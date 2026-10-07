@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Public Landing
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Phase 13: Public Property Discovery & Marketplace
+Route::get('/', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'home'])->name('home');
+Route::get('/properties', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'index'])->name('properties.index');
+Route::get('/properties/{id}', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'show'])->name('properties.show');
+Route::get('/discover', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'index'])->name('properties.discover');
 
 // Auth pages (stubs - will connect to Laravel auth in Phase 04 frontend)
 Route::get('/login', function () {
