@@ -20,3 +20,4 @@ Route::get('/register', function () {
 Route::get('/dashboard', function () {
     return view('dashboard.index');
 })->name('dashboard');
+
