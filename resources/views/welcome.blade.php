@@ -169,25 +169,49 @@
                 </a>
             </div>
 
-            {{-- Property Grid -- will be powered by API in Phase 13 --}}
+                        {{-- Property Grid -- will be powered by API in Phase 13 --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-properties-grid">
+                @php
+                    $sampleProperties = [
+                        (object)[
+                            'id' => 1,
+                            'title' => 'Luxury Villa in Bole',
+                            'type' => 'sale',
+                            'price' => 45000000,
+                            'location' => 'Bole, Addis Ababa',
+                            'bedrooms' => 5,
+                            'bathrooms' => 4,
+                            'area' => 450,
+                            'image_url' => 'https://images.unsplash.com/photo-1613490908592-fd5e48f7ce2f?auto=format&fit=crop&q=80&w=800'
+                        ],
+                        (object)[
+                            'id' => 2,
+                            'title' => 'Modern Apartment CMC',
+                            'type' => 'rent',
+                            'price' => 85000,
+                            'location' => 'CMC, Addis Ababa',
+                            'bedrooms' => 3,
+                            'bathrooms' => 2,
+                            'area' => 120,
+                            'image_url' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800'
+                        ],
+                        (object)[
+                            'id' => 3,
+                            'title' => 'Commercial Space Piassa',
+                            'type' => 'rent',
+                            'price' => 150000,
+                            'location' => 'Piassa, Addis Ababa',
+                            'bedrooms' => 0,
+                            'bathrooms' => 2,
+                            'area' => 300,
+                            'image_url' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800'
+                        ]
+                    ];
+                @endphp
 
-                {{-- Skeleton loading state (shown when JS fetches data) --}}
-                @for ($i = 0; $i < 3; $i++)
-                <div class="property-card" aria-hidden="true">
-                    <div class="skeleton aspect-video w-full"></div>
-                    <div class="p-5 space-y-3">
-                        <div class="skeleton h-4 w-3/4 rounded"></div>
-                        <div class="skeleton h-3 w-1/2 rounded"></div>
-                        <div class="flex gap-4 pt-1">
-                            <div class="skeleton h-3 w-16 rounded"></div>
-                            <div class="skeleton h-3 w-16 rounded"></div>
-                            <div class="skeleton h-3 w-16 rounded"></div>
-                        </div>
-                        <div class="skeleton h-5 w-28 rounded mt-2"></div>
-                    </div>
-                </div>
-                @endfor
+                @foreach($sampleProperties as $property)
+                    <x-property-card :property="$property" :isFeatured="$loop->first" />
+                @endforeach
             </div>
 
             {{-- Empty state (shown when no listings) --}}
@@ -305,3 +329,4 @@
     </section>
 
 </x-layouts.app>
+
