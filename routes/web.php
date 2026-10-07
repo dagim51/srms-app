@@ -72,3 +72,9 @@ Route::post('/dashboard/properties/{property}/media', [\App\Http\Controllers\Web
 Route::put('/dashboard/properties/{property}/media/order', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'updateOrder'])->name('dashboard.properties.media.order');
 Route::patch('/dashboard/properties/{property}/media/{media}/set-primary', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'setPrimary'])->name('dashboard.properties.media.primary');
 Route::delete('/dashboard/properties/{property}/media/{media}', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'destroy'])->name('dashboard.properties.media.destroy');
+
+// Phase 10: GIS Foundation UI
+Route::get('/dashboard/properties/map', function () {
+    return view('dashboard.properties.map');
+})->name('dashboard.properties.map');
+

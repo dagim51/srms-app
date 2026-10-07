@@ -215,4 +215,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/amenities', [\App\Http\Controllers\Api\V1\AmenityController::class, 'index']);
     Route::get('/amenities/categories', [\App\Http\Controllers\Api\V1\AmenityController::class, 'categories']);
     Route::get('/features', [\App\Http\Controllers\Api\V1\FeatureController::class, 'index']);
+
+    // GIS Foundation (Phase 10)
+    Route::get('/properties/search/radius', [\App\Http\Controllers\Api\V1\PropertyController::class, 'radiusSearch']);
 });

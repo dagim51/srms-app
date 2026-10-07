@@ -15,8 +15,12 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400">Manage real estate inventory, media, and features.</p>
             </div>
             <div class="flex items-center gap-2">
+                <a href="{{ route('dashboard.properties.map') }}" class="btn btn-outline text-xs text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+                    <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                    GIS Map Explorer
+                </a>
                 <a href="{{ route('dashboard.properties.media.demo') }}" class="btn btn-outline text-xs">
-                    <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <svg class="w-4 h-4 mr-1 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     Media Manager
                 </a>
                 <a href="/dashboard/properties/create" class="btn btn-primary text-xs shadow-sm shadow-orange-500/20">

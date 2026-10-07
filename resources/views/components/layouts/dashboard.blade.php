@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         </div>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
+                        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
                     <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1" x-cloak>
                         <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Organizations</div>
@@ -88,9 +88,15 @@
                 </a>
 
                 <a href="/dashboard/properties" id="sidebar-properties"
-                   class="sidebar-link {{ request()->is('dashboard/properties*') ? 'active' : '' }}">
+                   class="sidebar-link {{ (request()->is('dashboard/properties') || request()->is('dashboard/properties/create')) ? 'active' : '' }}">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
                     <span>Properties</span>
+                </a>
+
+                <a href="/dashboard/properties/map" id="sidebar-map"
+                   class="sidebar-link {{ request()->is('dashboard/properties/map*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                    <span>Map Explorer</span>
                 </a>
 
                 <a href="/dashboard/listings" id="sidebar-listings"

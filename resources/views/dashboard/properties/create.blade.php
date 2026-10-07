@@ -58,9 +58,18 @@
                 
                 <x-location-picker name="location_id" />
 
-                <div class="mt-5">
+                <div class="mt-5 mb-6">
                     <x-label for="address">Street Address</x-label>
                     <x-input type="text" id="address" name="address" placeholder="e.g. Rwanda Street, near X" class="w-full" />
+                </div>
+
+                {{-- Interactive Map Pin & Coordinates (Phase 10 GIS) --}}
+                <div class="pt-4 border-t border-gray-100 dark:border-[#273244]">
+                    <div class="mb-3">
+                        <x-label>GPS Coordinates & Map Pin</x-label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Click anywhere on the map or drag the pin to set the exact property coordinates.</p>
+                    </div>
+                    <x-coordinate-picker nameLat="latitude" nameLng="longitude" />
                 </div>
             </x-card>
 

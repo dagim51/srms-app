@@ -130,7 +130,8 @@ class PropertyController extends Controller
         $latRange = $radius / 111.32;
         $lonRange = $radius / (111.32 * cos(deg2rad($lat)));
 
-        $properties = Property::whereNotNull('latitude')
+        $properties = Property::with(['media', 'listings'])
+            ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
             ->whereBetween('longitude', [$lon - $lonRange, $lon + $lonRange])
@@ -146,7 +147,12 @@ class PropertyController extends Controller
                 $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
                 $distance = $earthRadius * $c;
                 
-                $property->distance = $distance;
+                $property->distance = round($distance, 2);
+                $property->cover_image = optional($property->media->first())->url;
+                $listing = $property->listings->first();
+                $property->price = $listing ? $listing->price : null;
+                $property->purpose = $listing ? $listing->purpose : 'For Sale';
+                $property->currency = $listing ? $listing->currency : 'ETB';
                 return $distance <= $radius;
             })
             ->sortBy('distance')
