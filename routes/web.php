@@ -8,6 +8,9 @@ Route::get('/properties', [\App\Http\Controllers\Web\PublicPropertyWebController
 Route::get('/properties/{id}', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'show'])->name('properties.show');
 Route::get('/discover', [\App\Http\Controllers\Web\PublicPropertyWebController::class, 'index'])->name('properties.discover');
 
+// Phase 14: Search Engine UI
+Route::get('/search', [\App\Http\Controllers\Web\SearchWebController::class, 'index'])->name('search');
+
 // Auth pages (stubs - will connect to Laravel auth in Phase 04 frontend)
 Route::get('/login', function () {
     return view('auth.login');

@@ -86,7 +86,7 @@
                 </div>
 
                 {{-- Search Inputs --}}
-                <form action="{{ route('properties.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-left">
+                <form action="{{ route('search') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-2 text-left">
                     <input type="hidden" name="purpose" :value="purposeParam">
 
                     {{-- Location Input --}}

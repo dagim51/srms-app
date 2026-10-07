@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }" x-bind:class="{ 'dark': darkMode }" x-init="$watch('darkMode', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
 <head>
     <meta charset="utf-8">
@@ -37,7 +37,11 @@
 
                     {{-- Desktop Nav --}}
                     <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
-                        <a href="/properties" class="btn btn-ghost text-sm px-3 py-2" id="nav-properties">Properties</a>
+                        <a href="/search" class="btn btn-ghost text-sm px-3 py-2 flex items-center gap-1.5 {{ request()->routeIs('search') ? 'text-primary-600 font-bold' : '' }}" id="nav-search">
+                            <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                            <span>Search</span>
+                        </a>
+                        <a href="/properties" class="btn btn-ghost text-sm px-3 py-2 {{ request()->routeIs('properties.index') ? 'text-primary-600 font-bold' : '' }}" id="nav-properties">Properties</a>
                         <a href="/short-stay" class="btn btn-ghost text-sm px-3 py-2" id="nav-short-stay">Short Stay</a>
                         <a href="/developers" class="btn btn-ghost text-sm px-3 py-2" id="nav-developers">Developers</a>
                         <a href="/services" class="btn btn-ghost text-sm px-3 py-2" id="nav-services">Services</a>
@@ -92,7 +96,11 @@
              class="glass border-b border-gray-200 dark:border-gray-700/50 md:hidden"
              x-cloak>
             <nav class="page-container py-4 flex flex-col gap-1" aria-label="Mobile navigation">
-                <a href="/properties" class="sidebar-link" id="mobile-nav-properties">
+                <a href="/search" class="sidebar-link {{ request()->routeIs('search') ? 'active' : '' }}" id="mobile-nav-search">
+                    <svg class="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    Search Engine
+                </a>
+                <a href="/properties" class="sidebar-link {{ request()->routeIs('properties.index') ? 'active' : '' }}" id="mobile-nav-properties">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
                     Properties
                 </a>
