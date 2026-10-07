@@ -9,7 +9,7 @@
     @endsection
 
     <div class="max-w-4xl mx-auto page-enter pb-12">
-        <form action="/dashboard/properties" method="POST" class="space-y-6">
+        <form action="/dashboard/properties" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             {{-- Basic Information --}}
@@ -89,6 +89,23 @@
                         <x-input type="number" id="year_built" name="year_built" min="1900" max="{{ date('Y') + 5 }}" class="w-full" />
                     </div>
                 </div>
+            </x-card>
+
+            {{-- Property Media (Phase 09) --}}
+            <x-card padding="p-6">
+                <div class="border-b border-gray-100 dark:border-[#273244] pb-4 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-display font-semibold text-lg text-gray-900 dark:text-white">Property Media & Gallery</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Upload photos, architectural floor plans, and video tours. First photo will be set as cover.
+                        </p>
+                    </div>
+                    <span class="text-xs text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-950/30 px-2.5 py-1 rounded-full">
+                        Up to 20MB per file
+                    </span>
+                </div>
+
+                <x-media-uploader name="photos" />
             </x-card>
 
             {{-- Amenities (Phase 08) --}}

@@ -37,7 +37,8 @@ Route::get('/403', function () {
 
 
 Route::get('/dashboard/properties', function () {
-    return view('dashboard.properties.index');
+    $properties = \App\Models\Property::with(['media'])->latest()->paginate(10);
+    return view('dashboard.properties.index', compact('properties'));
 });
 Route::get('/dashboard/properties/create', function () {
     return view('dashboard.properties.create');
@@ -64,4 +65,10 @@ Route::put('/dashboard/features/{feature}', [\App\Http\Controllers\Web\FeatureCa
 Route::patch('/dashboard/features/{feature}/toggle-status', [\App\Http\Controllers\Web\FeatureCatalogController::class, 'toggleStatus'])->name('dashboard.features.toggle');
 Route::delete('/dashboard/features/{feature}', [\App\Http\Controllers\Web\FeatureCatalogController::class, 'destroy'])->name('dashboard.features.destroy');
 
-
+// Phase 09: Property Media UI
+Route::get('/dashboard/properties/media', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'index'])->name('dashboard.properties.media.demo');
+Route::get('/dashboard/properties/{property}/media', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'index'])->name('dashboard.properties.media');
+Route::post('/dashboard/properties/{property}/media', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'store'])->name('dashboard.properties.media.store');
+Route::put('/dashboard/properties/{property}/media/order', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'updateOrder'])->name('dashboard.properties.media.order');
+Route::patch('/dashboard/properties/{property}/media/{media}/set-primary', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'setPrimary'])->name('dashboard.properties.media.primary');
+Route::delete('/dashboard/properties/{property}/media/{media}', [\App\Http\Controllers\Web\PropertyMediaWebController::class, 'destroy'])->name('dashboard.properties.media.destroy');
