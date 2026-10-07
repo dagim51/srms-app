@@ -242,8 +242,17 @@
                                     <x-listing-quality :listing="$listing" compact />
 
                                     <div class="flex items-center gap-1.5">
-                                        {{-- Toggle Published / Paused --}}
-                                        @if(in_array($listing->status, ['published', 'paused']))
+                                        {{-- Lifecycle Status / Rejection Explanation Link --}}
+                                        <a href="{{ route('dashboard.listings.submission-status', $listing) }}" class="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="View Submission Status & Lifecycle History">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        </a>
+
+                                        {{-- If Draft or Rejected: Submit for Review --}}
+                                        @if(in_array($listing->status, ['draft', 'rejected']))
+                                            <a href="{{ route('dashboard.listings.submit', $listing) }}" class="px-2 py-1 text-[11px] font-bold rounded {{ $listing->status === 'rejected' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 hover:bg-rose-100' : 'bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-400 hover:bg-primary-100' }} transition-colors">
+                                                {{ $listing->status === 'rejected' ? 'Fix & Submit' : 'Submit' }}
+                                            </a>
+                                        @elseif(in_array($listing->status, ['published', 'paused']))
                                             <form method="POST" action="{{ route('dashboard.listings.toggle-status', $listing) }}">
                                                 @csrf
                                                 @method('PATCH')
@@ -253,15 +262,6 @@
                                                     @else
                                                         <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                                     @endif
-                                                </button>
-                                            </form>
-                                        @elseif($listing->status === 'draft')
-                                            <form method="POST" action="{{ route('dashboard.listings.toggle-status', $listing) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="published">
-                                                <button type="submit" class="px-2 py-1 text-[11px] font-semibold rounded bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-400 hover:bg-primary-100 transition-colors">
-                                                    Publish
                                                 </button>
                                             </form>
                                         @endif
@@ -372,6 +372,9 @@
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         <div class="inline-flex items-center gap-1.5">
+                                            <a href="{{ route('dashboard.listings.submission-status', $listing) }}" class="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400" title="Lifecycle Status">
+                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                            </a>
                                             <a href="{{ route('dashboard.listings.preview', $listing) }}" class="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="Preview">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                             </a>

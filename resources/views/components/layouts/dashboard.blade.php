@@ -100,9 +100,16 @@
                 </a>
 
                 <a href="/dashboard/listings" id="sidebar-listings"
-                   class="sidebar-link {{ request()->is('dashboard/listings*') ? 'active' : '' }}">
+                   class="sidebar-link {{ (request()->is('dashboard/listings*') && !request()->is('dashboard/moderation*')) ? 'active' : '' }}">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
                     <span>Listings</span>
+                </a>
+
+                {{-- Moderation Queue (Phase 12) --}}
+                <a href="/dashboard/moderation/listings" id="sidebar-moderation"
+                   class="sidebar-link {{ request()->is('dashboard/moderation*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                    <span>Moderation Queue</span>
                 </a>
 
                 {{-- Property Catalogs (Phase 08) --}}

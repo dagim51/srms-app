@@ -55,6 +55,16 @@ Route::patch('/dashboard/listings/{listing}/toggle-status', [\App\Http\Controlle
 Route::delete('/dashboard/listings/{listing}', [\App\Http\Controllers\Web\ListingController::class, 'destroy'])->name('dashboard.listings.destroy');
 Route::get('/dashboard/listings/{listing}/preview', [\App\Http\Controllers\Web\ListingController::class, 'preview'])->name('dashboard.listings.preview');
 
+// Phase 12: Listing Submission & Lifecycle Status (User Screens)
+Route::get('/dashboard/listings/{listing}/submit', [\App\Http\Controllers\Web\ListingSubmissionWebController::class, 'showSubmitForm'])->name('dashboard.listings.submit');
+Route::post('/dashboard/listings/{listing}/submit', [\App\Http\Controllers\Web\ListingSubmissionWebController::class, 'processSubmit'])->name('dashboard.listings.submit.process');
+Route::get('/dashboard/listings/{listing}/submission-status', [\App\Http\Controllers\Web\ListingSubmissionWebController::class, 'status'])->name('dashboard.listings.submission-status');
+
+// Phase 12: Listing Moderation Queue & Decision Engine (Moderator Screens)
+Route::get('/dashboard/moderation/listings', [\App\Http\Controllers\Web\ListingModerationWebController::class, 'index'])->name('dashboard.moderation.listings.index');
+Route::get('/dashboard/moderation/listings/{listing}', [\App\Http\Controllers\Web\ListingModerationWebController::class, 'show'])->name('dashboard.moderation.listings.show');
+Route::post('/dashboard/moderation/listings/{listing}/decision', [\App\Http\Controllers\Web\ListingModerationWebController::class, 'decision'])->name('dashboard.moderation.listings.decision');
+
 // Phase 08: Property Features & Amenities Catalog Management
 Route::get('/dashboard/amenities', [\App\Http\Controllers\Web\AmenityCatalogController::class, 'index'])->name('dashboard.amenities.index');
 Route::post('/dashboard/amenities', [\App\Http\Controllers\Web\AmenityCatalogController::class, 'store'])->name('dashboard.amenities.store');
