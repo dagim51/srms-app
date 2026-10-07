@@ -91,6 +91,38 @@
                 </div>
             </x-card>
 
+            {{-- Amenities (Phase 08) --}}
+            <x-card padding="p-6">
+                <div class="border-b border-gray-100 dark:border-[#273244] pb-4 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-display font-semibold text-lg text-gray-900 dark:text-white">Amenities</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Select utility, security, indoor, and outdoor amenities available at this property.</p>
+                    </div>
+                    <a href="/dashboard/amenities" target="_blank" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium inline-flex items-center gap-1 flex-shrink-0">
+                        <span>Manage catalog</span>
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                </div>
+
+                <x-amenity-selector name="amenities" />
+            </x-card>
+
+            {{-- Architectural Features & Finishes (Phase 08) --}}
+            <x-card padding="p-6">
+                <div class="border-b border-gray-100 dark:border-[#273244] pb-4 mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-display font-semibold text-lg text-gray-900 dark:text-white">Features & Finishes</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Architectural elements, premium materials, and interior finishes.</p>
+                    </div>
+                    <a href="/dashboard/features" target="_blank" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium inline-flex items-center gap-1 flex-shrink-0">
+                        <span>Manage catalog</span>
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                </div>
+
+                <x-feature-selector name="features" />
+            </x-card>
+
             <div class="flex items-center justify-end gap-3 pt-2">
                 <a href="/dashboard/properties" class="btn btn-ghost">Cancel</a>
                 <x-button type="submit" variant="primary">Save Property</x-button>

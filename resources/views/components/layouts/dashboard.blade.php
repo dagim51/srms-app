@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches), sidebarOpen: false }" x-bind:class="{ 'dark': darkMode }" x-init="$watch('darkMode', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
 <head>
     <meta charset="utf-8">
@@ -32,7 +32,7 @@
                class="fixed lg:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-white dark:bg-[#111827] border-r border-gray-200 dark:border-[#273244] flex flex-col transition-transform duration-300"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
-                        {{-- Sidebar Header --}}
+            {{-- Sidebar Header --}}
             <div class="flex items-center gap-2.5 px-5 h-16 border-b border-gray-200 dark:border-[#273244] flex-shrink-0">
                 <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-sm shadow-orange-500/30">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
@@ -48,13 +48,13 @@
                             <div class="w-6 h-6 rounded bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
                                 A
                             </div>
-                                                    <div class="flex-1 min-w-0 text-left">
-                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
-                            <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20">Admin</span>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                            <div class="flex-1 min-w-0 text-left">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20">Admin</span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                                </div>
                             </div>
-                        </div>
                         </div>
                         <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
@@ -98,6 +98,25 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
                     <span>Listings</span>
                 </a>
+
+                {{-- Property Catalogs (Phase 08) --}}
+                <div class="pt-2 pb-1 px-3">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Catalogs</p>
+                </div>
+
+                <a href="/dashboard/amenities" id="sidebar-amenities"
+                   class="sidebar-link {{ request()->is('dashboard/amenities*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+                    <span>Amenities</span>
+                </a>
+
+                <a href="/dashboard/features" id="sidebar-features"
+                   class="sidebar-link {{ request()->is('dashboard/features*') ? 'active' : '' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /></svg>
+                    <span>Features</span>
+                </a>
+
+                <div class="divider my-2"></div>
 
                 <a href="/dashboard/bookings" id="sidebar-bookings"
                    class="sidebar-link {{ request()->is('dashboard/bookings*') ? 'active' : '' }}">
@@ -143,7 +162,7 @@
                         <div class="avatar avatar-md avatar-brand flex-shrink-0">
                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                         </div>
-                                                <div class="flex-1 min-w-0 text-left">
+                        <div class="flex-1 min-w-0 text-left">
                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
                             <div class="flex items-center gap-1.5 mt-0.5">
                                 <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20">Admin</span>
@@ -226,4 +245,3 @@
     @stack('scripts')
 </body>
 </html>
-

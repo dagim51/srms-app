@@ -210,4 +210,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/public/listings/{listing}', [\App\Http\Controllers\Api\V1\PublicListingController::class, 'show']);
     
     Route::get('/search', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
+
+    // Property Catalogs (Phase 08)
+    Route::get('/amenities', [\App\Http\Controllers\Api\V1\AmenityController::class, 'index']);
+    Route::get('/amenities/categories', [\App\Http\Controllers\Api\V1\AmenityController::class, 'categories']);
+    Route::get('/features', [\App\Http\Controllers\Api\V1\FeatureController::class, 'index']);
 });
