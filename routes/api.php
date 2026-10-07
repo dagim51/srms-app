@@ -185,10 +185,26 @@ Route::prefix('v1')->group(function () {
         Route::post('/marketing/campaigns', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeCampaign']);
         Route::post('/marketing/leads', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeLead']);
         Route::post('/marketing/leads/{lead}/convert', [\App\Http\Controllers\Api\V1\MarketingController::class, 'convertLead']);
+
+        // Valuation & Investment (Phase 41)
+        Route::post('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'calculate']);
+        Route::get('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'index']);
+
+        // Professional Services (Phase 42)
+        Route::post('/services/profiles', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeProfile']);
+        Route::post('/services/profiles/{profile}/listings', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeListing']);
+        Route::post('/services/listings/{listing}/requests', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeRequest']);
+        Route::patch('/services/requests/{serviceRequest}/status', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'updateRequestStatus']);
+
+        // Search Alerts & Recommendations (Phase 37)
+        Route::post('/search/alerts', [\App\Http\Controllers\Api\V1\SearchAlertController::class, 'store']);
     });
 });
 
 // Public Routes
+Route::post('/webhooks/{provider}', [\App\Http\Controllers\Api\V1\WebhookController::class, 'handle']);
+
+
 Route::prefix('v1')->group(function () {
     Route::get('/public/listings', [\App\Http\Controllers\Api\V1\PublicListingController::class, 'index']);
     Route::get('/public/listings/{listing}', [\App\Http\Controllers\Api\V1\PublicListingController::class, 'show']);
