@@ -28,7 +28,7 @@
                            value="{{ old('email') }}"
                            autocomplete="email"
                            required
-                           class="form-input {{ $errors->has('email') ? 'input-error' : '' }}"
+                           class="form-input {{ $errors->has('email') ? 'input-error' : ' }}"
                            placeholder="you@example.com">
                     @error('email')
                         <p class="form-error" role="alert">
@@ -48,7 +48,7 @@
                         <input :type="show ? 'text' : 'password'" id="password" name="password"
                                autocomplete="current-password"
                                required
-                               class="form-input pr-10 {{ $errors->has('password') ? 'input-error' : '' }}"
+                               class="form-input pr-10 {{ $errors->has('password') ? 'input-error' : ' }}"
                                placeholder="••••••••">
                         <button type="button" @click="show = !show"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -67,7 +67,7 @@
 
                 {{-- Remember --}}
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}
+                    <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : ' }}
                            class="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500 cursor-pointer accent-orange-500">
                     <label for="remember" class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">Remember me for 30 days</label>
                 </div>
@@ -91,3 +91,5 @@
         </p>
     </div>
 </x-layouts.auth>
+
+

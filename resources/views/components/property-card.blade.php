@@ -1,6 +1,6 @@
-﻿@props([
-    ''property'',
-    ''isFeatured'' => false,
+@props([
+    'property',
+    'isFeatured' => false,
 ])
 
 <div class="card card-hover overflow-hidden group flex flex-col h-full relative">
@@ -11,7 +11,7 @@
                 Featured
             </span>
         @endif
-        <span class="badge {{ $property->type === ''sale'' ? ''badge-brand'' : ''badge-info'' }} bg-white/90 backdrop-blur-sm shadow-sm">
+        <span class="badge {{ $property->type === 'sale' ? 'badge-brand' : 'badge-info' }} bg-white/90 backdrop-blur-sm shadow-sm">
             For {{ ucfirst($property->type) }}
         </span>
     </div>
@@ -23,7 +23,7 @@
 
     {{-- Image --}}
     <div class="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
-        <img src="{{ $property->image_url ?? ''https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'' }}" 
+        <img src="{{ $property->image_url ?? 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }}" 
              alt="{{ $property->title }}" 
              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out">
         
@@ -31,7 +31,7 @@
         <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-900/80 to-transparent">
             <p class="font-display font-extrabold text-white text-xl">
                 ETB {{ number_format($property->price) }}
-                @if($property->type === ''rent'')
+                @if($property->type === 'rent')
                     <span class="text-sm font-normal text-gray-200">/mo</span>
                 @endif
             </p>
@@ -43,12 +43,12 @@
         <h3 class="font-display font-bold text-gray-900 dark:text-white text-lg line-clamp-1 mb-1">
             <a href="/properties/{{ $property->id ?? 1 }}" class="focus:outline-none">
                 <span class="absolute inset-0" aria-hidden="true"></span>
-                {{ $property->title ?? ''Modern Family Home'' }}
+                {{ $property->title ?? 'Modern Family Home' }}
             </a>
         </h3>
         <p class="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5 mb-4 line-clamp-1">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-            {{ $property->location ?? ''Bole, Addis Ababa'' }}
+            {{ $property->location ?? 'Bole, Addis Ababa' }}
         </p>
 
         {{-- Amenities --}}

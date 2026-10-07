@@ -18,7 +18,7 @@
                            value="{{ old('name') }}"
                            autocomplete="name"
                            required
-                           class="form-input {{ $errors->has('name') ? 'input-error' : '' }}"
+                           class="form-input {{ $errors->has('name') ? 'input-error' : ' }}"
                            placeholder="Abebe Girma">
                     @error('name')
                         <p class="form-error" role="alert">
@@ -35,7 +35,7 @@
                            value="{{ old('email') }}"
                            autocomplete="email"
                            required
-                           class="form-input {{ $errors->has('email') ? 'input-error' : '' }}"
+                           class="form-input {{ $errors->has('email') ? 'input-error' : ' }}"
                            placeholder="you@example.com">
                     @error('email')
                         <p class="form-error" role="alert">
@@ -63,7 +63,7 @@
                         <input :type="show ? 'text' : 'password'" id="password" name="password"
                                autocomplete="new-password"
                                required
-                               class="form-input pr-10 {{ $errors->has('password') ? 'input-error' : '' }}"
+                               class="form-input pr-10 {{ $errors->has('password') ? 'input-error' : ' }}"
                                placeholder="At least 8 characters">
                         <button type="button" @click="show = !show"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -120,3 +120,5 @@
         </p>
     </div>
 </x-layouts.auth>
+
+

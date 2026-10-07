@@ -21,3 +21,33 @@ Route::get('/dashboard', function () {
     return view('dashboard.index');
 })->name('dashboard');
 
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('password.request');
+
+Route::get('/reset-password/{token}', function (\Illuminate\Http\Request $request, $token) {
+    return view('auth.reset-password', ['request' => $request]);
+})->name('password.reset');
+
+
+Route::get('/403', function () {
+    return view('errors.403');
+});
+
+
+Route::get('/dashboard/properties', function () {
+    return view('dashboard.properties.index');
+});
+Route::get('/dashboard/properties/create', function () {
+    return view('dashboard.properties.create');
+});
+
+
+Route::get('/dashboard/listings', function () {
+    return view('dashboard.listings.index');
+});
+Route::get('/dashboard/listings/create', function () {
+    return view('dashboard.listings.create');
+});
+

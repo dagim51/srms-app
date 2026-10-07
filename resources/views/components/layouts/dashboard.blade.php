@@ -32,12 +32,50 @@
                class="fixed lg:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-white dark:bg-[#111827] border-r border-gray-200 dark:border-[#273244] flex flex-col transition-transform duration-300"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
-            {{-- Sidebar Header --}}
+                        {{-- Sidebar Header --}}
             <div class="flex items-center gap-2.5 px-5 h-16 border-b border-gray-200 dark:border-[#273244] flex-shrink-0">
                 <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-sm shadow-orange-500/30">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
                 </div>
                 <span class="font-display font-bold text-gray-900 dark:text-white text-lg tracking-tight">SRMS</span>
+            </div>
+
+            {{-- Tenant Switcher --}}
+            <div class="px-3 py-3 border-b border-gray-200 dark:border-[#273244]">
+                <div x-data="{ open: false }" class="relative">
+                    <button @click="open = !open" class="w-full flex items-center justify-between bg-gray-50 dark:bg-[#172033] hover:bg-gray-100 dark:hover:bg-[#1e293b] p-2 rounded-lg transition-colors border border-gray-200 dark:border-[#273244]" aria-haspopup="true" :aria-expanded="open" id="tenant-switcher">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-6 h-6 rounded bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                A
+                            </div>
+                                                    <div class="flex-1 min-w-0 text-left">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20">Admin</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                            </div>
+                        </div>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
+                    </button>
+                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1" x-cloak>
+                        <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Organizations</div>
+                        <a href="#" class="dropdown-item">
+                            <div class="w-5 h-5 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-[10px] mr-2">A</div>
+                            <span class="flex-1 truncate">Acme Properties</span>
+                            <svg class="w-4 h-4 text-orange-500 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <div class="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-[10px] mr-2">P</div>
+                            <span class="flex-1 truncate">Personal Account</span>
+                        </a>
+                        <div class="divider my-1"></div>
+                        <a href="#" class="dropdown-item text-orange-600 dark:text-orange-400 font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            Create Organization
+                        </a>
+                    </div>
+                </div>
             </div>
 
             {{-- Sidebar Nav --}}
@@ -105,9 +143,12 @@
                         <div class="avatar avatar-md avatar-brand flex-shrink-0">
                             {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
                         </div>
-                        <div class="flex-1 min-w-0 text-left">
+                                                <div class="flex-1 min-w-0 text-left">
                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20">Admin</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                            </div>
                         </div>
                         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
@@ -185,3 +226,4 @@
     @stack('scripts')
 </body>
 </html>
+

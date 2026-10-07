@@ -1,5 +1,5 @@
-﻿@props([''padding'' => ''p-6''])
+@props(['padding' => 'p-6'])
 
-<div {{ $attributes->merge([''class'' => ''card '' . $padding]) }}>
+<div {{ $attributes->merge(['class' => 'card ' . $padding]) }}>
     {{ $slot }}
 </div>

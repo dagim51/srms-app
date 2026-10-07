@@ -4,12 +4,12 @@
     <div class="card p-8 page-enter">
         <div class="text-center mb-8">
             <h1 class="font-display font-bold text-gray-900 dark:text-white text-2xl mb-2">Reset Password</h1>
-            <p class="text-gray-500 dark:text-gray-400 text-sm">Enter your email address and we''ll send you a link to reset your password.</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm">Enter your email address and we'll send you a link to reset your password.</p>
         </div>
 
-        @if (session(''status''))
+        @if (session('status'))
             <x-alert type="success" class="mb-6">
-                {{ session(''status'') }}
+                {{ session('status') }}
             </x-alert>
         @endif
 
@@ -20,18 +20,18 @@
                 <div>
                     <x-label for="email" required>Email address</x-label>
                     <x-input type="email" id="email" name="email"
-                             value="{{ old(''email'') }}"
+                             value="{{ old('email') }}"
                              autocomplete="email"
                              required autofocus
-                             :error="$errors->has(''email'')"
+                             :error="$errors->has('email')"
                              placeholder="you@example.com" />
-                    @error(''email'')
+                    @error('email')
                         <p class="form-error" role="alert">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
-            <x-button type="submit" class="w-full mt-7" x-bind:class="{ ''btn-loading'': loading }" x-bind:disabled="loading">
+            <x-button type="submit" class="w-full mt-7" x-bind:class="{ 'btn-loading': loading }" x-bind:disabled="loading">
                 <span x-show="!loading">Send Reset Link</span>
                 <span x-show="loading" x-cloak>Sending...</span>
             </x-button>
@@ -47,3 +47,5 @@
         </p>
     </div>
 </x-layouts.auth>
+
+
