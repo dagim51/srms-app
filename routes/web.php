@@ -45,12 +45,15 @@ Route::get('/dashboard/properties/create', function () {
 });
 
 
-Route::get('/dashboard/listings', function () {
-    return view('dashboard.listings.index');
-});
-Route::get('/dashboard/listings/create', function () {
-    return view('dashboard.listings.create');
-});
+// Phase 11: Listing Core UI
+Route::get('/dashboard/listings', [\App\Http\Controllers\Web\ListingController::class, 'index'])->name('dashboard.listings.index');
+Route::get('/dashboard/listings/create', [\App\Http\Controllers\Web\ListingController::class, 'create'])->name('dashboard.listings.create');
+Route::post('/dashboard/listings', [\App\Http\Controllers\Web\ListingController::class, 'store'])->name('dashboard.listings.store');
+Route::get('/dashboard/listings/{listing}/edit', [\App\Http\Controllers\Web\ListingController::class, 'edit'])->name('dashboard.listings.edit');
+Route::put('/dashboard/listings/{listing}', [\App\Http\Controllers\Web\ListingController::class, 'update'])->name('dashboard.listings.update');
+Route::patch('/dashboard/listings/{listing}/toggle-status', [\App\Http\Controllers\Web\ListingController::class, 'toggleStatus'])->name('dashboard.listings.toggle-status');
+Route::delete('/dashboard/listings/{listing}', [\App\Http\Controllers\Web\ListingController::class, 'destroy'])->name('dashboard.listings.destroy');
+Route::get('/dashboard/listings/{listing}/preview', [\App\Http\Controllers\Web\ListingController::class, 'preview'])->name('dashboard.listings.preview');
 
 // Phase 08: Property Features & Amenities Catalog Management
 Route::get('/dashboard/amenities', [\App\Http\Controllers\Web\AmenityCatalogController::class, 'index'])->name('dashboard.amenities.index');
