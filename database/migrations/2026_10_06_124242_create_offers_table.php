@@ -24,8 +24,13 @@ return new class extends Migration
             
             $table->timestamps();
             $table->softDeletes();
-            
-            $table->foreign('parent_offer_id')->references('id')->on('offers')->nullOnDelete();
+        });
+
+        Schema::table('offers', function (Blueprint $table) {
+            $table->foreign('parent_offer_id')
+                ->references('id')
+                ->on('offers')
+                ->nullOnDelete();
         });
     }
 
@@ -34,6 +39,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('offers', function (Blueprint $table) {
+            $table->dropForeign(['parent_offer_id']);
+        });
+
         Schema::dropIfExists('offers');
     }
 };
