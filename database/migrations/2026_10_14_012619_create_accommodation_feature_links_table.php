@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('accommodation_feature_links', function (Blueprint $table) {
-            $table->foreignId('accommodation_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('feature_id')->constrained('property_features')->cascadeOnDelete();
+            $table->foreignUuid('accommodation_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('feature_id')->constrained('property_features')->cascadeOnDelete();
             $table->string('value')->nullable();
             $table->primary(['accommodation_id', 'feature_id']);
         });
