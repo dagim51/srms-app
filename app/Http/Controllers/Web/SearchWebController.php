@@ -29,12 +29,13 @@ class SearchWebController extends Controller
         // 2. Keyword / Location Filter
         $q = trim((string)($request->get('q') ?: $request->get('search') ?: $request->get('location')));
         if (!empty($q)) {
-            $query->where(function ($sub) use ($q) {
-                $sub->whereHas('property', function ($propQ) use ($q) {
-                    $propQ->where('title', 'like', "%{$q}%")
-                          ->orWhere('description', 'like', "%{$q}%")
-                          ->orWhere('property_code', 'like', "%{$q}%");
-                })->orWhere('purpose', 'like', "%{$q}%");
+            $likeOp = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($sub) use ($q, $likeOp) {
+                $sub->whereHas('property', function ($propQ) use ($q, $likeOp) {
+                    $propQ->where('title', $likeOp, "%{$q}%")
+                          ->orWhere('description', $likeOp, "%{$q}%")
+                          ->orWhere('property_code', $likeOp, "%{$q}%");
+                })->orWhere('purpose', $likeOp, "%{$q}%");
             });
         }
 

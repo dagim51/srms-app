@@ -112,22 +112,24 @@ class PublicPropertyWebController extends Controller
             $query->where('purpose', $purpose);
         }
 
+        $likeOp = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
         // Search Keyword (City, Subcity, Neighborhood, Title)
         if ($request->filled('search')) {
             $s = $request->search;
             $tokens = EthiopicTextNormalizer::getSearchTokens($s);
-            $query->where(function ($q) use ($tokens) {
-                $q->whereHas('property', function ($pq) use ($tokens) {
-                    $pq->where(function ($sub) use ($tokens) {
+            $query->where(function ($q) use ($tokens, $likeOp) {
+                $q->whereHas('property', function ($pq) use ($tokens, $likeOp) {
+                    $pq->where(function ($sub) use ($tokens, $likeOp) {
                         foreach ($tokens as $token) {
-                            $sub->orWhere('title', 'like', "%{$token}%")
-                                ->orWhere('description', 'like', "%{$token}%")
-                                ->orWhere('property_code', 'like', "%{$token}%");
+                            $sub->orWhere('title', $likeOp, "%{$token}%")
+                                ->orWhere('description', $likeOp, "%{$token}%")
+                                ->orWhere('property_code', $likeOp, "%{$token}%");
                         }
                     });
-                })->orWhere(function ($sub) use ($tokens) {
+                })->orWhere(function ($sub) use ($tokens, $likeOp) {
                     foreach ($tokens as $token) {
-                        $sub->orWhere('purpose', 'like', "%{$token}%");
+                        $sub->orWhere('purpose', $likeOp, "%{$token}%");
                     }
                 });
             });
@@ -137,11 +139,11 @@ class PublicPropertyWebController extends Controller
         if ($request->filled('location')) {
             $loc = $request->location;
             $locTokens = EthiopicTextNormalizer::getSearchTokens($loc);
-            $query->whereHas('property', function ($pq) use ($locTokens) {
-                $pq->where(function ($sub) use ($locTokens) {
+            $query->whereHas('property', function ($pq) use ($locTokens, $likeOp) {
+                $pq->where(function ($sub) use ($locTokens, $likeOp) {
                     foreach ($locTokens as $token) {
-                        $sub->orWhere('title', 'like', "%{$token}%")
-                            ->orWhere('description', 'like', "%{$token}%");
+                        $sub->orWhere('title', $likeOp, "%{$token}%")
+                            ->orWhere('description', $likeOp, "%{$token}%");
                     }
                 });
             });

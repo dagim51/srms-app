@@ -64,6 +64,12 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
+          sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/" .env
+          sed -i "s/^DB_HOST=.*/DB_HOST=127.0.0.1/" .env
+          sed -i "s/^DB_PORT=.*/DB_PORT=5432/" .env
+          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=ethio_real_estate_test/" .env
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=postgres/" .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=password/" .env
           php artisan key:generate
 
       - name: Install Frontend Dependencies
