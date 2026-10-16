@@ -70,3 +70,12 @@ npm run build
 # Migrations
 php artisan migrate:fresh --seed
 ```
+
+## UI & Frontend Design Authority
+
+For all UI/UX, styling, layout, typography, component design, and frontend interface tasks, exclusively apply the **Frontend Design** (`frontend-design`) skill:
+- **Bespoke Aesthetics**: Design directly for the product domain without defaulting to generic AI templates.
+- **Intentional Typography**: Deliberate type scale, appropriate weights, line length under 80 characters.
+- **Curated Color Tokens**: Tight, domain-specific palettes with 4–6 named hex values.
+- **Restrained Motion**: Subtle, user-triggered state transitions only; no perpetual or blanket hover transitions.
+- **Intentional Copy**: Clear, conversational active voice with plain verbs.
