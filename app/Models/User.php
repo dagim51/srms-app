@@ -14,12 +14,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'locale', 'phone', 'status', 'timezone'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasUuids, SoftDeletes, HasRoles;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'locale',
+        'phone',
+        'status',
+        'timezone',
+    ];
 
     /**
      * Get the attributes that should be cast.

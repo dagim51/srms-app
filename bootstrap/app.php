@@ -13,8 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+        // Attach the named "api" rate limiter (defined in AppServiceProvider)
+        // to every route in routes/api.php.
+        $middleware->throttleApi();
         $middleware->alias([
             'api.token' => \App\Http\Middleware\VerifyApiToken::class,
+            'org.scope' => \App\Http\Middleware\OrganizationScope::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

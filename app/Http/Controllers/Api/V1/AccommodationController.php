@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AccommodationResource;
 use App\Models\Accommodation;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class AccommodationController extends Controller
             ->where('is_active', true)
             ->paginate(15);
             
-        return response()->json(['data' => $accommodations]);
+        return AccommodationResource::collection($accommodations);
     }
 
     public function store(Request $request)
@@ -42,13 +43,13 @@ class AccommodationController extends Controller
         
         $accommodation = Accommodation::create($validated);
         
-        return response()->json(['data' => $accommodation], 201);
+        return response()->json(['data' => new AccommodationResource($accommodation)], 201);
     }
 
     public function show(Accommodation $accommodation)
     {
-        $accommodation->load('property', 'host:id,name');
-        return response()->json(['data' => $accommodation]);
+        $accommodation->load(['property', 'host', 'amenities', 'availabilities', 'pricingRules', 'media', 'bookings']);
+        return response()->json(['data' => new AccommodationResource($accommodation)]);
     }
 
     public function update(Request $request, Accommodation $accommodation)
@@ -70,7 +71,7 @@ class AccommodationController extends Controller
         
         $accommodation->update($validated);
         
-        return response()->json(['data' => $accommodation]);
+        return response()->json(['data' => new AccommodationResource($accommodation)]);
     }
 
     public function destroy(Accommodation $accommodation)

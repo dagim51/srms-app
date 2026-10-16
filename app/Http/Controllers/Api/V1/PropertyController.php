@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
+use App\Http\Resources\PropertyResource;
 use App\Models\Property;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class PropertyController extends Controller
@@ -26,7 +26,13 @@ class PropertyController extends Controller
         $validated['status'] = 'draft';
 
         $property = Property::create($validated);
-        return response()->json($property, 201);
+        return response()->json(['data' => new PropertyResource($property)], 201);
+    }
+
+    public function show(Property $property)
+    {
+        $property->load(['location', 'category', 'type', 'media', 'amenities', 'features', 'listings', 'owner', 'organization']);
+        return response()->json(['data' => new PropertyResource($property)]);
     }
 
     public function update(Request $request, Property $property)
@@ -42,7 +48,7 @@ class PropertyController extends Controller
         ]);
 
         $property->update($validated);
-        return response()->json($property);
+        return response()->json(['data' => new PropertyResource($property)]);
     }
 
     public function attachAmenity(Request $request, Property $property)
@@ -110,7 +116,7 @@ class PropertyController extends Controller
             $query->where('bedrooms', $request->input('bedrooms'));
         }
 
-        return response()->json($query->paginate(15));
+        return PropertyResource::collection($query->paginate(15));
     }
 
     public function radiusSearch(Request $request)
@@ -158,6 +164,6 @@ class PropertyController extends Controller
             ->sortBy('distance')
             ->values();
 
-        return response()->json(['data' => $properties]);
+        return response()->json(['data' => PropertyResource::collection($properties)]);
     }
 }

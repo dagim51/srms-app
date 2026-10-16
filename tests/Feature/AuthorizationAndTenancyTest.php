@@ -84,6 +84,43 @@ class AuthorizationAndTenancyTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_organization_scope_is_enforced_on_real_api_routes()
+    {
+        $user = \App\Models\User::factory()->create();
+        $orgId = \Illuminate\Support\Str::uuid()->toString();
+
+        \Illuminate\Support\Facades\DB::table('organizations')->insert([
+            'id' => $orgId, 'name' => 'Real Org', 'slug' => 'real-org', 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $token = \Illuminate\Support\Str::random(40);
+        \App\Models\ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+
+        // Authenticated, but not a member of the organization -> forbidden.
+        $this->withToken($token)
+            ->withHeader('X-Organization-ID', $orgId)
+            ->getJson('/api/v1/users/profile')
+            ->assertStatus(403)
+            ->assertJsonPath('error.code', 'FORBIDDEN');
+
+        // Join the organization -> allowed.
+        \Illuminate\Support\Facades\DB::table('organization_members')->insert([
+            'id' => \Illuminate\Support\Str::uuid()->toString(),
+            'user_id' => $user->id,
+            'organization_id' => $orgId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->withToken($token)
+            ->withHeader('X-Organization-ID', $orgId)
+            ->getJson('/api/v1/users/profile')
+            ->assertStatus(200);
+
+        // No organization header -> unchanged behaviour.
+        $this->withToken($token)->getJson('/api/v1/users/profile')->assertStatus(200);
+    }
+
     public function test_check_permission_middleware()
     {
         $user = \App\Models\User::factory()->create();

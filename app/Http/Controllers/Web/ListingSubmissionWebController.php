@@ -39,7 +39,7 @@ class ListingSubmissionWebController extends Controller
         // Optional submission notes recorded in moderations log
         if ($request->filled('comments')) {
             $listing->moderations()->create([
-                'moderator_id' => Auth::id() ?? $listing->owner_actor_id ?? \App\Models\User::first()->id,
+                'moderator_id' => Auth::id() ?? $listing->owner_actor_id,
                 'action' => 'submitted',
                 'comments' => $request->input('comments'),
             ]);

@@ -3,13 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ListingResource;
 use App\Models\Listing;
 use App\Models\Property;
+use App\Services\Listings\ListingPublisher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ListingController extends Controller
 {
+    protected ListingPublisher $publisher;
+
+    public function __construct(ListingPublisher $publisher)
+    {
+        $this->publisher = $publisher;
+    }
+
     public function store(Request $request, Property $property)
     {
         Gate::authorize('update', $property); // Only property owner can create listing
@@ -28,7 +37,13 @@ class ListingController extends Controller
             'owner_actor_id' => $request->user()->id
         ]);
 
-        return response()->json($listing, 201);
+        return response()->json(['data' => new ListingResource($listing)], 201);
+    }
+
+    public function show(Listing $listing)
+    {
+        $listing->load(['property', 'ownerActor', 'moderations', 'searchIndex']);
+        return response()->json(['data' => new ListingResource($listing)]);
     }
 
     public function update(Request $request, Listing $listing)
@@ -43,7 +58,7 @@ class ListingController extends Controller
 
         $listing->update($validated);
 
-        return response()->json($listing);
+        return response()->json(['data' => new ListingResource($listing)]);
     }
 
     public function submit(Request $request, Listing $listing)
@@ -59,10 +74,9 @@ class ListingController extends Controller
             return response()->json(['message' => 'Mandatory fields missing for submission'], 422);
         }
 
-        $listing->status = 'pending_review';
-        $listing->save();
+        $listing = $this->publisher->submitForReview($listing);
 
-        return response()->json(['message' => 'Listing submitted for review', 'listing' => $listing]);
+        return response()->json(['message' => 'Listing submitted for review', 'data' => new ListingResource($listing)]);
     }
 
     public function updateStatus(Request $request, Listing $listing)
@@ -79,12 +93,14 @@ class ListingController extends Controller
             if (empty($listing->price) || empty($listing->purpose)) {
                 return response()->json(['message' => 'Mandatory fields missing for publishing'], 422);
             }
-            $listing->published_at = now();
+            $listing = $this->publisher->publish($listing, $request->user()?->id);
+        } elseif ($newStatus === 'paused' && $listing->status === 'published') {
+            $listing = $this->publisher->unpublish($listing, $request->user()?->id);
+        } else {
+            $listing->status = $newStatus;
+            $listing->save();
         }
 
-        $listing->status = $newStatus;
-        $listing->save();
-
-        return response()->json($listing);
+        return response()->json(['data' => new ListingResource($listing)]);
     }
 }

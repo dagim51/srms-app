@@ -22,9 +22,9 @@ class PropertyTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('title', 'Luxury Villa');
-        $this->assertNotNull($response->json('property_code'));
-        $this->assertEquals($user->id, $response->json('owner_user_id'));
+        $response->assertJsonPath('data.title', 'Luxury Villa');
+        $this->assertNotNull($response->json('data.property_code'));
+        $this->assertEquals($user->id, $response->json('data.owner_user_id'));
     }
 
     public function test_unauthorized_user_cannot_edit_property()
@@ -68,8 +68,8 @@ class PropertyTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $this->assertEquals('Updated Title', $response->json('title'));
-        $this->assertEquals('pending_verification', $response->json('status'));
+        $this->assertEquals('Updated Title', $response->json('data.title'));
+        $this->assertEquals('pending_verification', $response->json('data.status'));
     }
 
     public function test_property_and_listing_are_separate_entities()

@@ -1,0 +1,161 @@
+name: UI Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'srms-app/resources/views/**/*.blade.php'
+      - 'srms-app/resources/css/**/*.css'
+      - 'srms-app/resources/js/**/*.js'
+      - 'srms-app/scripts/lint-design-tokens.js'
+      - 'srms-app/package.json'
+  pull_request:
+    paths:
+      - 'srms-app/resources/views/**/*.blade.php'
+      - 'srms-app/resources/css/**/*.css'
+      - 'srms-app/resources/js/**/*.js'
+      - 'srms-app/scripts/lint-design-tokens.js'
+      - 'srms-app/package.json'
+
+jobs:
+  design-token-lint:
+    name: Design Token Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srms-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: srms-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run design token linter
+        run: npm run lint:design-tokens
+
+      - name: Report violations
+        if: failure()
+        run: |
+          echo "::error::Design token violations detected. Run 'npm run lint:design-tokens' locally to see details."
+          exit 1
+
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srms-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: srms-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+  php-static-analysis:
+    name: PHP Static Analysis (Pint + PHPStan)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srms-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, dom, xml
+          tools: composer:v2
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run Laravel Pint (code style)
+        run: ./vendor/bin/pint --test
+
+      - name: Run PHPStan (static analysis)
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+
+  php-tests:
+    name: PHP Tests (SQLite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srms-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, dom, xml
+          tools: composer:v2
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate:fresh --seed --force
+
+      - name: Run PHPUnit tests
+        run: php artisan test
+
+  accessibility-audit:
+    name: Accessibility Audit (axe-core)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./srms-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: srms-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run accessibility tests
+        run: |
+          npx playwright test tests/e2e/accessibility.spec.ts --reporter=line
+        continue-on-error: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true

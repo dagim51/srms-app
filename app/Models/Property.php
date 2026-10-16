@@ -47,4 +47,10 @@ class Property extends Model
     {
         return $this->hasOne(PropertyMedia::class)->where('kind', 'image')->orderBy('sort_order');
     }
+
+    public function getCoverImageAttribute(): ?string
+    {
+        $media = $this->media()->first();
+        return $media ? $media->url : null;
+    }
 }

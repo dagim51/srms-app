@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'save' => 'Keesso',
+    'cancel' => 'Baleessaa',
+    'delete' => 'Sireeraa',
+    'edit' => 'Guddataa',
+    'filter' => 'Hidhaa',
+    'export' => 'Ibsaa',
+    'actions' => 'Gosaa',
+    'status' => 'Haalu',
+    'active' => 'Hordofaa',
+    'pending' => 'Lolaa irraa',
+    'confirmed' => 'Sifnaa\'a',
+    'saved' => 'Keessattii',
+    'loading' => 'Waliin kennina...',
+    'success' => 'Hojii danda\'a',
+    'error' => 'Kenneennoo',
+    'warning' => 'Dhiisaa',
+    'info' => 'Odeeffannoo',
+    'close' => 'Xiqqaa',
+    'view_all' => 'Hundee Dubbisuu',
+    'language' => 'Afaan',
+    'english' => 'Ingliizii',
+    'amharic' => 'Amaroo',
+    'oromo' => 'Afaan Oromoo',
+    'select_language' => 'Afaan Fildi',
+];

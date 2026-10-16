@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Admin\DisputeController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -15,17 +16,38 @@ Route::get('/health', function () {
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('/register', [AuthController::class, 'register']);
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
         Route::post('/logout', [AuthController::class, 'logout'])->middleware('api.token');
-        Route::post('/password/email', [AuthController::class, 'forgotPassword']);
-        Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+        Route::post('/password/email', [AuthController::class, 'forgotPassword'])->middleware('throttle:6,1');
+        Route::post('/password/reset', [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
     });
 
-    Route::middleware('api.token')->group(function () {
-        Route::get('/users/profile', function (Request $request) {
-            return response()->json(['data' => $request->user()]);
-        });
+    // Admin routes - require admin permission
+    Route::prefix('admin')->middleware(['api.token', \App\Http\Middleware\CheckPermission::class.':admin'])->group(function () {
+        // Disputes & Fraud Management
+        Route::get('/disputes', [DisputeController::class, 'index']);
+        Route::get('/disputes/stats', [DisputeController::class, 'stats']);
+        Route::get('/disputes/{dispute}', [DisputeController::class, 'show']);
+        Route::post('/disputes/{dispute}/assign', [DisputeController::class, 'assign']);
+        Route::patch('/disputes/{dispute}/status', [DisputeController::class, 'updateStatus']);
+        Route::post('/disputes/{dispute}/evidence', [DisputeController::class, 'addEvidence']);
+        Route::post('/evidence/{evidence}/verify', [DisputeController::class, 'verifyEvidence']);
+
+        // Listing Flags
+        Route::get('/flags/listings', [DisputeController::class, 'listingFlags']);
+        Route::patch('/flags/listings/{flag}', [DisputeController::class, 'updateListingFlag']);
+
+        // User Flags
+        Route::get('/flags/users', [DisputeController::class, 'userFlags']);
+        Route::patch('/flags/users/{flag}', [DisputeController::class, 'updateUserFlag']);
+    });
+
+    Route::middleware(['api.token', 'org.scope'])->group(function () {
+        Route::name('api.v1.')->group(function () {
+            Route::get('/users/profile', function (Request $request) {
+                return response()->json(['data' => $request->user()]);
+            });
 
         // Location Hierarchy
         Route::get('/locations/regions', [\App\Http\Controllers\Api\V1\LocationController::class, 'regions']);
@@ -129,7 +151,7 @@ Route::prefix('v1')->group(function () {
         
         // Payments & Transactions (Phase 24)
         Route::get('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'index']);
-        Route::post('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'store']);
+        Route::post('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'store'])->name('payments');
         Route::patch('/payments/{payment}', [\App\Http\Controllers\Api\V1\PaymentController::class, 'update']);
         
         // Companies & Organizations (Phase 26)
@@ -185,24 +207,27 @@ Route::prefix('v1')->group(function () {
         Route::post('/marketing/campaigns', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeCampaign']);
         Route::post('/marketing/leads', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeLead']);
         Route::post('/marketing/leads/{lead}/convert', [\App\Http\Controllers\Api\V1\MarketingController::class, 'convertLead']);
-
+        
         // Valuation & Investment (Phase 41)
         Route::post('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'calculate']);
         Route::get('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'index']);
-
+        
         // Professional Services (Phase 42)
         Route::post('/services/profiles', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeProfile']);
         Route::post('/services/profiles/{profile}/listings', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeListing']);
         Route::post('/services/listings/{listing}/requests', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeRequest']);
         Route::patch('/services/requests/{serviceRequest}/status', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'updateRequestStatus']);
-
+        
         // Search Alerts & Recommendations (Phase 37)
-        Route::post('/search/alerts', [\App\Http\Controllers\Api\V1\SearchAlertController::class, 'store']);
+            Route::post('/search/alerts', [\App\Http\Controllers\Api\V1\SearchAlertController::class, 'store']);
+        });
     });
 });
 
 // Public Routes
 Route::post('/webhooks/{provider}', [\App\Http\Controllers\Api\V1\WebhookController::class, 'handle']);
+Route::post('/webhooks/payments/telebirr', [\App\Http\Controllers\Api\V1\PaymentWebhookController::class, 'telebirr'])
+    ->middleware('throttle:webhooks');
 
 
 Route::prefix('v1')->group(function () {

@@ -3,11 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\InquiryResource;
 use App\Models\Inquiry;
+use App\Services\Inquiries\InquiryService;
 use Illuminate\Http\Request;
 
 class InquiryController extends Controller
 {
+    protected InquiryService $inquiryService;
+
+    public function __construct(InquiryService $inquiryService)
+    {
+        $this->inquiryService = $inquiryService;
+    }
+
     public function index()
     {
         $user = auth()->user();
@@ -17,7 +26,7 @@ class InquiryController extends Controller
             ->with(['listing', 'property', 'requester', 'sellerAgent'])
             ->get();
             
-        return response()->json(['data' => $inquiries]);
+        return response()->json(['data' => InquiryResource::collection($inquiries)]);
     }
 
     public function store(Request $request)
@@ -27,19 +36,12 @@ class InquiryController extends Controller
             'message' => 'nullable|string',
         ]);
         
-        // Use full namespace for Listing to avoid import issues
-        $listing = \App\Models\Listing::findOrFail($validated['listing_id']);
-        
-        $inquiry = Inquiry::create([
-            'listing_id' => $listing->id,
-            'property_id' => $listing->property_id,
-            'requester_id' => auth()->id(),
-            'seller_agent_id' => $listing->owner_actor_id,
-            'status' => 'pending',
-            'message' => $validated['message'] ?? null,
-        ]);
-        
-        return response()->json(['data' => $inquiry], 201);
+        try {
+            $inquiry = $this->inquiryService->create($validated, auth()->id());
+            return response()->json(['data' => new InquiryResource($inquiry)], 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     public function show(Inquiry $inquiry)
@@ -52,7 +54,7 @@ class InquiryController extends Controller
         
         $inquiry->load(['listing', 'property', 'requester', 'sellerAgent']);
         
-        return response()->json(['data' => $inquiry]);
+        return response()->json(['data' => new InquiryResource($inquiry)]);
     }
 
     public function update(Request $request, Inquiry $inquiry)
@@ -65,11 +67,22 @@ class InquiryController extends Controller
         
         $validated = $request->validate([
             'status' => 'required|in:pending,responded,closed',
+            'response' => 'nullable|string',
         ]);
         
-        $inquiry->update($validated);
-        
-        return response()->json(['data' => $inquiry]);
+        try {
+            if ($validated['status'] === 'responded') {
+                $inquiry = $this->inquiryService->respond($inquiry, $validated['response'] ?? '');
+            } elseif ($validated['status'] === 'closed') {
+                $inquiry = $this->inquiryService->close($inquiry);
+            } else {
+                $inquiry->update(['status' => $validated['status']]);
+            }
+            
+            return response()->json(['data' => new InquiryResource($inquiry)]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     public function destroy(Inquiry $inquiry)

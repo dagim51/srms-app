@@ -23,8 +23,8 @@ class PropertyGisTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $this->assertEquals(8.9806, $response->json('latitude'));
-        $this->assertEquals(38.7578, $response->json('longitude'));
+        $this->assertEquals(8.9806, $response->json('data.latitude'));
+        $this->assertEquals(38.7578, $response->json('data.longitude'));
     }
 
     public function test_invalid_coordinates_are_rejected()

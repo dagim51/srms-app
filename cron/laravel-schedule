@@ -1,0 +1,11 @@
+# Laravel Schedule Runner - runs every minute
+* * * * * www-data cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1
+
+# Clean up old logs daily at 2 AM
+0 2 * * * www-data find /var/www/html/storage/logs -name "*.log" -mtime +30 -delete
+
+# Clear expired password reset tokens daily at 3 AM
+0 3 * * * www-data cd /var/www/html && php artisan auth:clear-resets >> /dev/null 2>&1
+
+# Optimize database weekly on Sundays at 4 AM
+0 4 * * 0 www-data cd /var/www/html && php artisan db:optimize >> /dev/null 2>&1

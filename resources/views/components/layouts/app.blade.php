@@ -1,5 +1,24 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches) }" x-bind:class="{ 'dark': darkMode }" x-init="$watch('darkMode', v => localStorage.setItem('theme', v ? 'dark' : 'light'))">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="{
+          darkMode: document.documentElement.classList.contains('dark'),
+          toggleTheme() {
+              this.darkMode = !this.darkMode;
+              if (this.darkMode) {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('theme', 'dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('theme', 'light');
+              }
+              if (window.Alpine && Alpine.store('theme')) {
+                  Alpine.store('theme').dark = this.darkMode;
+              }
+              window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: this.darkMode ? 'dark' : 'light' } }));
+          }
+      }"
+      x-bind:class="{ 'dark': darkMode }"
+      @theme-changed.window="darkMode = ($event.detail.theme === 'dark')">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,73 +27,116 @@
     <title>{{ $title ?? config('app.name', 'SRMS') }} - Real Estate Platform</title>
     <meta name="description" content="{{ $description ?? 'Discover, buy, rent, and manage properties across Ethiopia. The modern real estate marketplace.' }}">
 
+    {{-- Multilingual SEO & Alternates --}}
+    <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['locale' => 'en']) }}">
+    <link rel="alternate" hreflang="am" href="{{ request()->fullUrlWithQuery(['locale' => 'am']) }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'am' ? 'am_ET' : 'en_US' }}">
+
+    {{-- Immediate FOUC Prevention --}}
+    <script>
+        (function() {
+            try {
+                const theme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (theme === 'dark' || (!theme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+
+        {{-- Client-Side Translation Bridge for Alpine.js & Dynamic Scripts --}}
+        window.__locale = '{{ app()->getLocale() }}';
+        window.__ = function(key, replace = {}) {
+            let translation = (window.__translations && window.__translations[key]) ? window.__translations[key] : key;
+            for (const [k, v] of Object.entries(replace)) {
+                translation = translation.replace(new RegExp(':' + k, 'g'), v);
+            }
+            return translation;
+        };
+        @php
+            $amTranslations = [];
+            if (app()->getLocale() === 'am') {
+                $amTranslations = cache()->remember('am_translations_js', 3600, function () {
+                    $p = base_path('lang/am.json');
+                    return file_exists($p) ? json_decode(file_get_contents($p), true) : [];
+                });
+            }
+        @endphp
+        window.__translations = @json($amTranslations);
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-[#FAFAFA] dark:bg-[#0B0F19] text-gray-900 dark:text-gray-100 antialiased page-enter">
+<body class="bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-[#F9FAFB] antialiased min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
 
-    {{-- PUBLIC NAV --}}
-    <header id="site-header" class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+    {{-- PUBLIC STICKY NAV --}}
+    <header id="site-header" class="fixed top-0 inset-x-0 z-50 pt-3 sm:pt-4 px-3 sm:px-6 pointer-events-none transition-all duration-300"
         x-data="{ scrolled: false }"
         x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 20)">
-        <div x-bind:class="scrolled ? 'glass border-b border-gray-200 dark:border-gray-700/50 shadow-sm' : 'bg-transparent'"
-             class="transition-all duration-300">
-            <div class="page-container">
-                <div class="flex items-center justify-between h-16 md:h-18">
+        <div class="page-container pointer-events-auto relative z-50">
+            <div x-bind:class="scrolled 
+                    ? 'bg-white/95 dark:bg-[#111827]/95 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-950/5 dark:shadow-black/60' 
+                    : 'bg-white/90 dark:bg-[#111827]/85 border-slate-200/90 dark:border-slate-800/80 shadow-lg shadow-slate-950/5 dark:shadow-black/40'"
+                 class="backdrop-blur-md border rounded-2xl md:rounded-full px-4 sm:px-6 py-2 transition-all duration-300">
+                <div class="flex items-center justify-between h-13 md:h-14">
                     {{-- Logo --}}
-                    <a href="/" class="flex items-center gap-2.5 flex-shrink-0 focus-brand rounded-lg" id="nav-logo">
-                        <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-sm shadow-orange-500/30 flex-shrink-0">
+                    <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group focus-brand rounded-lg" id="nav-logo">
+                        <div class="w-9 h-9 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30 group-hover:scale-105 transition-transform flex-shrink-0">
                             <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                             </svg>
                         </div>
-                        <span class="font-display font-800 text-gray-900 dark:text-white text-lg tracking-tight">SRMS</span>
+                        <div class="flex flex-col">
+                            <span class="font-display font-extrabold text-slate-900 dark:text-white text-lg tracking-tight leading-none">SRMS</span>
+                            <span class="text-[10px] font-bold text-orange-600 dark:text-orange-400 tracking-wider uppercase leading-none mt-0.5">{{ __('Ethiopia') }}</span>
+                        </div>
                     </a>
 
-                    {{-- Desktop Nav --}}
-                    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
-                        <a href="/search" class="btn btn-ghost text-sm px-3 py-2 flex items-center gap-1.5 {{ request()->routeIs('search') ? 'text-primary-600 font-bold' : '' }}" id="nav-search">
-                            <svg class="w-3.5 h-3.5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                            <span>Search</span>
+                    {{-- Desktop Nav with Purposeful Category Colors --}}
+                    <nav class="hidden md:flex items-center gap-1.5" aria-label="Main navigation">
+                        <a href="/search" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 {{ request()->routeIs('search') ? 'bg-violet-600 text-white shadow-sm shadow-violet-600/25' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-violet-950/30' }}" id="nav-search">
+                            <svg class="w-3.5 h-3.5 {{ request()->routeIs('search') ? 'text-white' : 'text-violet-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                            <span>{{ __('Search') }}</span>
                         </a>
-                        <a href="/properties" class="btn btn-ghost text-sm px-3 py-2 {{ request()->routeIs('properties.index') ? 'text-primary-600 font-bold' : '' }}" id="nav-properties">Properties</a>
-                        <a href="/short-stay" class="btn btn-ghost text-sm px-3 py-2" id="nav-short-stay">Short Stay</a>
-                        <a href="/developers" class="btn btn-ghost text-sm px-3 py-2" id="nav-developers">Developers</a>
-                        <a href="/services" class="btn btn-ghost text-sm px-3 py-2" id="nav-services">Services</a>
+                        <a href="/properties" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('properties.index') ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/20' : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-orange-950/30' }}" id="nav-properties">{{ __('Properties') }}</a>
+                        <a href="/developers" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('developers.index') ? 'bg-sky-600 text-white shadow-sm shadow-sky-600/25' : 'text-slate-600 hover:text-sky-600 hover:bg-sky-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-sky-950/30' }}" id="nav-developers">{{ __('Developers') }}</a>
+                        <a href="/services" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('services.*') ? 'bg-rose-600 text-white shadow-sm shadow-rose-600/25' : 'text-slate-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-rose-950/30' }}" id="nav-services">{{ __('Services') }}</a>
                     </nav>
 
                     {{-- Right Controls --}}
                     <div class="flex items-center gap-2">
+                        {{-- Language Switcher --}}
+                        <x-language-switcher id="nav-language-switcher" />
+
                         {{-- Dark Mode Toggle --}}
-                        <button @click="darkMode = !darkMode"
-                                class="btn btn-ghost btn-icon rounded-lg"
-                                aria-label="Toggle dark mode"
-                                id="dark-mode-toggle">
-                            <svg x-show="!darkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                            </svg>
-                            <svg x-show="darkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true" x-cloak>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                            </svg>
-                        </button>
+                        <x-theme-toggle id="dark-mode-toggle" />
 
                         @auth
-                            <a href="/dashboard" class="btn btn-secondary btn-sm hidden md:inline-flex" id="nav-dashboard">Dashboard</a>
+                            <a href="/dashboard" class="btn btn-secondary inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-orange-500 transition-colors shadow-sm" id="nav-dashboard">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span>{{ __('Dashboard') }}</span>
+                            </a>
                         @else
-                            <a href="/login" class="btn btn-ghost btn-sm hidden md:inline-flex" id="nav-login">Sign In</a>
-                            <a href="/register" class="btn btn-primary btn-sm hidden md:inline-flex" id="nav-register">Get Started</a>
+                            <a href="/login" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors hidden md:inline-flex" id="nav-login">{{ __('Sign In') }}</a>
+                            <a href="/register" class="btn btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-md shadow-orange-500/20 transition-all duration-200 active:scale-95 hidden md:inline-flex" id="nav-register">
+                                <span>{{ __('Get Started') }}</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                            </a>
                         @endauth
 
                         {{-- Mobile menu button --}}
                         <button x-data x-on:click="$dispatch('toggle-mobile-nav')"
-                                class="btn btn-ghost btn-icon md:hidden"
+                                class="btn btn-ghost btn-icon md:hidden text-slate-900 dark:text-white"
                                 aria-label="Open menu"
                                 id="mobile-menu-toggle">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
                         </button>
@@ -83,103 +145,151 @@
             </div>
         </div>
 
+        {{-- Mobile Nav Backdrop Scrim --}}
+        <div x-data="{ open: false }"
+             x-on:toggle-mobile-nav.window="open = !open"
+             x-show="open"
+             x-transition.opacity.duration.200ms
+             class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 pointer-events-auto md:hidden"
+             @click="$dispatch('toggle-mobile-nav')"
+             x-cloak></div>
+
         {{-- Mobile Nav Drawer --}}
         <div x-data="{ open: false }"
              x-on:toggle-mobile-nav.window="open = !open"
              x-show="open"
+             @click.away="open = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 -translate-y-2"
              x-transition:enter-end="opacity-100 translate-y-0"
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 -translate-y-2"
-             class="glass border-b border-gray-200 dark:border-gray-700/50 md:hidden"
+             class="page-container mt-2 md:hidden relative z-50 pointer-events-auto"
              x-cloak>
-            <nav class="page-container py-4 flex flex-col gap-1" aria-label="Mobile navigation">
-                <a href="/search" class="sidebar-link {{ request()->routeIs('search') ? 'active' : '' }}" id="mobile-nav-search">
-                    <svg class="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                    Search Engine
-                </a>
-                <a href="/properties" class="sidebar-link {{ request()->routeIs('properties.index') ? 'active' : '' }}" id="mobile-nav-properties">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
-                    Properties
-                </a>
-                <a href="/short-stay" class="sidebar-link" id="mobile-nav-short-stay">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m2.25-18v18m13.5-18v18m2.25-18v18M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12M3 3v18m9-18v18" /></svg>
-                    Short Stay
-                </a>
-                <a href="/developers" class="sidebar-link" id="mobile-nav-developers">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
-                    Developers
-                </a>
-                <a href="/services" class="sidebar-link" id="mobile-nav-services">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
-                    Services
-                </a>
-                <div class="divider my-2"></div>
-                @auth
-                    <a href="/dashboard" class="btn btn-primary w-full" id="mobile-nav-dashboard">Dashboard</a>
-                @else
-                    <a href="/login" class="btn btn-secondary w-full mb-2" id="mobile-nav-login">Sign In</a>
-                    <a href="/register" class="btn btn-primary w-full" id="mobile-nav-register">Get Started</a>
-                @endauth
-            </nav>
+            <div class="bg-white/98 dark:bg-[#111827]/98 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-2xl pointer-events-auto">
+                <nav class="flex flex-col gap-2" aria-label="Mobile navigation">
+                    <a href="/search" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('search') ? 'bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400' : 'text-slate-900 dark:text-white hover:bg-violet-50 dark:hover:bg-white/5' }}" id="mobile-nav-search">
+                        <div class="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-950/50 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        </div>
+                        <span>{{ __('Search Engine') }}</span>
+                    </a>
+                    <a href="/properties" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('properties.index') ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'text-slate-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-white/5' }}" id="mobile-nav-properties">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                        </div>
+                        <span>{{ __('Browse Properties') }}</span>
+                    </a>
+                    <a href="/developers" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('developers.index') ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400' : 'text-slate-900 dark:text-white hover:bg-sky-50 dark:hover:bg-white/5' }}" id="mobile-nav-developers">
+                        <div class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-950/50 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+                        </div>
+                        <span>{{ __('Developer Projects') }}</span>
+                    </a>
+                    <a href="/services" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('services.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400' : 'text-slate-900 dark:text-white hover:bg-rose-50 dark:hover:bg-white/5' }}" id="mobile-nav-services">
+                        <div class="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
+                        </div>
+                        <span>{{ __('Professional Services') }}</span>
+                    </a>
+                    
+                    <div class="h-px bg-slate-200 dark:bg-slate-800 my-2"></div>
+                    <div class="py-1">
+                        <x-language-switcher id="mobile-nav-language-switcher" class="w-full" />
+                    </div>
+                    @auth
+                        <a href="/dashboard" class="btn btn-primary w-full mt-2" id="mobile-nav-dashboard">{{ __('Go to Dashboard') }}</a>
+                    @else
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <a href="/login" class="btn btn-secondary text-center text-xs" id="mobile-nav-login">{{ __('Sign In') }}</a>
+                            <a href="/register" class="btn btn-primary text-center text-xs" id="mobile-nav-register">{{ __('Get Started') }}</a>
+                        </div>
+                    @endauth
+                </nav>
+            </div>
         </div>
     </header>
 
-    {{-- Main Content --}}
-    <main role="main">
+    {{-- Main Content Slot --}}
+    <main role="main" class="flex-grow">
         {{ $slot }}
     </main>
 
-    {{-- Footer --}}
-    <footer class="bg-gray-900 dark:bg-[#0B0F19] border-t border-gray-800 text-gray-400 mt-auto" role="contentinfo">
+    {{-- Modern High-Contrast Multicolored Footer --}}
+    <footer class="bg-white dark:bg-[#0D1322] border-t border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 mt-auto" role="contentinfo">
         <div class="page-container py-14">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                {{-- Brand --}}
-                <div class="lg:col-span-1">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+                {{-- Brand & Trust Accreditation --}}
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-9 h-9 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30">
+                            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
                         </div>
-                        <span class="font-display font-bold text-white text-lg">SRMS</span>
+                        <span class="font-display font-black text-slate-900 dark:text-white text-xl tracking-tight">SRMS <span class="text-orange-600 dark:text-orange-400 font-extrabold text-sm ml-1 uppercase">Ethiopia</span></span>
                     </div>
-                    <p class="text-sm leading-relaxed">Ethiopia's modern property marketplace. Buy, rent, manage, and discover real estate with ease.</p>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6 max-w-sm">
+                        {{ __("Ethiopia's premier real estate & property registry marketplace. Verified title deeds, PostGIS coordinates, and developer escrow across Addis Ababa and regional capitals.") }}
+                    </p>
+                    <div class="flex items-center gap-2 flex-wrap text-xs">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold border border-emerald-200 dark:border-emerald-800/40">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            {{ __('Verified Land Titles') }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800/40">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            {{ __('PostGIS Geocoded') }}
+                        </span>
+                    </div>
                 </div>
+
                 {{-- Platform --}}
                 <div>
-                    <h3 class="text-white font-semibold text-sm mb-4">Platform</h3>
+                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Platform') }}</h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="/properties" class="hover:text-orange-400 transition-colors">Browse Properties</a></li>
-                        <li><a href="/short-stay" class="hover:text-orange-400 transition-colors">Short Stay</a></li>
-                        <li><a href="/developers" class="hover:text-orange-400 transition-colors">Developer Projects</a></li>
-                        <li><a href="/services" class="hover:text-orange-400 transition-colors">Professional Services</a></li>
+                        <li><a href="/properties" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Browse Properties') }}</a></li>
+                        <li><a href="/properties?purpose=For+Rent" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Rental Homes') }}</a></li>
+                        <li><a href="/short-stay" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Short-Stay Accommodations') }}</a></li>
+                        <li><a href="/developers" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Developer Projects') }}</a></li>
+                        <li><a href="/services" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Professional Services') }}</a></li>
                     </ul>
                 </div>
-                {{-- Company --}}
+
+                {{-- Regional Hubs --}}
                 <div>
-                    <h3 class="text-white font-semibold text-sm mb-4">Company</h3>
+                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Regional Hubs') }}</h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="/about" class="hover:text-orange-400 transition-colors">About Us</a></li>
-                        <li><a href="/contact" class="hover:text-orange-400 transition-colors">Contact</a></li>
-                        <li><a href="/careers" class="hover:text-orange-400 transition-colors">Careers</a></li>
-                        <li><a href="/blog" class="hover:text-orange-400 transition-colors">Blog</a></li>
+                        <li><a href="/properties?location=Addis+Ababa" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Addis Ababa') }} (አዲስ አበባ)</a></li>
+                        <li><a href="/properties?location=Hawassa" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Hawassa') }} (ሀዋሳ)</a></li>
+                        <li><a href="/properties?location=Bahir+Dar" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Bahir Dar') }} (ባሕር ዳር)</a></li>
+                        <li><a href="/properties?location=Adama" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Adama / Nazret') }} (አዳማ)</a></li>
+                        <li><a href="/properties?location=Bishoftu" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Bishoftu') }} (ቢሾፍቱ)</a></li>
                     </ul>
                 </div>
-                {{-- Legal --}}
+
+                {{-- Legal & Trust --}}
                 <div>
-                    <h3 class="text-white font-semibold text-sm mb-4">Legal</h3>
+                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Security & Legal') }}</h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="/privacy" class="hover:text-orange-400 transition-colors">Privacy Policy</a></li>
-                        <li><a href="/terms" class="hover:text-orange-400 transition-colors">Terms of Service</a></li>
-                        <li><a href="/cookie-policy" class="hover:text-orange-400 transition-colors">Cookie Policy</a></li>
+                        <li><a href="/about" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Trust & Safety') }}</a></li>
+                        <li><a href="/privacy" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Privacy Policy') }}</a></li>
+                        <li><a href="/terms" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Terms of Service') }}</a></li>
+                        <li><a href="/cookie-policy" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Escrow Guidelines') }}</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="divider mt-12 mb-8"></div>
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-                <p>&copy; {{ date('Y') }} SRMS. All rights reserved.</p>
-                <p>Built for Ethiopia's real estate future.</p>
+
+            <div class="h-px bg-slate-200 dark:bg-slate-800 mt-12 mb-8"></div>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+                <p>&copy; {{ date('Y') }} SRMS Real Estate Platform. {{ __('All rights reserved.') }}</p>
+                <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        {{ __('System Status: Operational') }}
+                    </span>
+                    <span>•</span>
+                    <span>{{ __("Built with pride for Ethiopia's future.") }}</span>
+                </div>
             </div>
         </div>
     </footer>

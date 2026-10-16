@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
 use App\Models\Property;
+use App\Support\EthiopicTextNormalizer;
 use Illuminate\Http\Request;
 
 class PublicPropertyWebController extends Controller
@@ -22,14 +23,6 @@ class PublicPropertyWebController extends Controller
             ->take(6)
             ->get();
 
-        // 2. Popular Stays (Short Stay / vacation rentals)
-        $popularStays = Listing::with(['property.media', 'property.category', 'property.type'])
-            ->where('status', 'published')
-            ->where('visibility', 'public')
-            ->where('purpose', 'Short Stay')
-            ->latest('published_at')
-            ->take(4)
-            ->get();
 
         // 3. New Developments (Off-plan / projects)
         $newDevelopments = Listing::with(['property.media', 'property.category', 'property.type'])
@@ -92,7 +85,7 @@ class PublicPropertyWebController extends Controller
             ],
         ];
 
-        return view('welcome', compact('featuredListings', 'popularStays', 'newDevelopments', 'popularCities'));
+        return view('welcome', compact('featuredListings', 'newDevelopments', 'popularCities'));
     }
 
     /**
@@ -122,21 +115,35 @@ class PublicPropertyWebController extends Controller
         // Search Keyword (City, Subcity, Neighborhood, Title)
         if ($request->filled('search')) {
             $s = $request->search;
-            $query->where(function ($q) use ($s) {
-                $q->whereHas('property', function ($pq) use ($s) {
-                    $pq->where('title', 'like', "%{$s}%")
-                       ->orWhere('description', 'like', "%{$s}%")
-                       ->orWhere('property_code', 'like', "%{$s}%");
-                })->orWhere('purpose', 'like', "%{$s}%");
+            $tokens = EthiopicTextNormalizer::getSearchTokens($s);
+            $query->where(function ($q) use ($tokens) {
+                $q->whereHas('property', function ($pq) use ($tokens) {
+                    $pq->where(function ($sub) use ($tokens) {
+                        foreach ($tokens as $token) {
+                            $sub->orWhere('title', 'like', "%{$token}%")
+                                ->orWhere('description', 'like', "%{$token}%")
+                                ->orWhere('property_code', 'like', "%{$token}%");
+                        }
+                    });
+                })->orWhere(function ($sub) use ($tokens) {
+                    foreach ($tokens as $token) {
+                        $sub->orWhere('purpose', 'like', "%{$token}%");
+                    }
+                });
             });
         }
 
         // Location / City Filter
         if ($request->filled('location')) {
             $loc = $request->location;
-            $query->whereHas('property', function ($pq) use ($loc) {
-                $pq->where('title', 'like', "%{$loc}%")
-                   ->orWhere('description', 'like', "%{$loc}%");
+            $locTokens = EthiopicTextNormalizer::getSearchTokens($loc);
+            $query->whereHas('property', function ($pq) use ($locTokens) {
+                $pq->where(function ($sub) use ($locTokens) {
+                    foreach ($locTokens as $token) {
+                        $sub->orWhere('title', 'like', "%{$token}%")
+                            ->orWhere('description', 'like', "%{$token}%");
+                    }
+                });
             });
         }
 
@@ -173,6 +180,15 @@ class PublicPropertyWebController extends Controller
         $listings = $query->paginate(12)->withQueryString();
 
         return view('marketplace.index', compact('listings'));
+    }
+
+    /**
+     * Public Short-Stay & Vacation Accommodations Directory (`/short-stay`)
+     */
+    public function shortStay(Request $request)
+    {
+        $request->merge(['purpose' => 'Short Stay']);
+        return $this->index($request);
     }
 
     /**

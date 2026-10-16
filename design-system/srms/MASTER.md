@@ -1,214 +1,117 @@
-# Design System Master File
+# Design System Master File — Ethiopian Real Estate Marketplace (SRMS)
 
-> **LOGIC:** When building a specific page, first check `design-system/pages/[page-name].md`.
+> **LOGIC:** When building or refining a specific page, first check `design-system/pages/[page-name].md`.
 > If that file exists, its rules **override** this Master file.
 > If not, strictly follow the rules below.
 
 ---
 
-**Project:** SRMS
-**Generated:** 2026-10-07 16:44:56
-**Category:** Real Estate/Property
+**Project:** SRMS (Ethiopian Real Estate Marketplace, Short-Stay & Property Platform)  
+**Status:** Unified Single Source of Truth  
+**Technology Stack:** Laravel 12 + Blade + Tailwind CSS v4 + Alpine.js  
+**Coordinated Skills:** UI/UX Pro Max (Design Systems/Hierarchy) + Taste Skill (Visual Polish/Composition) + Emil Kowalski (Motion Engineering/States)
 
 ---
 
-## Global Rules
+## 1. Global Color Palette
 
-### Color Palette
+The project uses an intentional warm earth and sun palette rooted in Ethiopian trust, sunlit architecture, and premium modern real estate.
 
-| Role | Hex | CSS Variable |
-|------|-----|--------------|
-| Primary | `#0F766E` | `--color-primary` |
-| On Primary | `#FFFFFF` | `--color-on-primary` |
-| Secondary | `#14B8A6` | `--color-secondary` |
-| On Secondary | `#0F172A` | `--color-on-secondary` |
-| Accent/CTA | `#0369A1` | `--color-accent` |
-| On Accent/CTA | `#FFFFFF` | `--color-on-accent` |
-| Background | `#F0FDFA` | `--color-background` |
-| Foreground | `#134E4A` | `--color-foreground` |
-| Card | `#FFFFFF` | `--color-card` |
-| Card Foreground | `#134E4A` | `--color-card-foreground` |
-| Muted | `#E8F0F3` | `--color-muted` |
-| Muted Foreground | `#475569` | `--color-muted-foreground` |
-| Border | `#99F6E4` | `--color-border` |
-| Destructive | `#DC2626` | `--color-destructive` |
-| On Destructive | `#FFFFFF` | `--color-on-destructive` |
-| Ring | `#0F766E` | `--color-ring` |
+| Role | Light Hex | Dark Hex | CSS Variable / Token |
+|------|-----------|----------|----------------------|
+| **Brand Primary (500)** | `#F97316` | `#EA580C` | `--brand`, `--color-primary-500` |
+| **Brand Primary Hover (600)** | `#EA580C` | `#C2410C` | `--brand-dark`, `--color-primary-600` |
+| **Brand Light (400)** | `#FB923C` | `#F97316` | `--brand-light`, `--color-primary-400` |
+| **Brand Soft / Tint (50)** | `#FFF7ED` | `#1E1510` | `--brand-soft`, `--color-primary-50` |
+| **Primary Text (Foreground)** | `#0F172A` | `#F9FAFB` | `--color-foreground`, `--color-dark-text` |
+| **Muted Text** | `#475569` | `#94A3B8` | `--color-muted-foreground`, `--color-dark-subtle` |
+| **Border / Divider** | `#EBDBC9` | `#273244` | `--border-warm`, `--color-surface-border`, `--color-dark-border` |
+| **Page Background** | `#FFF5EB` | `#0B0F19` | `--bg-main`, `--color-page-bg`, `--color-dark-bg` |
+| **Subtle Background** | `#FFEFE0` | `#172033` | `--bg-subtle`, `--color-page-subtle`, `--color-dark-elevated` |
+| **Surface / Card Background** | `#FFFFFF` | `#111827` | `--surface`, `--color-surface`, `--color-dark-surface` |
+| **Elevated Surface** | `#FFFFFF` | `#172033` | `--surface`, `--color-dark-elevated` |
+| **Success / Verified** | `#16A34A` | `#22C55E` | `--color-success` |
+| **Warning** | `#F59E0B` | `#FBBF24` | `--color-warning` |
+| **Destructive / Error** | `#DC2626` | `#EF4444` | `--color-destructive`, `--color-error` |
+| **Information / Accent** | `#0284C7` | `#38BDF8` | `--color-info` |
 
-**Color Notes:** Trust teal + professional blue
+---
 
-### Typography
+## 2. Typography System
 
-- **Heading Font:** Cinzel
-- **Body Font:** Josefin Sans
-- **Mood:** real estate, luxury, elegant, sophisticated, property, premium
-- **Google Fonts:** [Cinzel + Josefin Sans](https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap)
+The typography pairs a high-clarity modern display font with an ultra-legible neutral body font:
 
-**CSS Import:**
+- **Display & Headings:** `Plus Jakarta Sans`, system-ui, -apple-system, sans-serif
+- **Body & Controls:** `Inter`, system-ui, -apple-system, sans-serif
+- **Amharic / Bilingual Display:** System Ethiopic (`Nyala`, `Kefa`, `Abyssinica SIL`), sans-serif
+
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
 ```
 
-### Spacing Variables
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--space-xs` | `4px` / `0.25rem` | Tight gaps |
-| `--space-sm` | `8px` / `0.5rem` | Icon gaps, inline spacing |
-| `--space-md` | `16px` / `1rem` | Standard padding |
-| `--space-lg` | `24px` / `1.5rem` | Section padding |
-| `--space-xl` | `32px` / `2rem` | Large gaps |
-| `--space-2xl` | `48px` / `3rem` | Section margins |
-| `--space-3xl` | `64px` / `4rem` | Hero padding |
-
-### Shadow Depths
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Subtle lift |
-| `--shadow-md` | `0 4px 6px rgba(0,0,0,0.1)` | Cards, buttons |
-| `--shadow-lg` | `0 10px 15px rgba(0,0,0,0.1)` | Modals, dropdowns |
-| `--shadow-xl` | `0 20px 25px rgba(0,0,0,0.15)` | Hero images, featured cards |
+### Type Scale Rules
+- **Display 1 (Hero Title):** `text-4xl md:text-5xl lg:text-6xl`, tracking `-0.025em`, font-weight `800`
+- **Page Titles:** `text-2xl md:text-3xl`, tracking `-0.02em`, font-weight `700`
+- **Section Headers:** `text-lg md:text-xl`, font-weight `600`
+- **Body Regular:** `text-sm md:text-base`, line-height `1.6`, font-weight `400`
+- **Metadata / Badges / Captions:** `text-xs font-semibold tracking-wider uppercase`
 
 ---
 
-## Component Specs
+## 3. Motion & Micro-Interaction Tokens (Emil Kowalski Spec)
+
+Motion must be restrained, physics-calibrated, and purposeful. Perpetual animations and distracting floating loops are strictly prohibited.
+
+```css
+:root {
+    --ease-float:      cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out:        cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out:     cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer:     cubic-bezier(0.32, 0.72, 0, 1);
+    --duration-fast:   140ms;
+    --duration-btn:    160ms;
+    --duration-normal: 200ms;
+    --duration-card:   220ms;
+    --duration-modal:  220ms;
+}
+```
+
+### Interaction Rules
+1. **Button Presses:** Must feel tactile with active compression (`transform: scale(0.97)` on `:active`).
+2. **Card Hover:** Subtle elevation only (`transform: translateY(-2px)` with `--ease-out` over `220ms`). Never scale cards up so they collide with neighbors.
+3. **Dropdowns & Drawers:** Scale out from trigger (`scale(0.96) -> scale(1)`), never translate across entire screen without context.
+4. **Accessibility:** Strictly enforce `@media (prefers-reduced-motion: reduce)` with instantaneous transitions (`0.01ms`).
+
+---
+
+## 4. Anti-AI Design Guidelines (Eliminating Generic Patterns)
+
+To prevent the application from feeling like an AI template:
+
+1. **No Universal Card-Wrapping:** Do not wrap every heading, metric, and paragraph in identical cards with identical borders and shadows. Use whitespace and typography to group content naturally.
+2. **No Horizontal Clipping on Mobile:** Never use `white-space: nowrap` on long badges or tags without responsive abbreviations or flexible flex wrapping.
+3. **No Collision with Floating Elements:** Sticky/floating navbars must have adequate clearance. Content must not scroll under transparent unpadded bars without a backdrop scrim.
+4. **High Contrast Form Controls:** Placeholder text and inactive inputs in dark mode must meet WCAG 4.5:1 contrast ratio against `#111827` surface background.
+5. **No Emojis as Icons:** All iconography must be consistent Heroicons SVG glyphs with semantic accessible labels.
+
+---
+
+## 5. Component Specifications
 
 ### Buttons
+- **Primary:** `bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl px-4 py-2.5 transition active:scale-97`
+- **Secondary:** `bg-transparent border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl px-4 py-2.5 transition active:scale-97`
+- **Ghost:** `hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-1.5 transition`
 
-```css
-/* Primary Button */
-.btn-primary {
-  background: #0369A1;
-  color: #FFFFFF;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
+### Inputs & Selects
+- Light: `bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 rounded-xl`
+- Dark: `bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/25 rounded-xl`
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #0F766E;
-  border: 2px solid #0F766E;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
-
-### Cards
-
-```css
-.card {
-  background: #F0FDFA;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
-
-### Inputs
-
-```css
-.input {
-  padding: 12px 16px;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
-}
-
-.input:focus {
-  border-color: #0F766E;
-  outline: none;
-  box-shadow: 0 0 0 3px #0F766E20;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
-}
-```
-
----
-
-## Style Guidelines
-
-**Style:** Glassmorphism
-
-**Keywords:** Frosted glass, transparent, blurred background, layered, vibrant background, light source, depth, multi-layer
-
-**Best For:** Modern SaaS, financial dashboards, high-end corporate, lifestyle apps, modal overlays, navigation
-
-**Key Effects:** Backdrop blur (10-20px), subtle border (1px solid rgba white 0.2), light reflection, Z-depth
-
-### Page Pattern
-
-**Pattern Name:** Hero-Centric Design
-
-- **Conversion Strategy:** One primary CTA. Let the hero dominate the initial viewport without hiding the next content cue. Use a static hero and non-pulsing CTA when reduced motion is requested; provide video controls. Pause hero media offscreen/hidden and keep the final hero message and CTA static under reduced motion.
-- **CTA Placement:** Hero dominant (center/bottom) + Sticky nav CTA
-- **Section Order:** Full-bleed Hero (headline + visual) > Single value prop strip > Key benefit or proof > Primary CTA
-
----
-
-## Anti-Patterns (Do NOT Use)
-
-- ❌ Poor photos
-- ❌ No virtual tours
-
-### Additional Forbidden Patterns
-
-- ❌ **Emojis as icons** — Use SVG icons (Heroicons, Lucide, Simple Icons)
-- ❌ **Missing cursor:pointer** — All clickable elements must have cursor:pointer
-- ❌ **Layout-shifting hovers** — Avoid scale transforms that shift layout
-- ❌ **Low contrast text** — Maintain 4.5:1 minimum contrast ratio
-- ❌ **Instant state changes** — Always use transitions (150-300ms)
-- ❌ **Invisible focus states** — Focus states must be visible for a11y
-
----
-
-## Pre-Delivery Checklist
-
-Before delivering any UI code, verify:
-
-- [ ] No emojis used as icons (use SVG instead)
-- [ ] All icons from consistent icon set (Heroicons/Lucide)
-- [ ] `cursor-pointer` on all clickable elements
-- [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
-- [ ] Focus states visible for keyboard navigation
-- [ ] `prefers-reduced-motion` respected
-- [ ] Responsive: 375px, 768px, 1024px, 1440px
-- [ ] No content hidden behind fixed navbars
-- [ ] No horizontal scroll on mobile
+### Badges & Status Indicators
+- Verified: `bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20`
+- For Sale: `bg-orange-500 text-white font-semibold`
+- For Rent: `bg-blue-600 text-white font-semibold`
+- Development: `bg-purple-600 text-white font-semibold`

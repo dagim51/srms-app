@@ -19,6 +19,7 @@ class AccommodationBooking extends Model
         'guests',
         'total_price',
         'status',
+        'confirmed_at',
     ];
 
     protected $casts = [

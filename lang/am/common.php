@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'save' => 'አስቀምጥ',
+    'cancel' => 'ሰርዝ',
+    'delete' => 'ሰርዝ',
+    'edit' => 'አርትዕ',
+    'filter' => 'አጣራ',
+    'export' => 'ላክ',
+    'actions' => 'እርምጃዎች',
+    'status' => 'ሁኔታ',
+    'active' => 'ንቁ',
+    'pending' => 'በመጠባበቅ ላይ',
+    'confirmed' => 'የተረጋገጠ',
+    'saved' => 'የተቀመጠ',
+    'loading' => 'በመጫን ላይ...',
+    'success' => 'ተሳክቷል',
+    'error' => 'ስህተት',
+    'warning' => 'ማስጠንቀቂያ',
+    'info' => 'መረጃ',
+    'close' => 'ዝጋ',
+    'view_all' => 'ሁሉንም ተመልከት',
+    'language' => 'ቋንቋ',
+    'english' => 'English',
+    'amharic' => 'አማርኛ',
+    'select_language' => 'ቋንቋ ይምረጡ',
+];

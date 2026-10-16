@@ -116,7 +116,7 @@
     {{-- Search & Controls Header --}}
     <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div class="relative flex-1 max-w-md">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 dark:text-gray-500">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted dark:text-muted">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
@@ -124,21 +124,21 @@
             <input 
                 type="text" 
                 x-model="search" 
-                placeholder="Search features (e.g. Marble, Ceilings, Solar)..." 
+                placeholder="{{ __('Search features (e.g. Marble, Ceilings, Solar)...') }}" 
                 class="form-input pl-10 pr-9 w-full text-sm rounded-lg"
             >
             <button 
                 type="button" 
                 x-show="search.length > 0" 
                 @click="search = ''" 
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-muted hover:text-muted dark:hover:text-muted"
                 x-cloak
             >
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
 
-        <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 self-end sm:self-center">
+        <div class="flex items-center gap-2 text-xs text-muted dark:text-muted self-end sm:self-center">
             <span>Selected:</span>
             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400" x-text="selectedList.length">0</span>
             <button 
@@ -154,7 +154,7 @@
     </div>
 
     {{-- Interactive Feature Badges / Chips Grid --}}
-    <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto p-2 border border-gray-200 dark:border-[#273244] rounded-xl bg-gray-50/50 dark:bg-[#0B0F19]/40">
+    <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto p-2 border border-warm dark:border-[#273244] rounded-xl bg-surface/50 dark:bg-[#0B0F19]/40">
         <template x-for="item in filteredCatalog" :key="item.id">
             <button 
                 type="button"
@@ -162,13 +162,13 @@
                 class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border transition-all cursor-pointer select-none group"
                 :class="isSelected(item.id) 
                     ? 'bg-orange-600 border-orange-600 text-white shadow-sm shadow-orange-600/30' 
-                    : 'bg-white dark:bg-[#111827] border-gray-200 dark:border-[#273244] text-gray-700 dark:text-gray-300 hover:border-orange-300 dark:hover:border-orange-500/40'"
+                    : 'bg-white dark:bg-[#111827] border-warm dark:border-[#273244] text-muted dark:text-dark-subtle hover:border-orange-300 dark:hover:border-orange-500/40'"
             >
                 <div 
                     class="w-4 h-4 rounded-full flex items-center justify-center transition-colors flex-shrink-0"
                     :class="isSelected(item.id) 
                         ? 'bg-white/20 text-white' 
-                        : 'border border-gray-300 dark:border-gray-600 group-hover:border-orange-400 text-transparent'"
+                        : 'border border-warm dark:border-warm group-hover:border-orange-400 text-transparent'"
                 >
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -179,39 +179,39 @@
         </template>
 
         {{-- Empty Search Results --}}
-        <div x-show="filteredCatalog.length === 0" class="w-full py-6 text-center text-gray-500 dark:text-gray-400" x-cloak>
+        <div x-show="filteredCatalog.length === 0" class="w-full py-6 text-center text-muted dark:text-muted" x-cloak>
             <p class="text-sm font-medium">No features match "<span x-text="search"></span>"</p>
-            <p class="text-xs text-gray-400 mt-1">Try another search or manage features in the catalog.</p>
+            <p class="text-xs text-muted mt-1">{{ __('Try another search or manage features in the catalog.') }}</p>
         </div>
     </div>
 
     {{-- Selected Features Custom Specifications --}}
     <div x-show="selectedList.length > 0" class="border border-orange-200 dark:border-orange-900/40 rounded-xl p-3.5 bg-orange-50/40 dark:bg-orange-950/20 space-y-3" x-cloak>
         <div class="flex items-center justify-between">
-            <h4 class="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+            <h4 class="text-xs font-semibold text-muted dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-orange-500"></span>
                 Selected Features & Custom Specifications (<span x-text="selectedList.length"></span>)
             </h4>
-            <span class="text-[11px] text-gray-500 dark:text-gray-400">Optional notes (e.g. brand, material, finish)</span>
+            <span class="text-xs text-muted dark:text-muted">Optional notes (e.g. brand, material, finish)</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <template x-for="item in selectedList" :key="item.id">
                 <div class="flex items-center justify-between gap-2 bg-white dark:bg-[#111827] border border-orange-200 dark:border-orange-800/60 rounded-lg p-2 text-xs shadow-2xs">
-                    <span class="font-medium text-gray-900 dark:text-white truncate flex-1" x-text="item.name"></span>
+                    <span class="font-medium text-muted dark:text-white truncate flex-1" x-text="item.name"></span>
                     
                     <input 
                         type="text" 
-                        placeholder="Material / brand spec" 
+                        placeholder="{{ __('Material / brand spec') }}" 
                         :value="item.value" 
                         @input="updateValue(item.id, $event.target.value)" 
-                        class="w-36 text-[11px] py-1 px-2 border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-[#172033] focus:border-orange-500 focus:outline-none"
+                        class="w-36 text-xs py-1 px-2 border border-warm dark:border-warm rounded bg-surface dark:bg-[#172033] focus:border-orange-500 focus:outline-none"
                     >
 
                     <button 
                         type="button" 
                         @click="remove(item.id)" 
-                        class="text-gray-400 hover:text-red-500 p-1 transition-colors flex-shrink-0 cursor-pointer"
+                        class="text-muted hover:text-red-500 p-1 transition-colors flex-shrink-0 cursor-pointer"
                         title="Remove feature"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

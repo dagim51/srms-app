@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AccommodationBooking;
+use App\Services\Bookings\BookingManager;
 use Illuminate\Http\Request;
 
 class AccommodationBookingController extends Controller
 {
+    protected BookingManager $bookingManager;
+
+    public function __construct(BookingManager $bookingManager)
+    {
+        $this->bookingManager = $bookingManager;
+    }
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -33,118 +41,44 @@ class AccommodationBookingController extends Controller
             'guests' => 'required|integer|min:1',
         ]);
         
-        $accommodation = \App\Models\Accommodation::findOrFail($validated['accommodation_id']);
-        
-        if ($accommodation->host_id === auth()->id()) {
-            return response()->json(['message' => 'You cannot book your own accommodation.'], 422);
+        try {
+            $booking = $this->bookingManager->create($validated, auth()->id());
+            return response()->json(['data' => $booking], 201);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
         }
-        
-        if ($validated['guests'] > $accommodation->max_guests) {
-            return response()->json(['message' => 'Number of guests exceeds maximum allowed.'], 422);
-        }
-        
-        // Check availability (conflicting bookings or blocks)
-        $conflict = \App\Models\AccommodationAvailability::where('accommodation_id', $accommodation->id)
-            ->where('start_date', '<', $validated['check_out_date'])
-            ->where('end_date', '>', $validated['check_in_date'])
-            ->exists();
-            
-        if ($conflict) {
-            return response()->json(['message' => 'The selected dates are not available.'], 409);
-        }
-        
-        // Also check existing confirmed/pending bookings just in case they aren't in availabilities table yet
-        $bookingConflict = AccommodationBooking::where('accommodation_id', $accommodation->id)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->where('check_in_date', '<', $validated['check_out_date'])
-            ->where('check_out_date', '>', $validated['check_in_date'])
-            ->exists();
-            
-        if ($bookingConflict) {
-            return response()->json(['message' => 'The selected dates are already booked.'], 409);
-        }
-        
-        // Calculate price based on base price and rules
-        $basePrice = $accommodation->property->price ?? 100; // Fallback
-        
-        $days = \Carbon\Carbon::parse($validated['check_in_date'])->diffInDays(\Carbon\Carbon::parse($validated['check_out_date']));
-        $totalPrice = $basePrice * $days;
-        
-        $rules = \App\Models\AccommodationPricingRule::where('accommodation_id', $accommodation->id)
-            ->where(function($q) use ($validated) {
-                $q->where(function($q2) use ($validated) {
-                    $q2->whereNull('start_date')
-                       ->orWhere(function($q3) use ($validated) {
-                           $q3->where('start_date', '<', $validated['check_out_date'])
-                              ->where('end_date', '>', $validated['check_in_date']);
-                       });
-                });
-            })
-            ->orderByDesc('priority')
-            ->get();
-            
-        if ($rules->isNotEmpty()) {
-            // Apply first applicable rule for simplicity
-            $rule = $rules->first();
-            if ($rule->price_modifier_type === 'fixed') {
-                $totalPrice = $rule->price_modifier_value * $days;
-            } else {
-                $totalPrice = $totalPrice * (1 + ($rule->price_modifier_value / 100));
-            }
-        }
-        
-        $booking = AccommodationBooking::create([
-            'accommodation_id' => $accommodation->id,
-            'user_id' => auth()->id(),
-            'check_in_date' => $validated['check_in_date'],
-            'check_out_date' => $validated['check_out_date'],
-            'guests' => $validated['guests'],
-            'total_price' => $totalPrice,
-            'status' => 'pending',
-        ]);
-        
-        // Optionally create availability block immediately
-        \App\Models\AccommodationAvailability::create([
-            'accommodation_id' => $accommodation->id,
-            'start_date' => $validated['check_in_date'],
-            'end_date' => $validated['check_out_date'],
-            'type' => 'booked',
-            'reason' => 'Booking ID: ' . $booking->id,
-        ]);
-        
-        return response()->json(['data' => $booking], 201);
     }
 
-    public function update(Request $request, AccommodationBooking $accommodationBooking)
+    public function update(Request $request, string $id)
     {
+        $booking = AccommodationBooking::with('accommodation')->findOrFail($id);
+        
         $validated = $request->validate([
             'status' => 'required|string|in:confirmed,cancelled',
         ]);
         
         $user = auth()->user();
         
-        if ($validated['status'] === 'cancelled' && $accommodationBooking->user_id === $user->id) {
-            // Guest cancelling
-        } elseif (in_array($validated['status'], ['confirmed', 'cancelled']) && $accommodationBooking->accommodation->host_id === $user->id) {
-            // Host confirming/cancelling
-        } else {
-            abort(403, 'Unauthorized.');
+        try {
+            if ($validated['status'] === 'cancelled' && $booking->user_id === $user->id) {
+                // Guest cancelling
+                $booking = $this->bookingManager->cancel($booking, $user->id, 'guest_cancelled');
+            } elseif (in_array($validated['status'], ['confirmed', 'cancelled']) && $booking->accommodation->host_id === $user->id) {
+                // Host confirming/cancelling
+                if ($validated['status'] === 'confirmed') {
+                    $booking = $this->bookingManager->confirm($booking, $user->id);
+                } else {
+                    $booking = $this->bookingManager->cancel($booking, $user->id, 'host_cancelled');
+                }
+            } else {
+                abort(403, 'Unauthorized.');
+            }
+            
+            return response()->json(['data' => $booking]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-        
-        if ($accommodationBooking->status !== 'pending') {
-            return response()->json(['message' => 'Only pending bookings can be updated.'], 422);
-        }
-        
-        $accommodationBooking->update(['status' => $validated['status']]);
-        
-        // If cancelled, remove the availability block
-        if ($validated['status'] === 'cancelled') {
-            \App\Models\AccommodationAvailability::where('accommodation_id', $accommodationBooking->accommodation_id)
-                ->where('type', 'booked')
-                ->where('reason', 'like', '%' . $accommodationBooking->id . '%')
-                ->delete();
-        }
-        
-        return response()->json(['data' => $accommodationBooking]);
     }
 }

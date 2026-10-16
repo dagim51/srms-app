@@ -15,7 +15,7 @@ abstract class BasePolicy
             return $user->hasRole('Administrator', $model->organization_id) || $user->id === $model->user_id;
         }
         
-        return $user->id === $model->user_id || clone $user->hasRole('Administrator');
+        return $user->id === $model->user_id || $user->hasRole('Administrator');
     }
 
     /**
