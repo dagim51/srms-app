@@ -34,8 +34,12 @@ trait HasRoles
 
         return $this->roles()
             ->where(function ($query) use ($roleNameOrId) {
-                $query->where('roles.id', $roleNameOrId)
-                      ->orWhere('roles.name', $roleNameOrId);
+                if (\Illuminate\Support\Str::isUuid($roleNameOrId)) {
+                    $query->where('roles.id', $roleNameOrId)
+                          ->orWhere('roles.name', $roleNameOrId);
+                } else {
+                    $query->where('roles.name', $roleNameOrId);
+                }
             })
             ->wherePivot('organization_id', $organizationId)
             ->exists();

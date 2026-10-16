@@ -59,14 +59,14 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('role_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('organization_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->primary(['user_id', 'role_id', 'organization_id']);
+            $table->index(['user_id', 'role_id', 'organization_id']);
         });
 
         Schema::create('user_permissions', function (Blueprint $table) {
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('permission_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('organization_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->primary(['user_id', 'permission_id', 'organization_id']);
+            $table->index(['user_id', 'permission_id', 'organization_id']);
         });
         
         // Update organization_members to optionally reference branch/team

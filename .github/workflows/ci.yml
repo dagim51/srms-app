@@ -66,6 +66,12 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Build Frontend Assets
+        run: npm run build
+
       - name: Run Migrations
         run: php artisan migrate --force
 
@@ -79,9 +85,3 @@ jobs:
       - name: Run Static Analysis (PHPStan)
         run: ./vendor/bin/phpstan analyse --memory-limit=2G
         continue-on-error: true
-
-      - name: Install Frontend Dependencies
-        run: npm ci
-
-      - name: Build Frontend Assets
-        run: npm run build
