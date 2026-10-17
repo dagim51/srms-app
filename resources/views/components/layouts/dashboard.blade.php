@@ -119,11 +119,11 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-slate-50 dark:bg-[#090D16] text-slate-800 dark:text-slate-100 antialiased">
+<body class="dashboard-shell bg-slate-50 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 antialiased selection:bg-orange-500 selection:text-white">
 
     <div class="flex h-dvh overflow-hidden">
 
@@ -136,65 +136,72 @@
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
              @click="sidebarOpen = false"
-             class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+             class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
              x-cloak></div>
 
         {{-- ═══ SIDEBAR ═══ --}}
         <aside id="dashboard-sidebar"
-               class="fixed lg:static inset-y-0 left-0 z-40 w-64 flex-shrink-0 bg-white dark:bg-[#0D1322] border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col transition-transform duration-[240ms] [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] shadow-xs dark:shadow-none"
+               class="fixed lg:static inset-y-0 left-0 z-40 w-68 flex-shrink-0 bg-white/95 dark:bg-[#0A101D]/95 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800/70 flex flex-col transition-transform duration-[240ms] [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] shadow-xl lg:shadow-none"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
-            {{-- Sidebar Header --}}
-            <div class="flex items-center gap-2.5 px-5 h-16 border-b border-slate-200/80 dark:border-slate-800/80 flex-shrink-0">
-                <div class="w-8 h-8 bg-gradient-to-tr from-orange-500 via-amber-500 to-rose-500 rounded-xl flex items-center justify-center shadow-sm shadow-orange-500/25">
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" /></svg>
+            {{-- Sidebar Header: Aura Estates & Apple Design Synergy --}}
+            <div class="flex items-center gap-3 px-5 h-17 border-b border-slate-200/80 dark:border-slate-800/70 flex-shrink-0 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 via-[#C2410C] to-amber-500 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md shadow-orange-500/25 ring-1 ring-orange-400/30">
+                    A
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="font-display font-extrabold text-slate-900 dark:text-white text-lg tracking-tight">{{ __('SRMS') }}</span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-orange-100 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/50 dark:border-orange-500/20">PRO</span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-serif font-bold text-lg tracking-wider block leading-none text-slate-900 dark:text-white">AURA</span>
+                        <span class="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-300/40 dark:border-orange-500/30">PRO</span>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-orange-600 dark:text-orange-400 font-semibold block mt-0.5">SRMS Estates</span>
                 </div>
             </div>
 
-            {{-- Tenant Switcher --}}
-            <div class="px-3 py-3 border-b border-slate-200/80 dark:border-slate-800/80">
+            {{-- Organization Workspace Selector (Replaces duplicate user profile) --}}
+            <div class="px-3 py-3 border-b border-slate-200/80 dark:border-slate-800/70">
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="w-full flex items-center justify-between bg-slate-50 dark:bg-slate-900/60 hover:bg-orange-50/40 dark:hover:bg-slate-800/60 p-2.5 rounded-xl transition-all border border-slate-200/80 dark:border-slate-800/80" aria-haspopup="true" :aria-expanded="open" id="tenant-switcher">
+                    <button @click="open = !open" class="w-full flex items-center justify-between bg-slate-100/70 dark:bg-slate-900/60 hover:bg-orange-50/50 dark:hover:bg-slate-800/80 p-2.5 rounded-xl transition-all border border-slate-200/80 dark:border-slate-800/80 group text-left cursor-pointer" aria-haspopup="true" :aria-expanded="open" id="tenant-switcher">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                                A
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-950 dark:from-slate-700 dark:to-slate-900 text-orange-400 border border-slate-700/50 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
                             </div>
-                            <div class="flex-1 min-w-0 text-left">
-                                <p class="text-xs font-semibold text-slate-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{{ __('Acme Real Estate Group') }}</p>
                                 <div class="flex items-center gap-1.5 mt-0.5">
-                                    <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20 font-bold">{{ __('Admin') }}</span>
-                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">{{ auth()->user()->email ?? '' }}</p>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <p class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">{{ __('Verified Workspace') }}</p>
                                 </div>
                             </div>
                         </div>
-                        <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
+                        <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
-                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#0D1322] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl shadow-slate-950/10 p-1" x-cloak>
-                        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Organizations</div>
-                        <a href="#" class="dropdown-item rounded-lg">
-                            <div class="w-5 h-5 rounded-md bg-orange-100 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-xs mr-2">A</div>
-                            <span class="flex-1 truncate text-xs">{{ __('Acme Properties') }}</span>
+                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl shadow-slate-950/20 p-1.5 z-50" x-cloak>
+                        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{{ __('Active Workspaces') }}</div>
+                        <a href="#" class="dropdown-item rounded-lg flex items-center justify-between bg-orange-50/50 dark:bg-orange-950/20">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-6 h-6 rounded-md bg-orange-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">A</div>
+                                <span class="truncate text-xs font-semibold text-slate-900 dark:text-white">{{ __('Acme Real Estate Group') }}</span>
+                            </div>
                             <svg class="w-4 h-4 text-orange-500 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                         </a>
-                        <a href="#" class="dropdown-item rounded-lg">
-                            <div class="w-5 h-5 rounded-md bg-sky-100 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-xs mr-2">P</div>
-                            <span class="flex-1 truncate text-xs">{{ __('Personal Account') }}</span>
+                        <a href="#" class="dropdown-item rounded-lg flex items-center justify-between">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-xs flex-shrink-0">P</div>
+                                <span class="truncate text-xs text-slate-700 dark:text-slate-300">{{ __('Personal Portfolio') }}</span>
+                            </div>
                         </a>
-                        <div class="divider my-1 border-slate-100 dark:border-slate-800"></div>
-                        <a href="/dashboard/organization/create" class="dropdown-item rounded-lg text-orange-600 dark:text-orange-400 font-semibold text-xs">
-                            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                            {{ __('Create Organization') }}
+                        <div class="divider my-1 border-slate-100 dark:border-slate-800/80"></div>
+                        <a href="/dashboard/organization/create" class="dropdown-item rounded-lg text-orange-600 dark:text-orange-400 font-semibold text-xs flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            <span>{{ __('Add Workspace') }}</span>
                         </a>
                     </div>
                 </div>
             </div>
 
             {{-- Sidebar Nav --}}
-            <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-4" aria-label="Dashboard navigation">
+            <nav class="flex-1 overflow-y-auto py-3 px-3 space-y-4 dashboard-sidebar-scroll" aria-label="Dashboard navigation">
 
                 {{-- Group 1: Core & Inventory --}}
                 <div class="space-y-1">
@@ -462,48 +469,65 @@
         </aside>
 
         {{-- ═══ MAIN AREA ═══ --}}
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 dark:bg-[#090D16]">
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 dark:bg-[#070B14] relative">
+
+            {{-- Aura Estates Ambient Light Orbs --}}
+            <div class="absolute -top-32 -left-32 w-96 h-96 bg-orange-500/10 dark:bg-orange-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 dark:bg-amber-600/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
 
             {{-- Topbar --}}
-            <header class="flex-shrink-0 h-16 bg-white/95 dark:bg-[#0D1322]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 flex items-center gap-4 px-4 lg:px-6 shadow-xs" id="dashboard-topbar">
-                {{-- Mobile sidebar toggle --}}
-                <button @click="sidebarOpen = !sidebarOpen"
-                        class="btn btn-ghost btn-icon lg:hidden flex-shrink-0"
-                        aria-label="Toggle sidebar"
-                        id="sidebar-toggle">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                </button>
+            <header class="flex-shrink-0 h-16 bg-white/80 dark:bg-[#0A101D]/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/70 border-t border-t-white/60 dark:border-t-white/10 flex items-center justify-between gap-4 px-4 lg:px-8 shadow-xs relative z-10" id="dashboard-topbar">
+                {{-- Mobile sidebar toggle & Page Title --}}
+                <div class="flex items-center gap-3 min-w-0">
+                    <button @click="sidebarOpen = !sidebarOpen"
+                            class="btn btn-ghost btn-icon lg:hidden flex-shrink-0"
+                            aria-label="Toggle sidebar"
+                            id="sidebar-toggle">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                    </button>
 
-                {{-- Page Title & Dynamic Breadcrumbs --}}
-                <div class="flex-1 min-w-0">
-                    <h1 class="text-base font-bold text-slate-900 dark:text-white truncate font-display tracking-tight">
-                        {{ __($topbarTitle) }}
-                    </h1>
-                    @if(isset($breadcrumb))
-                        <nav aria-label="Breadcrumb" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            {{ $breadcrumb }}
-                        </nav>
-                    @elseif(View::hasSection('breadcrumb'))
-                        <nav aria-label="Breadcrumb" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            @yield('breadcrumb')
-                        </nav>
-                    @elseif($topbarTitle !== 'Dashboard' && !request()->is('dashboard'))
-                        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                            <a href="/dashboard" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">{{ __('Dashboard') }}</a>
-                            <svg class="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                            <span class="text-slate-700 dark:text-slate-300 font-medium">{{ __($topbarTitle) }}</span>
-                        </nav>
-                    @endif
+                    <div class="min-w-0">
+                        <h1 class="text-base font-bold text-slate-900 dark:text-white truncate font-display tracking-tight flex items-center gap-2">
+                            <span>{{ __($topbarTitle) }}</span>
+                        </h1>
+                        @if(isset($breadcrumb))
+                            <nav aria-label="Breadcrumb" class="breadcrumb-nav mt-0.5">
+                                {{ $breadcrumb }}
+                            </nav>
+                        @elseif(View::hasSection('breadcrumb'))
+                            <nav aria-label="Breadcrumb" class="breadcrumb-nav mt-0.5">
+                                @yield('breadcrumb')
+                            </nav>
+                        @elseif($topbarTitle !== 'Dashboard' && !request()->is('dashboard'))
+                            <nav aria-label="Breadcrumb" class="breadcrumb-nav mt-0.5">
+                                <a href="/dashboard" class="breadcrumb-link">{{ __('Dashboard') }}</a>
+                                <svg class="w-3 h-3 breadcrumb-separator" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                <span class="breadcrumb-current">{{ __($topbarTitle) }}</span>
+                            </nav>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Center: Global Quick Command Search (Desktop) --}}
+                <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                               placeholder="{{ __('Search properties, transactions, clients... (⌘K)') }}"
+                               class="w-full pl-9 pr-12 py-1.5 text-xs bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-xl text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                               aria-label="Global search">
+                        <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+                            <kbd class="px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md">⌘K</kbd>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Topbar Right --}}
                 <div class="flex items-center gap-2.5 flex-shrink-0">
-                    {{-- Quick Action (New Listing) --}}
-                    <a href="/dashboard/listings/create" class="hidden sm:inline-flex items-center gap-1.5 btn btn-primary btn-sm flex-shrink-0 shadow-sm shadow-orange-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                        <span>{{ __('New Listing') }}</span>
-                    </a>
-
                     {{-- Language Switcher --}}
                     <x-language-switcher id="topbar-language-switcher" />
 
@@ -511,58 +535,44 @@
                     <x-theme-toggle id="topbar-dark-toggle" />
 
                     {{-- Notifications --}}
-                    <button class="btn btn-ghost btn-icon rounded-xl relative hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Notifications" id="topbar-notifications">
+                    <button class="btn btn-ghost btn-icon rounded-xl relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" aria-label="Notifications" id="topbar-notifications">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true"></span>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white dark:ring-[#0A101D]" aria-hidden="true"></span>
                     </button>
                 </div>
             </header>
 
             {{-- Page Content --}}
-            <main class="flex-1 overflow-y-auto p-4 lg:p-6 bg-slate-50 dark:bg-[#090D16]" role="main">
+            <main class="flex-1 overflow-y-auto p-4 lg:p-7 bg-slate-50/50 dark:bg-[#070B14]" role="main">
                 @if (session('success'))
-                    <div class="mb-4 bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl p-4 shadow-xs">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
-                                    {{ session('success') }}
-                                </p>
-                            </div>
+                    <div class="mb-5 alert alert-success" role="alert">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.745 3.745 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
+                        <div class="flex-1">
+                            <p class="font-medium text-sm">{{ session('success') }}</p>
                         </div>
                     </div>
                 @endif
 
                 @if (isset($errors) && $errors->any())
-                    <div class="mb-4 bg-rose-50/90 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl p-4 shadow-xs">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-semibold text-rose-800 dark:text-rose-200">
-                                    {{ __('There were :count errors with your submission', ['count' => $errors->count()]) }}
-                                </h3>
-                                <div class="mt-2 text-xs text-rose-700 dark:text-rose-300">
-                                    <ul class="list-disc pl-5 space-y-1">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="mb-5 alert alert-error" role="alert">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-sm mb-1">
+                                {{ __('There were :count errors with your submission', ['count' => $errors->count()]) }}
+                            </h3>
+                            <ul class="list-disc pl-5 space-y-1 text-xs opacity-90">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
                 @endif
 
                 {{-- Page heading is provided by the topbar (title + breadcrumb); no duplicated hero. --}}
-                {{ $slot }}
+                <div class="page-content-wrapper page-enter w-full">
+                    {{ $slot }}
+                </div>
             </main>
         </div>
     </div>

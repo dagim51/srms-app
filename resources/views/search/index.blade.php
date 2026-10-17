@@ -45,22 +45,22 @@
     </style>
     @endpush
 
-    <div class="min-h-screen pt-28 pb-16 bg-[#FFF5EB] dark:bg-[#0B0F19]"
+    <div class="min-h-screen pt-28 pb-16 bg-slate-50 dark:bg-slate-950"
          x-data="searchPageController()">
 
-        <div class="page-container space-y-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-6">
 
-            {{-- SEARCH ENGINE TOP BAR --}}
-            <div class="bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
+            {{-- SEARCH ENGINE TOP BAR (AURA ESTATES CONSOLE) --}}
+            <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-900/5 space-y-4 cinematic-fade-up">
                 
                 {{-- Breadcrumbs & Results Eyebrow --}}
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EBDBC9]/80 dark:border-[#273244] pb-3">
-                    <nav class="flex items-center gap-2 text-xs text-[#6B7280] dark:text-[#94A3B8] font-medium">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
                         <a href="/" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">{{ __('Home') }}</a>
                         <span>/</span>
                         <a href="/properties" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">{{ __('Marketplace') }}</a>
                         <span>/</span>
-                        <span class="text-[#111827] dark:text-white font-bold">{{ __('Search Engine') }}</span>
+                        <span class="text-slate-900 dark:text-white font-bold">{{ __('Search Console') }}</span>
                     </nav>
 
                     <div class="flex items-center gap-2 text-xs">
@@ -69,6 +69,11 @@
                             {{ $listings->total() }} {{ __('Verified Properties') }}
                         </span>
                     </div>
+                </div>
+
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900 dark:text-white">{{ __('Interactive Search Console') }}</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ __('Multi-criteria search with live GIS coordinates and authenticated cadastral registry across Ethiopia.') }}</p>
                 </div>
 
                 {{-- Primary Keyword Search Input --}}
@@ -101,12 +106,12 @@
                                 id="search-keyword-input"
                                 value="{{ $q }}"
                                 placeholder="{{ __('Search by neighborhood (Bole, Kazanchis, Hawassa...), title, or property code...') }}"
-                                class="w-full pl-11 pr-10 py-3 text-xs sm:text-sm font-bold rounded-2xl bg-white dark:bg-[#1E293B] border border-[#EBDBC9] dark:border-[#273244] text-[#111827] dark:text-white placeholder:text-[#9CA3AF] focus:border-orange-500 outline-none transition-all shadow-sm"
+                                class="w-full pl-11 pr-10 py-3 text-xs sm:text-sm font-semibold rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-all shadow-sm"
                             />
                             
                             @if(!empty($q))
                                 <a href="{{ request()->fullUrlWithQuery(['q' => null]) }}" 
-                                   class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#9CA3AF] hover:text-rose-500 transition-colors"
+                                   class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-rose-500 transition-colors"
                                    title="{{ __('Clear search keyword') }}">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </a>
@@ -115,19 +120,19 @@
 
                         <div class="flex items-center gap-2">
                             {{-- Search Button --}}
-                            <button type="submit" class="px-6 py-3 rounded-2xl text-xs sm:text-sm font-extrabold flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-md shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer" id="search-submit-btn">
+                            <button type="submit" class="btn btn-primary px-6 py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-md shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer" id="search-submit-btn">
                                 <span>{{ __('Search') }}</span>
                             </button>
 
                             {{-- Filter Drawer Toggle Button --}}
                             <button type="button" 
                                     @click="drawerOpen = true"
-                                    class="px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 bg-white dark:bg-[#1E293B] border border-[#EBDBC9] dark:border-[#273244] text-[#111827] dark:text-white hover:border-orange-500 transition-all shadow-sm cursor-pointer"
+                                    class="px-4 py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:border-orange-500 transition-all shadow-sm cursor-pointer"
                                     id="filter-drawer-toggle">
                                 <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
                                 <span>{{ __('Filters') }}</span>
                                 @if($activeCount > 0)
-                                    <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-[11px] font-black flex items-center justify-center">
+                                    <span class="w-5 h-5 rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center">
                                         {{ $activeCount }}
                                     </span>
                                 @endif
@@ -137,35 +142,34 @@
 
                     {{-- Quick Neighborhood Suggestions --}}
                     <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs pt-1">
-                        <span class="text-[#111827] dark:text-white font-bold whitespace-nowrap">{{ __('Popular Areas:') }}</span>
+                        <span class="text-slate-500 dark:text-slate-400 font-semibold whitespace-nowrap">{{ __('Popular Destinations:') }}</span>
                         @foreach(['Bole', 'Kazanchis', 'Old Airport', 'Ayat', 'Hawassa', 'Bishoftu'] as $city)
                             <a href="{{ request()->fullUrlWithQuery(['q' => $city]) }}" 
-                               class="px-3 py-1 rounded-full bg-[#FFF5EB] dark:bg-[#1E293B] border border-[#EBDBC9] dark:border-[#273244] hover:border-orange-500 text-[#111827] dark:text-white font-bold transition-all whitespace-nowrap hover:scale-105">
+                               class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-600 text-slate-700 dark:text-slate-300 font-medium transition-colors whitespace-nowrap">
                                 {{ __($city) }}
                             </a>
                         @endforeach
                     </div>
                 </form>
 
-                {{-- Mode Switcher Tabs with Purposeful Colors --}}
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 border-t border-[#EBDBC9]/80 dark:border-[#273244]">
+                {{-- Mode Switcher Tabs --}}
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 border-t border-slate-100 dark:border-slate-800">
                     @php
                         $tabPurposes = [
-                            'all' => ['label' => __('All Properties'), 'color' => 'bg-[#111827] text-white dark:bg-white dark:text-black'],
-                            'For Sale' => ['label' => __('For Sale'), 'color' => 'bg-orange-500 text-white shadow-sm shadow-orange-500/20'],
-                            'For Rent' => ['label' => __('For Rent'), 'color' => 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'],
-                            'Short Stay' => ['label' => __('Short Stay'), 'color' => 'bg-sky-600 text-white shadow-sm shadow-sky-600/20'],
-                            'Land' => ['label' => __('Land & Plots'), 'color' => 'bg-amber-600 text-white shadow-sm shadow-amber-600/20'],
-                            'Development' => ['label' => __('New Projects'), 'color' => 'bg-purple-600 text-white shadow-sm shadow-purple-600/20'],
+                            'all' => __('All Properties'),
+                            'For Sale' => __('Buy Property'),
+                            'For Rent' => __('Luxury Rentals'),
+                            'Land' => __('Land & Plots'),
+                            'Development' => __('New Projects'),
                         ];
                     @endphp
-                    @foreach($tabPurposes as $pVal => $pInfo)
+                    @foreach($tabPurposes as $pVal => $pLabel)
                         @php
                             $isActive = ($purpose === $pVal || (!$purpose && $pVal === 'all'));
                         @endphp
                         <a href="{{ request()->fullUrlWithQuery(['purpose' => $pVal === 'all' ? null : $pVal]) }}" 
-                           class="px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all {{ $isActive ? $pInfo['color'] : 'text-[#4B5563] dark:text-[#CBD5E1] hover:bg-orange-50 dark:hover:bg-white/5' }}">
-                            {{ $pInfo['label'] }}
+                           class="px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all {{ $isActive ? 'bg-orange-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-orange-600' }}">
+                            {{ $pLabel }}
                         </a>
                     @endforeach
                 </div>
@@ -285,7 +289,7 @@
                 {{-- 1. GRID VIEW --}}
                 <div x-show="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($listings as $item)
-                        <div class="transition-transform duration-200">
+                        <div class="transition-transform duration-200 cinematic-fade-up cinematic-stagger-{{ ($loop->index % 4) + 1 }}">
                             <x-property-card :listing="$item" />
                         </div>
                     @endforeach
@@ -294,7 +298,9 @@
                 {{-- 2. LIST VIEW --}}
                 <div x-show="viewMode === 'list'" class="space-y-4">
                     @foreach($listings as $item)
-                        <x-property-list-card :listing="$item" />
+                        <div class="cinematic-fade-up cinematic-stagger-{{ ($loop->index % 4) + 1 }}">
+                            <x-property-list-card :listing="$item" />
+                        </div>
                     @endforeach
                 </div>
 

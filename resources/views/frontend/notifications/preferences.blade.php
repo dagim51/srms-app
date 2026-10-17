@@ -3,14 +3,17 @@
 
     <div class="page-container pt-32 pb-24 max-w-3xl relative z-10">
         
-        <div class="mb-8">
-            <a href="{{ route('dashboard.notifications.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-6 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Back to Notifications
-            </a>
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Notification Preferences') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Control how and when you want to be notified.') }}</p>
-        </div>
+        <a href="{{ route('dashboard.notifications.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+            {{ __('Back to Notifications') }}
+        </a>
+
+        <x-page-header
+            :title="__('Notification Preferences')"
+            :description="__('Control how and when you receive automated emails, browser alerts, SMS updates, and inquiry digests.')"
+            icon="cog"
+            badge="Preferences"
+        />
 
         @if(session('success'))
             <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 font-medium flex items-center gap-2 border border-emerald-100 dark:border-emerald-800/50">

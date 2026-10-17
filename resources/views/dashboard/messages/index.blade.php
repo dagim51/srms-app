@@ -1,19 +1,26 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Inbox & Messages') }}</x-slot>
     <x-slot name="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-        <span>/</span>
-        <span class="text-muted dark:text-white font-medium">{{ __('Messages') }}</span>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('Messages')],
+        ]" />
     </x-slot>
 
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-0">
+    <div class="max-w-4xl mx-auto space-y-6">
+        <x-page-header
+            title="Inquiries & Messaging"
+            description="Direct communication channel between verified buyers, agents, owners, and developers with real-time audit logs."
+            icon="chat"
+            badge="Communications" />
+
+        <div class="cinematic-fade-up cinematic-stagger-2 card overflow-hidden flex flex-col min-h-0">
             {{-- Header --}}
             <div class="p-4 border-b border-warm dark:border-[#273244] flex items-center justify-between bg-surface/50 dark:bg-surface/30">
                 <h2 class="text-lg font-bold font-display text-muted dark:text-white">{{ __('Recent Conversations') }}</h2>
-                <span class="badge badge-primary px-2.5 py-1 text-xs">
+                <x-badge variant="brand" size="xs" dot>
                     {{ $conversations->count() }} {{ __('Active') }}
-                </span>
+                </x-badge>
             </div>
 
             {{-- Conversations List --}}
@@ -59,14 +66,15 @@
                         </div>
                     </a>
                 @empty
-                    <div class="flex flex-col items-center justify-center p-12 text-center h-full">
-                        <div class="w-16 h-16 bg-surface-subtle dark:bg-surface rounded-2xl flex items-center justify-center mb-4 text-muted">
-                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
-                        </div>
-                        <h3 class="text-base font-bold text-muted dark:text-white mb-1">{{ __('No Messages Yet') }}</h3>
-                        <p class="text-xs text-muted max-w-sm">{{ __('When you inquire about a property or someone contacts you, the conversation will appear here.') }}</p>
-                        <a href="{{ route('properties.index') }}" class="btn btn-outline btn-sm mt-6">{{ __('Explore Properties') }}</a>
-                    </div>
+                    <x-empty-state
+                        icon="chat"
+                        :title="__('No Messages Yet')"
+                        :description="__('When you inquire about a property or someone contacts you, the conversation will appear here.')"
+                        size="default">
+                        <x-slot:actions>
+                            <a href="{{ route('properties.index') }}" class="btn btn-outline btn-sm">{{ __('Explore Properties') }}</a>
+                        </x-slot:actions>
+                    </x-empty-state>
                 @endforelse
             </div>
         </div>

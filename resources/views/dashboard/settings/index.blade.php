@@ -38,75 +38,61 @@
             </div>
         @endif
 
-        {{-- Page Header Card --}}
-        <div class="card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-orange-100 dark:bg-orange-950/50 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-2xl flex-shrink-0 shadow-xs">
-                    {{ strtoupper(substr($user->name ?? 'A', 0, 1)) }}
-                </div>
-                <div>
-                    <div class="flex items-center gap-2.5 flex-wrap">
-                        <h1 class="text-2xl font-extrabold font-display text-muted dark:text-white tracking-tight">
-                            {{ $user->name ?? 'Account Settings' }}
-                        </h1>
-                        <span class="badge badge-brand text-xs font-bold px-2.5 py-0.5">
-                            {{ $user->role ?? 'Administrator' }}
-                        </span>
-                    </div>
-                    <p class="text-xs sm:text-sm text-muted dark:text-muted mt-1">
-                        {{ $user->email ?? 'admin@srms.et' }} &bull; {{ __('Organization:') }} {{ $organization->name ?? 'Default Org' }}
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 self-start sm:self-center">
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="System Settings & Preferences"
+            description="Configure account credentials, notification channels, security policies, and system preferences."
+            icon="cog"
+            badge="Settings">
+            <x-slot:actions>
                 <a href="{{ route('dashboard.admin.permissions') }}" class="btn btn-secondary btn-sm text-xs font-bold inline-flex items-center gap-2">
                     <svg class="w-4 h-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
                     {{ __('View Permissions Matrix') }}
                 </a>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         {{-- Tab Navigation Bar --}}
-        <div class="border-b border-[#EBDBC9] dark:border-[#273244] overflow-x-auto">
+        <div class="cinematic-fade-up cinematic-stagger-1 border-b border-[#EBDBC9] dark:border-[#273244] overflow-x-auto">
             <nav class="flex space-x-2 sm:space-x-6 min-w-max pb-1">
                 <button type="button" @click="setTab('profile')"
-                        :class="currentTab === 'profile' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'profile' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                     {{ __('Profile & Account') }}
                 </button>
 
                 <button type="button" @click="setTab('organization')"
-                        :class="currentTab === 'organization' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'organization' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.75a1.5 1.5 0 011.5-1.5h1.5a1.5 1.5 0 011.5 1.5V21" /></svg>
                     {{ __('Organization & Agency') }}
                 </button>
 
                 <button type="button" @click="setTab('regional')"
-                        :class="currentTab === 'regional' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'regional' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918" /></svg>
                     {{ __('Regional & Localization') }}
                 </button>
 
                 <button type="button" @click="setTab('notifications')"
-                        :class="currentTab === 'notifications' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'notifications' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
                     {{ __('Notifications') }}
                 </button>
 
                 <button type="button" @click="setTab('security')"
-                        :class="currentTab === 'security' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'security' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
                     {{ __('Security & Sessions') }}
                 </button>
 
                 <button type="button" @click="setTab('platform')"
-                        :class="currentTab === 'platform' ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold' : 'border-transparent text-muted hover:text-muted dark:text-muted'"
-                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2">
+                        :class="currentTab === 'platform' ? 'border-[#C2410C] text-[#C2410C] dark:text-orange-400 font-bold' : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium'"
+                        class="py-3 px-2 border-b-2 text-sm transition-colors inline-flex items-center gap-2 min-h-[44px] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" /></svg>
                     {{ __('Platform & Fees') }}
                 </button>
@@ -116,7 +102,7 @@
         {{-- ═══════════════════════════════════════════════════════════
              TAB 1: PROFILE & ACCOUNT
              ═══════════════════════════════════════════════════════════ --}}
-        <div x-show="currentTab === 'profile'" class="space-y-6">
+        <div x-show="currentTab === 'profile'" class="cinematic-fade-up cinematic-stagger-2 space-y-6">
             <div class="card p-6 sm:p-8">
                 <form action="{{ route('dashboard.settings.profile') }}" method="POST" class="space-y-6">
                     @csrf

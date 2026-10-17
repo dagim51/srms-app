@@ -2,13 +2,15 @@
     <x-slot name="page-title">{{ __('Handovers') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Handovers & Snagging') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage the final handover process of completed units.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Schedule Handover') }}</button>
-        </div>
+        <x-page-header
+            title="Handovers & Snagging"
+            description="Manage the final handover process and inspection snagging of completed units."
+            icon="key"
+            badge="Handovers">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Schedule Handover') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.developer.sales.partials.tabs')
 

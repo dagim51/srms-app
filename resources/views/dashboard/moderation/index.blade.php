@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="title">Listing Moderation Queue | Trust & Safety</x-slot>
 
-    @section('page-title', 'Moderation Queue')
-    @section('breadcrumb')
-        <a href="/dashboard" class="hover:text-muted dark:hover:text-muted">{{ __('Dashboard') }}</a>
-        <span class="mx-1.5 text-muted dark:text-muted">/</span>
-        <span class="text-muted dark:text-dark-subtle">{{ __('Moderation Queue') }}</span>
-    @endsection
+    <x-slot:breadcrumb>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => '/dashboard'],
+            ['label' => __('Moderation Queue')]
+        ]" />
+    </x-slot:breadcrumb>
 
     <div class="space-y-6 page-enter pb-16" x-data="{ quickRejectOpen: false, rejectUrl: '', rejectTitle: '', templateReason: '' }">
         {{-- Flash Messages --}}
@@ -21,52 +21,67 @@
             </x-alert>
         @endif
 
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Listing Moderation Queue"
+            description="Review and verify property listings submitted for public discovery, legal compliance, and quality assurance."
+            icon="shield"
+            badge="Trust & Safety" />
+
         {{-- Top KPI Stat Cards --}}
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <x-card-stat
-                :label="__('Pending Review')"
-                :value="$stats['in_queue']"
-                iconColor="blue"
-                icon="clock"
-                :badge="__('Queue')"
-                badgeVariant="info"
-                :href="route('dashboard.moderation.listings.index', ['status' => 'pending_review'])"
-                :class="$status === 'pending_review' ? 'border-sky-500 ring-2 ring-sky-500/20' : ''"
-            />
-            <x-card-stat
-                :label="__('Approved / Live')"
-                :value="$stats['approved']"
-                iconColor="emerald"
-                icon="check"
-                :badge="__('Approved')"
-                badgeVariant="success"
-                :href="route('dashboard.moderation.listings.index', ['status' => 'published'])"
-                :class="in_array($status, ['published', 'approved']) ? 'border-emerald-500 ring-2 ring-emerald-500/20' : ''"
-            />
-            <x-card-stat
-                :label="__('Rejected')"
-                :value="$stats['rejected']"
-                iconColor="rose"
-                icon="wrench"
-                :badge="__('Rejected')"
-                badgeVariant="error"
-                :href="route('dashboard.moderation.listings.index', ['status' => 'rejected'])"
-                :class="$status === 'rejected' ? 'border-rose-500 ring-2 ring-rose-500/20' : ''"
-            />
-            <x-card-stat
-                :label="__('Suspended')"
-                :value="$stats['suspended']"
-                iconColor="amber"
-                icon="clock"
-                :badge="__('Suspended')"
-                badgeVariant="warning"
-                :href="route('dashboard.moderation.listings.index', ['status' => 'suspended'])"
-                :class="$status === 'suspended' ? 'border-amber-500 ring-2 ring-amber-500/20' : ''"
-            />
+            <div class="cinematic-fade-up cinematic-stagger-1">
+                <x-card-stat
+                    :label="__('Pending Review')"
+                    :value="$stats['in_queue']"
+                    iconColor="blue"
+                    icon="clock"
+                    :badge="__('Queue')"
+                    badgeVariant="info"
+                    :href="route('dashboard.moderation.listings.index', ['status' => 'pending_review'])"
+                    :class="$status === 'pending_review' ? 'border-sky-500 ring-2 ring-sky-500/20' : ''"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-2">
+                <x-card-stat
+                    :label="__('Approved / Live')"
+                    :value="$stats['approved']"
+                    iconColor="emerald"
+                    icon="check"
+                    :badge="__('Approved')"
+                    badgeVariant="success"
+                    :href="route('dashboard.moderation.listings.index', ['status' => 'published'])"
+                    :class="in_array($status, ['published', 'approved']) ? 'border-emerald-500 ring-2 ring-emerald-500/20' : ''"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-3">
+                <x-card-stat
+                    :label="__('Rejected')"
+                    :value="$stats['rejected']"
+                    iconColor="rose"
+                    icon="wrench"
+                    :badge="__('Rejected')"
+                    badgeVariant="error"
+                    :href="route('dashboard.moderation.listings.index', ['status' => 'rejected'])"
+                    :class="$status === 'rejected' ? 'border-rose-500 ring-2 ring-rose-500/20' : ''"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-4">
+                <x-card-stat
+                    :label="__('Suspended')"
+                    :value="$stats['suspended']"
+                    iconColor="amber"
+                    icon="clock"
+                    :badge="__('Suspended')"
+                    badgeVariant="warning"
+                    :href="route('dashboard.moderation.listings.index', ['status' => 'suspended'])"
+                    :class="$status === 'suspended' ? 'border-amber-500 ring-2 ring-amber-500/20' : ''"
+                />
+            </div>
         </div>
 
         {{-- Filter Toolbar --}}
-        <div class="card p-5 space-y-4">
+        <div class="cinematic-fade-up cinematic-stagger-2 card p-5 space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="card-title text-base">{{ __('Trust & Safety Moderation Workstation') }}</h2>
@@ -85,7 +100,7 @@
                 </div>
 
                 <div class="sm:col-span-3">
-                    <select name="status" onchange="this.form.submit()" class="form-input w-full text-xs font-medium">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs font-medium">
                         <option value="pending_review" {{ $status === 'pending_review' ? 'selected' : '' }}>Pending Review Queue ({{ $stats['in_queue'] }})</option>
                         <option value="published" {{ $status === 'published' ? 'selected' : '' }}>Approved / Published ({{ $stats['approved'] }})</option>
                         <option value="rejected" {{ $status === 'rejected' ? 'selected' : '' }}>Rejected Submissions ({{ $stats['rejected'] }})</option>
@@ -95,7 +110,7 @@
                 </div>
 
                 <div class="sm:col-span-3">
-                    <select name="purpose" onchange="this.form.submit()" class="form-input w-full text-xs">
+                    <select name="purpose" onchange="this.form.submit()" class="form-select w-full text-xs">
                         <option value="all">{{ __('All Modes') }}</option>
                         <option value="For Sale" {{ request('purpose') === 'For Sale' ? 'selected' : '' }}>{{ __('For Sale') }}</option>
                         <option value="For Rent" {{ request('purpose') === 'For Rent' ? 'selected' : '' }}>{{ __('For Rent') }}</option>
@@ -113,12 +128,11 @@
             </form>
         </div>
 
-        {{-- Queue Table --}}
-        <div class="card overflow-hidden">
+        <div class="cinematic-fade-up cinematic-stagger-3 card overflow-hidden">
             @if($listings->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-surface/70 dark:bg-surface/40 text-muted dark:text-muted font-semibold uppercase tracking-wider border-b border-[#EBDBC9] dark:border-[#273244]">
+                <div class="table-container">
+                    <table class="data-table text-xs">
+                        <thead>
                             <tr>
                                 <th class="px-5 py-3.5">{{ __('Property Under Review') }}</th>
                                 <th class="px-4 py-3.5">{{ __('Mode & Asking Price') }}</th>
@@ -169,20 +183,15 @@
                                     </td>
                                     <td class="px-4 py-4">
                                         @if($listing->status === 'pending_review')
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                                                Pending Review
-                                            </span>
+                                            <x-badge variant="info" dot>{{ __('Pending Review') }}</x-badge>
                                         @elseif($listing->status === 'published' || $listing->status === 'approved')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">{{ __('Approved') }}</span>
+                                            <x-badge variant="success">{{ __('Approved') }}</x-badge>
                                         @elseif($listing->status === 'rejected')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400">{{ __('Rejected') }}</span>
+                                            <x-badge variant="error">{{ __('Rejected') }}</x-badge>
                                         @elseif($listing->status === 'suspended')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-subtle text-muted dark:bg-surface dark:text-dark-subtle">{{ __('Suspended') }}</span>
+                                            <x-badge variant="neutral">{{ __('Suspended') }}</x-badge>
                                         @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-subtle text-muted dark:bg-surface dark:text-dark-subtle capitalize">
-                                                {{ $listing->status }}
-                                            </span>
+                                            <x-badge variant="neutral" class="capitalize">{{ $listing->status }}</x-badge>
                                         @endif
                                     </td>
                                     <td class="px-4 py-4 text-muted dark:text-muted">
@@ -221,13 +230,11 @@
                     </table>
                 </div>
             @else
-                <div class="p-12 text-center">
-                    <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                    </div>
-                    <h3 class="card-title text-base">Queue is Clear!</h3>
-                    <p class="card-subtitle text-xs max-w-sm mx-auto mt-1">{{ __('There are no listings matching this filter status waiting for moderation review.') }}</p>
-                </div>
+                <x-empty-state
+                    icon="shield"
+                    title="Queue is Clear!"
+                    description="{{ __('There are no listings matching this filter status waiting for moderation review.') }}"
+                />
             @endif
         </div>
 
@@ -238,9 +245,8 @@
             </div>
         @endif
 
-        {{-- Quick Reject Modal with Template Reasons --}}
         <div x-show="quickRejectOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div @click.away="quickRejectOpen = false" class="bg-white dark:bg-[#1E293B] rounded-2xl max-w-lg w-full p-6 shadow-xl border border-warm dark:border-warm space-y-4">
+            <div @click.away="quickRejectOpen = false" class="modal-content max-w-lg w-full p-6 space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -275,7 +281,7 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-muted dark:text-dark-subtle mb-1.5">{{ __('Rejection Feedback / Remediation Instructions') }}</label>
-                        <textarea name="comments" x-model="templateReason" rows="3" class="form-input w-full text-xs" required placeholder="{{ __('Describe exactly what needs to be fixed...') }}"></textarea>
+                        <textarea name="comments" x-model="templateReason" rows="3" class="form-textarea w-full text-xs" required placeholder="{{ __('Describe exactly what needs to be fixed...') }}"></textarea>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-2">

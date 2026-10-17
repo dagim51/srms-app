@@ -2,10 +2,12 @@
     <x-slot name="page-title">{{ __('Valuation Tool') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Valuation Tool') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Get an AI-powered estimate based on recent comparable properties.') }}</p>
-        </div>
+        <x-page-header
+            :title="__('Valuation Tool')"
+            :description="__('Estimate accurate market property valuations using recent comparable sales, spatial proximity, and algorithmic intelligence.')"
+            icon="sparkles"
+            badge="Valuation Model"
+        />
 
         @include('frontend.intelligence.partials.tabs')
 

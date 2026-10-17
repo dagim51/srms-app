@@ -3,17 +3,19 @@
 
     <div class="page-container pt-32 pb-24 max-w-5xl relative z-10">
         
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Notifications') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Stay updated on your bookings and account activity.') }}</p>
-            </div>
-            
-            <a href="{{ route('dashboard.preferences') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-surface border border-warm dark:border-warm rounded-xl shadow-sm text-sm font-bold text-muted dark:text-dark-subtle hover:bg-surface dark:hover:bg-surface transition-colors shrink-0">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                Preferences
-            </a>
-        </div>
+        <x-page-header
+            :title="__('Notifications')"
+            :description="__('Stay updated on booking inquiries, offer status changes, system messages, and account events.')"
+            icon="sparkles"
+            badge="Activity Feed"
+        >
+            <x-slot:actions>
+                <a href="{{ route('dashboard.preferences') }}" class="btn btn-secondary border-orange-200 text-[#C2410C] hover:bg-orange-50 dark:hover:bg-orange-950/30 inline-flex items-center gap-2 font-semibold shadow-xs">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    <span>{{ __('Preferences') }}</span>
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         @if(session('success'))
             <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 font-medium flex items-center gap-2 border border-emerald-100 dark:border-emerald-800/50">

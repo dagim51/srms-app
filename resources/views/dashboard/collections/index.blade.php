@@ -25,72 +25,50 @@
              }
          }">
 
-        {{-- Page Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-warm dark:border-warm pb-5">
-            <div>
-                <nav class="flex items-center gap-2 text-xs text-muted mb-1">
-                    <a href="/dashboard" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-                    <span>/</span>
-                    <span class="text-muted dark:text-white font-medium">{{ __('Collections') }}</span>
-                </nav>
-                <h1 class="text-2xl sm:text-3xl font-display font-extrabold text-muted dark:text-white tracking-tight flex items-center gap-3">
-                    <span>{{ __('My Property Collections') }}</span>
-                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/60 text-primary-600 dark:text-primary-400 border border-orange-200 dark:border-orange-900/40">
-                        {{ $collections->total() }} {{ __('Collections') }}
-                    </span>
-                </h1>
-                <p class="text-xs sm:text-sm text-muted dark:text-muted mt-1">
-                    {{ __('Organize your saved homes, commercial investments, and land plots into private or shared collections.') }}
-                </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <a href="{{ route('dashboard.favorites.index') }}" class="btn btn-secondary text-xs flex items-center gap-1.5" id="view-favorites-link">
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Curated Collections"
+            description="Organize, group, and collaborate on shared property portfolios for private investment groups and clients."
+            icon="folder"
+            badge="Portfolios">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.favorites.index') }}" class="btn btn-secondary btn-sm flex items-center gap-1.5" id="view-favorites-link">
                     <svg class="w-4 h-4 text-rose-500 fill-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
                     <span>{{ __('All Favorites') }}</span>
                 </a>
                 <button type="button" 
                         @click="createModalOpen = true" 
-                        class="btn btn-primary text-xs flex items-center gap-2 shadow-sm"
+                        class="btn btn-primary btn-sm flex items-center gap-2 shadow-sm shadow-orange-500/20"
                         id="create-collection-btn">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                     <span>{{ __('New Collection') }}</span>
                 </button>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         {{-- COLLECTIONS GRID --}}
         @if($collections->isEmpty())
-            {{-- EMPTY STATE --}}
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-12 text-center max-w-xl mx-auto my-8 shadow-sm">
-                <div class="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-950/40 text-primary-600 dark:text-primary-400 mx-auto flex items-center justify-center mb-5">
-                    <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121 12v.75m-8.625-1.5v3.75m-3.75-3.75v3.75m6-3.75v3.75M3 18.75V18a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 18v.75" /></svg>
-                </div>
-
-                <h3 class="font-display font-extrabold text-2xl text-muted dark:text-white mb-2">
-                    {{ __('No Collections Yet') }}
-                </h3>
-
-                <p class="text-sm text-muted dark:text-muted mb-6 max-w-md mx-auto leading-relaxed">
-                    {{ __('Collections let you group your favorite properties together, such as "Dream Homes in Bole", "Affordable 2-Beds", or "Vacation Rentals".') }}
-                </p>
-
-                <div class="flex flex-wrap items-center justify-center gap-3">
+            <x-empty-state
+                icon="folder"
+                :title="__('No Collections Yet')"
+                :description="__('Collections let you group your favorite properties together, such as \'Dream Homes in Bole\', \'Affordable 2-Beds\', or \'Vacation Rentals\'.')"
+                size="lg">
+                <x-slot:actions>
                     <button type="button" @click="createModalOpen = true" class="btn btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-orange-500/20">
                         {{ __('Create Your First Collection') }}
                     </button>
                     <a href="{{ route('dashboard.favorites.index') }}" class="btn btn-secondary px-6 py-2.5 rounded-xl text-sm font-bold">
                         {{ __('Browse Saved Favorites') }}
                     </a>
-                </div>
-            </div>
+                </x-slot:actions>
+            </x-empty-state>
         @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="collections-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 cinematic-fade-up cinematic-stagger-2" id="collections-grid">
                 @foreach($collections as $col)
                     @php
                         $firstProps = $col->properties->take(3);
                     @endphp
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 group flex flex-col justify-between"
+                    <div class="card card-hover overflow-hidden group flex flex-col justify-between"
                          id="collection-card-{{ $col->id }}">
                         
                         <div>
@@ -214,7 +192,7 @@
                      x-transition:leave="ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm">
+                     class="modal-content inline-block align-bottom text-left transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                     
                     <form action="{{ route('dashboard.collections.store') }}" method="POST" class="p-6 space-y-5">
                         @csrf
@@ -238,7 +216,7 @@
                                     <p class="text-xs font-bold text-muted dark:text-white">{{ __('Private Collection') }}</p>
                                     <p class="text-xs text-muted">{{ __('Only you can view and manage this collection') }}</p>
                                 </div>
-                                <input type="checkbox" name="is_private" value="1" x-model="newPrivate" class="rounded text-primary-500 focus:ring-primary-500 w-4 h-4">
+                                <input type="checkbox" name="is_private" value="1" x-model="newPrivate" class="form-checkbox">
                             </label>
                         </div>
 
@@ -272,7 +250,7 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div x-show="editModalOpen"
-                     class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm">
+                     class="modal-content inline-block align-bottom text-left transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                     
                     <form :action="'/dashboard/collections/' + (selectedCollection?.id || '')" method="POST" class="p-6 space-y-5">
                         @csrf
@@ -297,7 +275,7 @@
                                     <p class="text-xs font-bold text-muted dark:text-white">{{ __('Private Collection') }}</p>
                                     <p class="text-xs text-muted">{{ __('Only you can view and manage this collection') }}</p>
                                 </div>
-                                <input type="checkbox" name="is_private" value="1" x-model="editPrivate" class="rounded text-primary-500 focus:ring-primary-500 w-4 h-4">
+                                <input type="checkbox" name="is_private" value="1" x-model="editPrivate" class="form-checkbox">
                             </label>
                         </div>
 
@@ -331,7 +309,7 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div x-show="deleteModalOpen"
-                     class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm p-6 space-y-4">
+                     class="modal-content inline-block align-bottom text-left transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full p-6 space-y-4">
                     
                     <div class="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto mb-2">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>

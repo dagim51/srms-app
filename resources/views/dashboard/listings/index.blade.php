@@ -11,77 +11,102 @@
             </x-alert>
         @endif
 
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Listings Management"
+            description="Manage public market listings, sales pricing, rental rates, promotion tiers, and verification lifecycle states."
+            icon="tag"
+            badge="Listings">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.listings.create') }}" class="btn btn-primary text-xs font-medium flex items-center gap-1.5 py-2 px-3.5 shadow-sm shadow-orange-500/20">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    {{ __('Create New Listing') }}
+                </a>
+            </x-slot:actions>
+        </x-page-header>
+
         {{-- Top KPI Stat Cards --}}
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-muted dark:text-muted">{{ __('Total Listings') }}</p>
-                    <p class="text-2xl font-display font-bold text-muted dark:text-white mt-0.5">{{ $stats['total'] }}</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-surface-subtle dark:bg-surface flex items-center justify-center text-muted dark:text-dark-subtle">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                </div>
+            <div class="cinematic-fade-up cinematic-stagger-1">
+                <x-card-stat
+                    :label="__('Total Listings')"
+                    :value="$stats['total']"
+                    iconColor="orange"
+                    icon="tag"
+                    :badge="__('Inventory')"
+                    badgeVariant="brand"
+                    caption="{{ __('All registered listings') }}"
+                    href="{{ route('dashboard.listings.index') }}"
+                />
             </div>
-
-            <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400">{{ __('Published') }}</p>
-                    <p class="text-2xl font-display font-bold text-muted dark:text-white mt-0.5">{{ $stats['published'] }}</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
+            <div class="cinematic-fade-up cinematic-stagger-2">
+                <x-card-stat
+                    :label="__('Published')"
+                    :value="$stats['published']"
+                    iconColor="emerald"
+                    icon="check"
+                    :badge="__('Active')"
+                    badgeVariant="success"
+                    caption="{{ __('Public on marketplace') }}"
+                    href="{{ route('dashboard.listings.index', ['status' => 'published']) }}"
+                />
             </div>
-
-            <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-amber-600 dark:text-amber-400">{{ __('Drafts') }}</p>
-                    <p class="text-2xl font-display font-bold text-muted dark:text-white mt-0.5">{{ $stats['draft'] }}</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                </div>
+            <div class="cinematic-fade-up cinematic-stagger-3">
+                <x-card-stat
+                    :label="__('Drafts')"
+                    :value="$stats['draft']"
+                    iconColor="amber"
+                    icon="document"
+                    :badge="__('Draft')"
+                    badgeVariant="warning"
+                    caption="{{ __('Unpublished listings') }}"
+                    href="{{ route('dashboard.listings.index', ['status' => 'draft']) }}"
+                />
             </div>
-
-            <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-blue-600 dark:text-blue-400">{{ __('In Review') }}</p>
-                    <p class="text-2xl font-display font-bold text-muted dark:text-white mt-0.5">{{ $stats['pending'] }}</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
+            <div class="cinematic-fade-up cinematic-stagger-4">
+                <x-card-stat
+                    :label="__('In Review')"
+                    :value="$stats['pending']"
+                    iconColor="blue"
+                    icon="clock"
+                    :badge="__('Verification')"
+                    badgeVariant="info"
+                    caption="{{ __('Awaiting verification') }}"
+                    href="{{ route('dashboard.listings.index', ['status' => 'pending']) }}"
+                />
             </div>
-
-            <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm flex items-center justify-between col-span-2 sm:col-span-1">
-                <div>
-                    <p class="text-xs font-medium text-muted dark:text-muted">{{ __('Paused') }}</p>
-                    <p class="text-2xl font-display font-bold text-muted dark:text-white mt-0.5">{{ $stats['paused'] }}</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-surface-subtle dark:bg-surface flex items-center justify-center text-muted">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
+            <div class="cinematic-fade-up cinematic-stagger-5">
+                <x-card-stat
+                    :label="__('Paused')"
+                    :value="$stats['paused']"
+                    iconColor="purple"
+                    icon="chart-pie"
+                    :badge="__('Paused')"
+                    badgeVariant="neutral"
+                    caption="{{ __('Temporarily suspended') }}"
+                    href="{{ route('dashboard.listings.index', ['status' => 'paused']) }}"
+                />
             </div>
         </div>
 
         {{-- Actions & Filter Toolbar --}}
-        <div class="bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4">
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Commercial Listings') }}</h2>
                     <p class="text-xs text-muted dark:text-muted">{{ __('Marketplace offers linked directly to canonical properties') }}</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="flex bg-surface-subtle dark:bg-surface p-0.5 rounded-lg border border-warm dark:border-warm">
-                        <button type="button" @click="viewMode = 'grid'" :class="{ 'bg-white dark:bg-[#1E293B] text-muted dark:text-white shadow-sm': viewMode === 'grid', 'text-muted': viewMode !== 'grid' }" class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-all" title="{{ __('Grid View') }}">
+                    <div class="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <button type="button" @click="viewMode = 'grid'" :class="{ 'bg-[#C2410C] text-white shadow-md shadow-orange-500/25': viewMode === 'grid', 'text-slate-600 hover:text-[#C2410C] dark:text-slate-400 dark:hover:text-white': viewMode !== 'grid' }" class="p-2.5 rounded-lg text-xs font-medium transition-all min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer" title="{{ __('Grid View') }}" aria-label="{{ __('Grid View') }}">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                         </button>
-                        <button type="button" @click="viewMode = 'table'" :class="{ 'bg-white dark:bg-[#1E293B] text-muted dark:text-white shadow-sm': viewMode === 'table', 'text-muted': viewMode !== 'table' }" class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-all" title="{{ __('Table View') }}">
+                        <button type="button" @click="viewMode = 'table'" :class="{ 'bg-[#C2410C] text-white shadow-md shadow-orange-500/25': viewMode === 'table', 'text-slate-600 hover:text-[#C2410C] dark:text-slate-400 dark:hover:text-white': viewMode !== 'table' }" class="p-2.5 rounded-lg text-xs font-medium transition-all min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer" title="{{ __('Table View') }}" aria-label="{{ __('Table View') }}">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                         </button>
                     </div>
 
-                    <a href="{{ route('dashboard.listings.create') }}" class="btn btn-primary text-xs font-medium flex items-center gap-1.5 py-2 px-3.5">
+                    <a href="{{ route('dashboard.listings.create') }}" class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         {{ __('Create New Listing') }}
                     </a>
@@ -96,7 +121,7 @@
                 </div>
 
                 <div class="md:col-span-3">
-                    <select name="purpose" onchange="this.form.submit()" class="form-input w-full text-xs">
+                    <select name="purpose" onchange="this.form.submit()" class="form-select w-full text-xs">
                         <option value="all">{{ __('All Modes (Sale, Rent, Stay)') }}</option>
                         <option value="For Sale" {{ request('purpose') == 'For Sale' ? 'selected' : '' }}>{{ __('For Sale') }}</option>
                         <option value="For Rent" {{ request('purpose') == 'For Rent' ? 'selected' : '' }}>{{ __('For Rent') }}</option>
@@ -106,7 +131,7 @@
                 </div>
 
                 <div class="md:col-span-3">
-                    <select name="status" onchange="this.form.submit()" class="form-input w-full text-xs">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs">
                         <option value="all">{{ __('All Statuses') }}</option>
                         <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>{{ __('Published (Active)') }}</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
@@ -117,7 +142,7 @@
                 </div>
 
                 <div class="md:col-span-2 flex items-center gap-2">
-                    <select name="sort" onchange="this.form.submit()" class="form-input w-full text-xs">
+                    <select name="sort" onchange="this.form.submit()" class="form-select w-full text-xs">
                         <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>{{ __('Newest') }}</option>
                         <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>{{ __('Price: High-Low') }}</option>
                         <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>{{ __('Price: Low-High') }}</option>
@@ -132,7 +157,7 @@
         </div>
 
         {{-- Listing Presentation: Grid Mode --}}
-        <div x-show="viewMode === 'grid'">
+        <div x-show="viewMode === 'grid'" class="cinematic-fade-up cinematic-stagger-3">
             @if($listings->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($listings as $listing)
@@ -150,30 +175,17 @@
                                 {{-- Status Badge --}}
                                 <div class="absolute top-3 left-3 flex items-center gap-1.5">
                                     @if($listing->status === 'published')
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-sm">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                                            {{ __('Published') }}
-                                        </span>
+                                        <x-badge variant="success" dot :uppercase="false">{{ __('Published') }}</x-badge>
                                     @elseif($listing->status === 'draft')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-sm">
-                                            {{ __('Draft') }}
-                                        </span>
+                                        <x-badge variant="warning" :uppercase="false">{{ __('Draft') }}</x-badge>
                                     @elseif($listing->status === 'pending_review')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500 text-white shadow-sm">
-                                            {{ __('In Review') }}
-                                        </span>
+                                        <x-badge variant="info" :uppercase="false">{{ __('In Review') }}</x-badge>
                                     @elseif($listing->status === 'paused')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-subtle text-white shadow-sm">
-                                            {{ __('Paused') }}
-                                        </span>
+                                        <x-badge variant="neutral" :uppercase="false">{{ __('Paused') }}</x-badge>
                                     @elseif($listing->status === 'rejected')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500 text-white shadow-sm">
-                                            {{ __('Rejected') }}
-                                        </span>
+                                        <x-badge variant="error" :uppercase="false">{{ __('Rejected') }}</x-badge>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface0 text-white shadow-sm">
-                                            {{ __(ucfirst($listing->status)) }}
-                                        </span>
+                                        <x-badge variant="neutral" :uppercase="false">{{ __(ucfirst($listing->status)) }}</x-badge>
                                     @endif
 
                                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-sm text-white">
@@ -242,12 +254,10 @@
                                     <x-listing-quality :listing="$listing" compact />
 
                                     <div class="flex items-center gap-1.5">
-                                        {{-- Lifecycle Status / Rejection Explanation Link --}}
                                         <a href="{{ route('dashboard.listings.submission-status', $listing) }}" class="p-1.5 text-muted hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-surface-subtle dark:hover:bg-surface transition-colors" title="View Submission Status & Lifecycle History">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                         </a>
 
-                                        {{-- If Draft or Rejected: Submit for Review --}}
                                         @if(in_array($listing->status, ['draft', 'rejected']))
                                             <a href="{{ route('dashboard.listings.submit', $listing) }}" class="px-2 py-1 text-xs font-bold rounded {{ $listing->status === 'rejected' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 hover:bg-rose-100' : 'bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-400 hover:bg-primary-100' }} transition-colors">
                                                 {{ $listing->status === 'rejected' ? 'Fix & Submit' : 'Submit' }}
@@ -284,103 +294,110 @@
                     @endforeach
                 </div>
             @else
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl p-12 text-center">
-                    <div class="w-16 h-16 mx-auto rounded-full bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    </div>
-                    <h3 class="font-display font-bold text-muted dark:text-white text-lg">{{ __('No Listings Found') }}</h3>
-                    <p class="text-sm text-muted dark:text-muted max-w-md mx-auto mt-1 mb-6">{{ __('No commercial listings match your current filters. Create a new listing to publish your property on the marketplace.') }}</p>
-                    <a href="{{ route('dashboard.listings.create') }}" class="btn btn-primary text-sm">{{ __('Create Your First Listing') }}</a>
-                </div>
+                <x-card padding="p-8">
+                    <x-empty-state
+                        icon="tag"
+                        :title="__('No Listings Found')"
+                        :description="__('No commercial listings match your current filters. Create a new listing to publish your property on the marketplace.')"
+                        :action="route('dashboard.listings.create')"
+                        :actionText="__('Create Your First Listing')"
+                    />
+                </x-card>
             @endif
         </div>
 
         {{-- Listing Presentation: Table Mode --}}
-        <div x-show="viewMode === 'table'" class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl shadow-sm overflow-hidden">
+        <div x-show="viewMode === 'table'" class="table-container cinematic-fade-up cinematic-stagger-3">
             @if($listings->count() > 0)
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-surface dark:bg-surface/60 text-muted dark:text-muted font-semibold uppercase tracking-wider border-b border-warm dark:border-warm">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Property') }}</th>
+                            <th>{{ __('Mode') }}</th>
+                            <th>{{ __('Price') }}</th>
+                            <th>{{ __('Quality Score') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($listings as $listing)
+                            @php
+                                $property = $listing->property;
+                                $coverImg = $property && $property->media->first() 
+                                    ? ($property->media->first()->url ?? $property->media->first()->storage_key) 
+                                    : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
+                            @endphp
                             <tr>
-                                <th class="px-4 py-3">{{ __('Property') }}</th>
-                                <th class="px-4 py-3">{{ __('Mode') }}</th>
-                                <th class="px-4 py-3">{{ __('Price') }}</th>
-                                <th class="px-4 py-3">{{ __('Quality Score') }}</th>
-                                <th class="px-4 py-3">{{ __('Status') }}</th>
-                                <th class="px-4 py-3 text-right">{{ __('Actions') }}</th>
+                                <td>
+                                    <div class="flex items-center gap-3">
+                                        <img src="{{ $coverImg }}" alt="" class="w-12 h-10 rounded-lg object-cover flex-shrink-0">
+                                        <div>
+                                            <a href="{{ route('dashboard.listings.preview', $listing) }}" class="font-semibold text-muted dark:text-white hover:text-primary-600 transition-colors line-clamp-1">
+                                                {{ $property->title ?? 'Untitled Property' }}
+                                            </a>
+                                            <span class="text-xs font-mono text-muted">
+                                                {{ $property->property_code ?? 'PROP' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="font-medium">
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-subtle dark:bg-surface text-muted dark:text-dark-subtle">
+                                        {{ $listing->purpose }}
+                                    </span>
+                                </td>
+                                <td class="font-display font-bold text-muted dark:text-white">
+                                    {{ $listing->formatted_price }}
+                                </td>
+                                <td>
+                                    <x-listing-quality :listing="$listing" compact />
+                                </td>
+                                <td>
+                                    @if($listing->status === 'published')
+                                        <x-badge variant="success" dot :uppercase="false">{{ __('Published') }}</x-badge>
+                                    @elseif($listing->status === 'draft')
+                                        <x-badge variant="warning" :uppercase="false">{{ __('Draft') }}</x-badge>
+                                    @elseif($listing->status === 'pending_review')
+                                        <x-badge variant="info" :uppercase="false">{{ __('In Review') }}</x-badge>
+                                    @elseif($listing->status === 'paused')
+                                        <x-badge variant="neutral" :uppercase="false">{{ __('Paused') }}</x-badge>
+                                    @elseif($listing->status === 'rejected')
+                                        <x-badge variant="error" :uppercase="false">{{ __('Rejected') }}</x-badge>
+                                    @else
+                                        <x-badge variant="neutral" :uppercase="false">{{ ucfirst($listing->status) }}</x-badge>
+                                    @endif
+                                </td>
+                                <td class="text-right">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="{{ route('dashboard.listings.submission-status', $listing) }}" class="p-1.5 text-muted hover:text-blue-600 dark:hover:text-blue-400" title="Lifecycle Status">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        </a>
+                                        <a href="{{ route('dashboard.listings.preview', $listing) }}" class="p-1.5 text-muted hover:text-muted dark:hover:text-muted" title="Preview">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        </a>
+                                        <a href="{{ route('dashboard.listings.edit', $listing) }}" class="p-1.5 text-muted hover:text-muted dark:hover:text-muted" title="Edit">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                        </a>
+                                        <button type="button" @click="deleteModalOpen = true; deleteActionUrl = '{{ route('dashboard.listings.destroy', $listing) }}'; deleteTitle = '{{ addslashes($property->title ?? 'Listing') }}'" class="p-1.5 text-muted hover:text-rose-600" title="Delete">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-warm dark:divide-dark-border text-muted dark:text-dark-subtle">
-                            @foreach($listings as $listing)
-                                @php
-                                    $property = $listing->property;
-                                    $coverImg = $property && $property->media->first() 
-                                        ? ($property->media->first()->url ?? $property->media->first()->storage_key) 
-                                        : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80';
-                                @endphp
-                                <tr class="hover:bg-surface/50 dark:hover:bg-surface/40 transition-colors">
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center gap-3">
-                                            <img src="{{ $coverImg }}" alt="" class="w-12 h-10 rounded-lg object-cover flex-shrink-0">
-                                            <div>
-                                                <a href="{{ route('dashboard.listings.preview', $listing) }}" class="font-semibold text-muted dark:text-white hover:text-primary-600 transition-colors line-clamp-1">
-                                                    {{ $property->title ?? 'Untitled Property' }}
-                                                </a>
-                                                <span class="text-xs font-mono text-muted">
-                                                    {{ $property->property_code ?? 'PROP' }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3 font-medium">
-                                        <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-subtle dark:bg-surface text-muted dark:text-dark-subtle">
-                                            {{ $listing->purpose }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 font-display font-bold text-muted dark:text-white">
-                                        {{ $listing->formatted_price }}
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <x-listing-quality :listing="$listing" compact />
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        @if($listing->status === 'published')
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Published
-                                            </span>
-                                        @elseif($listing->status === 'draft')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400">{{ __('Draft') }}</span>
-                                        @elseif($listing->status === 'pending_review')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400">{{ __('In Review') }}</span>
-                                        @elseif($listing->status === 'paused')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-surface-subtle text-muted dark:bg-surface dark:text-dark-subtle">{{ __('Paused') }}</span>
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400">
-                                                {{ ucfirst($listing->status) }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-3 text-right">
-                                        <div class="inline-flex items-center gap-1.5">
-                                            <a href="{{ route('dashboard.listings.submission-status', $listing) }}" class="p-1.5 text-muted hover:text-blue-600 dark:hover:text-blue-400" title="Lifecycle Status">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                            </a>
-                                            <a href="{{ route('dashboard.listings.preview', $listing) }}" class="p-1.5 text-muted hover:text-muted dark:hover:text-muted" title="Preview">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                            </a>
-                                            <a href="{{ route('dashboard.listings.edit', $listing) }}" class="p-1.5 text-muted hover:text-muted dark:hover:text-muted" title="Edit">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                            </a>
-                                            <button type="button" @click="deleteModalOpen = true; deleteActionUrl = '{{ route('dashboard.listings.destroy', $listing) }}'; deleteTitle = '{{ addslashes($property->title ?? 'Listing') }}'" class="p-1.5 text-muted hover:text-rose-600" title="Delete">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
+            @else
+                <x-card padding="p-8">
+                    <x-empty-state
+                        icon="tag"
+                        :title="__('No Listings Found')"
+                        :description="__('No commercial listings match your current filters.')"
+                        :action="route('dashboard.listings.create')"
+                        :actionText="__('Create Listing')"
+                    />
+                </x-card>
             @endif
         </div>
 
@@ -393,7 +410,7 @@
 
         {{-- Delete Confirmation Modal --}}
         <div x-show="deleteModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div @click.away="deleteModalOpen = false" class="bg-white dark:bg-[#1E293B] rounded-2xl max-w-md w-full p-6 shadow-xl border border-warm dark:border-warm space-y-4">
+            <div @click.away="deleteModalOpen = false" class="modal-content max-w-md w-full p-6 space-y-4">
                 <div class="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>

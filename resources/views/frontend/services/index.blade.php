@@ -2,13 +2,18 @@
     <x-slot name="page-title">{{ __('Professional Services') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Professional Services') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Find and hire verified lawyers, surveyors, and architects.') }}</p>
-            </div>
-            <a href="{{ route('dashboard.services.dashboard') }}" class="btn btn-secondary border-primary-200 text-primary-700 hover:bg-primary-50">{{ __('Switch to Provider View') }}</a>
-        </div>
+        <x-page-header
+            :title="__('Professional Services')"
+            :description="__('Find and hire verified real estate lawyers, certified land surveyors, architects, and engineering consultants.')"
+            icon="users"
+            badge="Marketplace"
+        >
+            <x-slot:actions>
+                <a href="{{ route('dashboard.services.dashboard') }}" class="btn btn-secondary border-orange-200 text-[#C2410C] hover:bg-orange-50 dark:hover:bg-orange-950/30 font-semibold shadow-xs">
+                    {{ __('Switch to Provider View') }}
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         <!-- Search & Categories -->
         <div class="mb-8 space-y-4">

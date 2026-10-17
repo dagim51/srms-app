@@ -2,13 +2,15 @@
     <x-slot name="page-title">{{ __('Unit Inventory') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Sales & Inventory') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage unit statuses, reservations, and sales.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Export Report') }}</button>
-        </div>
+        <x-page-header
+            title="Sales & Inventory"
+            description="Manage unit statuses, reservations, and sales."
+            icon="building"
+            badge="Inventory">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Export Report') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.developer.sales.partials.tabs')
 

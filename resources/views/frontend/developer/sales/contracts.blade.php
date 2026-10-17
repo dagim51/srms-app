@@ -2,13 +2,15 @@
     <x-slot name="page-title">{{ __('Contracts') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Sales Contracts') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage generated contracts and their statuses.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Generate Contract') }}</button>
-        </div>
+        <x-page-header
+            title="Sales Contracts"
+            description="Manage generated contracts, unit agreements, and signature statuses."
+            icon="document"
+            badge="Contracts">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Generate Contract') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.developer.sales.partials.tabs')
 

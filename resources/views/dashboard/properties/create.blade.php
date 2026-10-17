@@ -3,12 +3,20 @@
 
     @section('page-title', __('Add Property'))
     @section('breadcrumb')
-        <a href="/dashboard/properties" class="hover:text-muted dark:hover:text-muted">{{ __('Properties') }}</a>
-        <span class="mx-1.5 text-muted dark:text-muted">/</span>
-        <span class="text-muted dark:text-dark-subtle">{{ __('Add New') }}</span>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => '/dashboard'],
+            ['label' => __('Properties'), 'url' => '/dashboard/properties'],
+            ['label' => __('Add New')]
+        ]" />
     @endsection
 
     <div class="max-w-4xl mx-auto page-enter pb-12">
+        <x-page-header
+            title="Register New Property"
+            description="Register a new real estate property with PostGIS coordinates, category specifications, amenities, and title verification documents."
+            icon="building"
+            badge="Registration" />
+
         <form action="/dashboard/properties" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
@@ -28,7 +36,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <x-label for="type" required>{{ __('Property Type') }}</x-label>
-                            <select id="type" name="type" class="form-input w-full">
+                            <select id="type" name="type" class="form-select w-full">
                                 <option value="">{{ __('Select type...') }}</option>
                                 <option value="apartment">{{ __('Apartment') }}</option>
                                 <option value="villa">{{ __('Villa') }}</option>
@@ -39,7 +47,7 @@
                         </div>
                         <div>
                             <x-label for="status" required>{{ __('Initial Status') }}</x-label>
-                            <select id="status" name="status" class="form-input w-full">
+                            <select id="status" name="status" class="form-select w-full">
                                 <option value="draft">{{ __('Draft') }}</option>
                                 <option value="available">{{ __('Available') }}</option>
                                 <option value="under_construction">{{ __('Under Construction') }}</option>

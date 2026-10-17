@@ -2,15 +2,12 @@
     <x-slot name="page-title">{{ __('AI Search') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight flex items-center gap-3">
-                <span class="text-primary-600">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                </span>
-                AI Property Search
-            </h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Search for properties using natural language. Just type what you\'re looking for.') }}</p>
-        </div>
+        <x-page-header
+            :title="__('AI Property Search')"
+            :description="__('Search for properties using conversational natural language, semantic queries, and automated preference extraction.')"
+            icon="search"
+            badge="Semantic Search"
+        />
 
         @include('frontend.ai.partials.tabs')
 

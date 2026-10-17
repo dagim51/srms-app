@@ -1,52 +1,54 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Hosting & Accommodations') }}</x-slot>
     <x-slot name="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-        <span>/</span>
-        <span class="text-muted dark:text-white font-medium">{{ __('Hosting') }}</span>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('Hosting')],
+        ]" />
     </x-slot>
 
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold font-display text-muted dark:text-white">{{ __('Your Accommodations') }}</h2>
-                <p class="text-sm text-muted mt-1">{{ __('Manage your properties available for short-term stays and bookings.') }}</p>
-            </div>
-            <a href="{{ route('dashboard.accommodations.create') }}" class="btn btn-primary shadow-md flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-                {{ __('Set up new Accommodation') }}
-            </a>
-        </div>
+        <x-page-header
+            title="Short-Stay Accommodations"
+            description="Manage serviced apartments, guest rooms, night rates, and hospitality occupancy settings."
+            icon="key"
+            badge="Accommodations">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.accommodations.create') }}" class="btn btn-primary shadow-sm shadow-orange-500/20 flex items-center gap-2 text-xs py-2 px-3.5">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    {{ __('Set up new Accommodation') }}
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         @if(session('success'))
-            <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
+            <x-alert type="success">
                 {{ session('success') }}
-            </div>
+            </x-alert>
         @endif
 
         @if($accommodations->isEmpty())
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-12 text-center">
-                <div class="w-16 h-16 bg-surface dark:bg-surface rounded-full flex items-center justify-center mx-auto mb-4 text-primary-500">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                </div>
-                <h3 class="text-lg font-bold text-muted dark:text-white mb-2">{{ __('No Accommodations Set Up') }}</h3>
-                <p class="text-muted max-w-sm mx-auto mb-6 text-sm">{{ __("You haven't converted any of your properties into bookable accommodations yet.") }}</p>
-                <a href="{{ route('dashboard.accommodations.create') }}" class="btn btn-primary shadow-md">{{ __('Get Started') }}</a>
-            </div>
+            <x-empty-state
+                icon="home"
+                :title="__('No Accommodations Set Up')"
+                :description="__('You haven\'t converted any of your properties into bookable accommodations yet.')"
+                size="lg">
+                <x-slot:actions>
+                    <a href="{{ route('dashboard.accommodations.create') }}" class="btn btn-primary shadow-md">{{ __('Get Started') }}</a>
+                </x-slot:actions>
+            </x-empty-state>
         @else
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 cinematic-fade-up cinematic-stagger-2">
                 @foreach($accommodations as $acc)
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden flex flex-col">
+                    <div class="card card-hover overflow-hidden flex flex-col">
                         @if($acc->property && $acc->property->media->count())
                             @php $primaryImg = $acc->property->media->first()->url ?? $acc->property->media->first()->storage_key; @endphp
                             <div class="h-48 w-full relative">
                                 <img src="{{ $primaryImg }}" alt="{{ $acc->property->title }}" class="w-full h-full object-cover">
                                 <div class="absolute top-3 right-3">
-                                    @if($acc->is_active)
-                                        <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 shadow-sm backdrop-blur-md">{{ __('Active') }}</span>
-                                    @else
-                                        <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-surface-subtle text-muted shadow-sm backdrop-blur-md">{{ __('Inactive') }}</span>
-                                    @endif
+                                    <x-badge :variant="$acc->is_active ? 'success' : 'neutral'" size="xs" dot>
+                                        {{ $acc->is_active ? __('Active') : __('Inactive') }}
+                                    </x-badge>
                                 </div>
                             </div>
                         @else

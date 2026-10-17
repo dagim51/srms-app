@@ -2,13 +2,18 @@
     <x-slot name="page-title">{{ __('Provider Dashboard') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Provider Dashboard') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage your service requests and monitor your performance.') }}</p>
-            </div>
-            <a href="{{ route('dashboard.services.index') }}" class="btn btn-secondary border-primary-200 text-primary-700 hover:bg-primary-50">{{ __('Back to Marketplace') }}</a>
-        </div>
+        <x-page-header
+            :title="__('Provider Dashboard')"
+            :description="__('Manage client service requests, track project milestones, and monitor professional performance.')"
+            icon="users"
+            badge="Provider"
+        >
+            <x-slot:actions>
+                <a href="{{ route('dashboard.services.index') }}" class="btn btn-secondary border-orange-200 text-[#C2410C] hover:bg-orange-50 dark:hover:bg-orange-950/30 font-semibold shadow-xs">
+                    {{ __('Back to Marketplace') }}
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         <!-- Performance Stats -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">

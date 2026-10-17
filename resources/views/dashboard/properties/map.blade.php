@@ -19,14 +19,14 @@
             z-index: 1000 !important;
         }
         .gis-marker-bubble {
-            background-color: #F97316;
+            background-color: #C2410C;
             color: #FFFFFF;
             font-weight: 700;
             font-size: 11px;
             padding: 3px 8px;
             border-radius: 9999px;
             border: 2px solid #FFFFFF;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4), 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(194, 65, 12, 0.4), 0 2px 4px rgba(0,0,0,0.2);
             white-space: nowrap;
             cursor: pointer;
             text-align: center;
@@ -36,9 +36,9 @@
             line-height: 1.2;
         }
         .gis-marker-bubble.active-bubble {
-            background-color: #EA580C;
+            background-color: #9A3412;
             border-color: #FED7AA;
-            box-shadow: 0 6px 18px rgba(234, 88, 12, 0.6);
+            box-shadow: 0 6px 18px rgba(154, 52, 18, 0.6);
         }
         .leaflet-popup-content-wrapper {
             border-radius: 1rem;
@@ -63,8 +63,15 @@
 
     <div x-data="gisMapExplorer" class="space-y-4 font-sans h-[calc(100vh-8rem)] flex flex-col">
 
+        <x-page-header
+            title="GIS Map Explorer"
+            description="Interactive spatial intelligence, live radius search, and geographic property distribution across Ethiopian urban centers."
+            icon="map"
+            badge="GIS Spatial"
+            class="mb-0 flex-shrink-0" />
+
         {{-- Top Header & Preset Filters --}}
-        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-[#111827] p-3.5 rounded-2xl border border-warm dark:border-[#273244] shadow-xs flex-shrink-0">
+        <div class="cinematic-fade-up cinematic-stagger-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-[#111827] p-3.5 rounded-2xl border border-warm dark:border-[#273244] shadow-xs flex-shrink-0">
             {{-- Quick Presets --}}
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-thin">
                 <span class="text-xs font-semibold text-muted dark:text-muted mr-1 flex-shrink-0">Urban Areas:</span>
@@ -126,7 +133,7 @@
         </div>
 
         {{-- Main Interactive Explorer Body --}}
-        <div class="flex-1 min-h-0 flex flex-col lg:flex-row gap-4">
+        <div class="cinematic-fade-up cinematic-stagger-2 flex-1 min-h-0 flex flex-col lg:flex-row gap-4">
 
             {{-- Left: Leaflet Interactive Map Viewport --}}
             <div 

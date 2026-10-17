@@ -85,6 +85,13 @@
             }
          }">
 
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Publish New Listing"
+            description="Publish inventory properties to the marketplace with purpose types, pricing tiers, and inspection dates."
+            icon="tag"
+            badge="Publisher" />
+
         {{-- Step Navigation Indicator --}}
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 shadow-sm mb-6">
             <div class="flex items-center justify-between mb-3">
@@ -120,11 +127,11 @@
                 @foreach($steps as $num => $label)
                     <button type="button" @click="setStep({{ $num }})" 
                             :class="{ 
-                                'bg-primary-500 text-white font-bold shadow-sm': step === {{ $num }},
+                                'bg-[#C2410C] text-white font-bold shadow-md shadow-orange-500/20': step === {{ $num }},
                                 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 font-medium': step > {{ $num }},
-                                'bg-surface dark:bg-surface/60 text-muted dark:text-muted hover:bg-surface-subtle': step < {{ $num }}
+                                'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700': step < {{ $num }}
                             }"
-                            class="py-2 px-1 rounded-lg transition-all truncate text-xs">
+                            class="py-2.5 px-2 rounded-xl transition-all truncate text-xs min-h-[44px] flex items-center justify-center cursor-pointer">
                         {{ $label }}
                     </button>
                 @endforeach

@@ -1,14 +1,71 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Offers & Negotiations') }}</x-slot>
-    <x-slot name="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-        <span>/</span>
-        <span class="text-muted dark:text-white font-medium">{{ __('Offers') }}</span>
-    </x-slot>
+    <x-slot:breadcrumb>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('Offers')]
+        ]" />
+    </x-slot:breadcrumb>
 
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold font-display text-muted dark:text-white">{{ __('Active Offers') }}</h2>
+        <x-page-header
+            title="Offers & Negotiations"
+            description="Track formal purchase bids, lease offers, counter-negotiations, and contractual deposit milestones."
+            icon="document"
+            badge="Negotiations" />
+
+        {{-- Top KPI Stat Cards --}}
+        @php
+            $totalOffers = $offers->count();
+            $pendingOffers = $offers->where('status', 'pending')->count();
+            $acceptedOffers = $offers->where('status', 'accepted')->count();
+            $counteredOffers = $offers->where('status', 'countered')->count();
+        @endphp
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="cinematic-fade-up cinematic-stagger-1">
+                <x-card-stat
+                    :label="__('Total Offers')"
+                    :value="$totalOffers"
+                    iconColor="orange"
+                    icon="banknotes"
+                    :badge="__('Pipeline')"
+                    badgeVariant="brand"
+                    caption="{{ __('Active bids & offers') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-2">
+                <x-card-stat
+                    :label="__('Pending Decision')"
+                    :value="$pendingOffers"
+                    iconColor="amber"
+                    icon="clock"
+                    :badge="__('Action Req')"
+                    badgeVariant="warning"
+                    caption="{{ __('Awaiting seller response') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-3">
+                <x-card-stat
+                    :label="__('Accepted Bids')"
+                    :value="$acceptedOffers"
+                    iconColor="emerald"
+                    icon="check"
+                    :badge="__('Agreed')"
+                    badgeVariant="success"
+                    caption="{{ __('Proceeding to escrow') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-4">
+                <x-card-stat
+                    :label="__('Counter-Offers')"
+                    :value="$counteredOffers"
+                    iconColor="blue"
+                    icon="arrow-trending-up"
+                    :badge="__('Countered')"
+                    badgeVariant="info"
+                    caption="{{ __('Negotiation active') }}"
+                />
+            </div>
         </div>
 
         @if(session('success'))
@@ -18,16 +75,15 @@
         @endif
 
         @if($offers->isEmpty())
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-12 text-center">
-                <div class="w-16 h-16 bg-surface dark:bg-surface rounded-full flex items-center justify-center mx-auto mb-4 text-primary-500">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <h3 class="text-lg font-bold text-muted dark:text-white mb-2">{{ __('No active offers') }}</h3>
-                <p class="text-muted max-w-sm mx-auto mb-6 text-sm">{{ __("You haven't made or received any offers yet. Explore the marketplace to find your dream property.") }}</p>
-                <a href="{{ route('properties.index') }}" class="btn btn-primary shadow-md">{{ __('Explore Properties') }}</a>
-            </div>
+            <x-empty-state
+                icon="document"
+                title="{{ __('No active offers') }}"
+                description="{{ __('You haven\'t made or received any offers yet. Explore the marketplace to find your dream property.') }}"
+                action="{{ route('properties.index') }}"
+                actionText="{{ __('Explore Properties') }}"
+            />
         @else
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 cinematic-fade-up cinematic-stagger-2">
                 @foreach($offers as $offer)
                     @php
                         $isOwner = $offer->listing->owner_actor_id === auth()->id();
@@ -49,13 +105,13 @@
                                             (!$isOwner && $current->buyer_id === auth()->id() && $current->status === 'pending');
                     @endphp
                     
-                    <a href="{{ route('dashboard.offers.show', $offer) }}" class="block bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden {{ $isActionRequired ? 'ring-2 ring-primary-500' : '' }}">
+                    <a href="{{ route('dashboard.offers.show', $offer) }}" class="card card-hover block group overflow-hidden {{ $isActionRequired ? 'border-primary-500 ring-2 ring-primary-500/20' : '' }}">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-2">
-                                    <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider {{ $badgeColor }}">
+                                    <x-badge variant="{{ $current->status === 'accepted' ? 'success' : ($current->status === 'pending' ? 'warning' : ($current->status === 'rejected' ? 'error' : 'info')) }}">
                                         {{ __($current->status) }}
-                                    </span>
+                                    </x-badge>
                                     @if($isActionRequired)
                                         <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
                                     @endif

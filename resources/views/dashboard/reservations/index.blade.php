@@ -1,25 +1,73 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('My Reservations') }}</x-slot>
-    <x-slot name="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-        <span>/</span>
-        <span class="text-muted dark:text-white font-medium">{{ __('Reservations') }}</span>
-    </x-slot>
+    <x-slot:breadcrumb>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('Reservations')]
+        ]" />
+    </x-slot:breadcrumb>
 
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold font-display text-muted dark:text-white">{{ __('My Reservations') }}</h2>
+        <x-page-header
+            title="Marketplace Reservations"
+            description="Oversee short-stay accommodation bookings, check-in schedules, and guest reservation statuses."
+            icon="key"
+            badge="Reservations" />
+
+        {{-- Top KPI Stat Cards --}}
+        @php
+            $totalRes = $reservations->count();
+            $confirmedRes = $reservations->where('status', 'confirmed')->count();
+            $pendingRes = $reservations->where('status', 'pending')->count();
+            $expiredRes = $reservations->where('status', 'expired')->count();
+        @endphp
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <x-card-stat
+                :label="__('Total Bookings')"
+                :value="$totalRes"
+                iconColor="orange"
+                icon="key"
+                :badge="__('Stays')"
+                badgeVariant="brand"
+                caption="{{ __('All reservation records') }}"
+            />
+            <x-card-stat
+                :label="__('Confirmed')"
+                :value="$confirmedRes"
+                iconColor="emerald"
+                icon="check"
+                :badge="__('Active')"
+                badgeVariant="success"
+                caption="{{ __('Secured short stays') }}"
+            />
+            <x-card-stat
+                :label="__('Pending Payment')"
+                :value="$pendingRes"
+                iconColor="amber"
+                icon="clock"
+                :badge="__('Pending')"
+                badgeVariant="warning"
+                caption="{{ __('Awaiting payment lock') }}"
+            />
+            <x-card-stat
+                :label="__('Expired / Past')"
+                :value="$expiredRes"
+                iconColor="rose"
+                icon="sparkles"
+                :badge="__('Released')"
+                badgeVariant="neutral"
+                caption="{{ __('Expired hold windows') }}"
+            />
         </div>
 
         @if($reservations->isEmpty())
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-12 text-center">
-                <div class="w-16 h-16 bg-surface dark:bg-surface rounded-full flex items-center justify-center mx-auto mb-4 text-primary-500">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                </div>
-                <h3 class="text-lg font-bold text-muted dark:text-white mb-2">{{ __('No active reservations') }}</h3>
-                <p class="text-muted max-w-sm mx-auto mb-6 text-sm">{{ __("You haven't reserved any properties yet. Secure your dream property before it's gone.") }}</p>
-                <a href="{{ route('properties.index') }}" class="btn btn-primary shadow-md">{{ __('Explore Properties') }}</a>
-            </div>
+            <x-empty-state
+                icon="key"
+                title="{{ __('No active reservations') }}"
+                description="{{ __('You haven\'t reserved any properties yet. Secure your dream property before it\'s gone.') }}"
+                action="{{ route('properties.index') }}"
+                actionText="{{ __('Explore Properties') }}"
+            />
         @else
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 @foreach($reservations as $reservation)
@@ -51,13 +99,13 @@
                         }
                     @endphp
                     
-                    <a href="{{ route('dashboard.reservations.show', $reservation) }}" class="block bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm hover:shadow-md transition-all group overflow-hidden {{ $isPending ? 'ring-2 ring-primary-500' : '' }}">
+                    <a href="{{ route('dashboard.reservations.show', $reservation) }}" class="card card-hover block group overflow-hidden {{ $isPending ? 'border-primary-500 ring-2 ring-primary-500/20' : '' }}">
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-2">
-                                    <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider {{ $badgeColor }}">
+                                    <x-badge variant="{{ $reservation->status === 'confirmed' ? 'success' : ($reservation->status === 'pending' ? 'warning' : ($reservation->status === 'expired' ? 'error' : 'neutral')) }}">
                                         {{ __($reservation->status) }}
-                                    </span>
+                                    </x-badge>
                                     @if($isPending)
                                         <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
                                     @endif

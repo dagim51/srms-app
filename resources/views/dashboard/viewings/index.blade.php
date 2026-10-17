@@ -1,20 +1,77 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('My Viewings') }}</x-slot>
-    <x-slot name="breadcrumb">
-        <a href="{{ route('dashboard') }}" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-        <span>/</span>
-        <span class="text-muted dark:text-white font-medium">{{ __('Viewings') }}</span>
-    </x-slot>
+    <x-slot:breadcrumb>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => route('dashboard')],
+            ['label' => __('Viewings')]
+        ]" />
+    </x-slot:breadcrumb>
 
     <div class="space-y-6">
-        <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold font-display text-muted dark:text-white">{{ __('Scheduled Viewings') }}</h2>
-            <div class="flex items-center gap-2">
-                {{-- Toggle View (Calendar / List) --}}
-                <div class="bg-surface-subtle dark:bg-[#1E293B] p-1 rounded-xl flex">
-                    <button class="px-3 py-1.5 rounded-lg text-sm font-medium bg-white dark:bg-surface shadow-sm text-muted dark:text-white">{{ __('List') }}</button>
-                    <button class="px-3 py-1.5 rounded-lg text-sm font-medium text-muted hover:text-muted dark:hover:text-white">{{ __('Calendar') }}</button>
+        <x-page-header
+            title="Property Viewings"
+            description="Coordinate and manage scheduled on-site appointments, virtual tours, and viewing feedback."
+            icon="calendar"
+            badge="Appointments">
+            <x-slot:actions>
+                <div class="bg-surface-subtle dark:bg-[#1E293B] p-1 rounded-xl flex border border-slate-200/80 dark:border-slate-800">
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-surface shadow-xs text-slate-800 dark:text-white">{{ __('List') }}</button>
+                    <button class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white">{{ __('Calendar') }}</button>
                 </div>
+            </x-slot:actions>
+        </x-page-header>
+
+        {{-- Top KPI Stat Cards --}}
+        @php
+            $totalViewings = $viewings->count();
+            $confirmedViewings = $viewings->where('status', 'confirmed')->count();
+            $requestedViewings = $viewings->where('status', 'requested')->count();
+            $completedViewings = $viewings->where('status', 'completed')->count();
+        @endphp
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="cinematic-fade-up cinematic-stagger-1">
+                <x-card-stat
+                    :label="__('Total Appointments')"
+                    :value="$totalViewings"
+                    iconColor="orange"
+                    icon="calendar"
+                    :badge="__('Schedule')"
+                    badgeVariant="brand"
+                    caption="{{ __('All property viewing requests') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-2">
+                <x-card-stat
+                    :label="__('Confirmed')"
+                    :value="$confirmedViewings"
+                    iconColor="emerald"
+                    icon="check"
+                    :badge="__('Confirmed')"
+                    badgeVariant="success"
+                    caption="{{ __('Buyer & agent confirmed') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-3">
+                <x-card-stat
+                    :label="__('Pending Requests')"
+                    :value="$requestedViewings"
+                    iconColor="amber"
+                    icon="clock"
+                    :badge="__('Pending')"
+                    badgeVariant="warning"
+                    caption="{{ __('Awaiting scheduling response') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-4">
+                <x-card-stat
+                    :label="__('Completed Tours')"
+                    :value="$completedViewings"
+                    iconColor="blue"
+                    icon="eye"
+                    :badge="__('Done')"
+                    badgeVariant="info"
+                    caption="{{ __('Past verified appointments') }}"
+                />
             </div>
         </div>
 
@@ -25,16 +82,15 @@
         @endif
 
         @if($viewings->isEmpty())
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-12 text-center">
-                <div class="w-16 h-16 bg-surface dark:bg-surface rounded-full flex items-center justify-center mx-auto mb-4 text-primary-500">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                </div>
-                <h3 class="text-lg font-bold text-muted dark:text-white mb-2">{{ __('No upcoming viewings') }}</h3>
-                <p class="text-muted max-w-sm mx-auto mb-6 text-sm">{{ __('When you request to view a property or someone requests to view yours, they will appear here.') }}</p>
-                <a href="{{ route('properties.index') }}" class="btn btn-primary shadow-md">{{ __('Explore Properties') }}</a>
-            </div>
+            <x-empty-state
+                icon="calendar"
+                title="{{ __('No upcoming viewings') }}"
+                description="{{ __('When you request to view a property or someone requests to view yours, they will appear here.') }}"
+                action="{{ route('properties.index') }}"
+                actionText="{{ __('Explore Properties') }}"
+            />
         @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cinematic-fade-up cinematic-stagger-2">
                 @foreach($viewings as $viewing)
                     @php
                         $isAgent = $viewing->agent_id === auth()->id();
@@ -48,15 +104,15 @@
                         $badgeColor = $statusColors[$viewing->status] ?? $statusColors['requested'];
                     @endphp
                     
-                    <a href="{{ route('dashboard.viewings.show', $viewing) }}" class="block bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm hover:shadow-md transition-shadow group overflow-hidden">
+                    <a href="{{ route('dashboard.viewings.show', $viewing) }}" class="card card-hover block group overflow-hidden">
                         <div class="h-2 w-full {{ $viewing->status === 'confirmed' ? 'bg-emerald-500' : ($viewing->status === 'requested' ? 'bg-amber-500' : 'bg-surface-subtle dark:bg-surface') }}"></div>
                         
                         <div class="p-5">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
-                                    <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider {{ $badgeColor }}">
+                                    <x-badge variant="{{ $viewing->status === 'confirmed' ? 'success' : ($viewing->status === 'requested' ? 'warning' : ($viewing->status === 'cancelled' ? 'error' : 'neutral')) }}">
                                         {{ __($viewing->status) }}
-                                    </span>
+                                    </x-badge>
                                 </div>
                                 <div class="text-right">
                                     <div class="text-2xl font-bold font-display text-muted dark:text-white leading-none">{{ $viewing->scheduled_at->format('d') }}</div>

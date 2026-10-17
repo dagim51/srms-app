@@ -2,10 +2,12 @@
     <x-slot name="page-title">{{ __('Portfolio View') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Portfolio Overview') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Track the performance and equity of your real estate assets.') }}</p>
-        </div>
+        <x-page-header
+            :title="__('Portfolio Overview')"
+            :description="__('Track overall performance, unrealized equity, cash flows, and capital appreciation across your property portfolio.')"
+            icon="chart"
+            badge="Asset Portfolio"
+        />
 
         @include('frontend.intelligence.partials.tabs')
 

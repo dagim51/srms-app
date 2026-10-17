@@ -2,15 +2,12 @@
     <x-slot name="page-title">{{ __('Listing Assistant') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight flex items-center gap-3">
-                <span class="text-primary-600">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                </span>
-                AI Listing Assistant
-            </h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Generate compelling property descriptions instantly.') }}</p>
-        </div>
+        <x-page-header
+            :title="__('AI Listing Assistant')"
+            :description="__('Generate compelling marketing copy, amenity highlights, and bilingual property descriptions in seconds.')"
+            icon="sparkles"
+            badge="AI Powered"
+        />
 
         @include('frontend.ai.partials.tabs')
 

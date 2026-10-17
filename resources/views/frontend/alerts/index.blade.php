@@ -2,13 +2,19 @@
     <x-slot name="page-title">{{ __('Saved Searches & Alerts') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Saved Searches & Alerts') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Never miss a matching property or price drop.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Create Alert') }}</button>
-        </div>
+        <x-page-header
+            :title="__('Saved Searches & Alerts')"
+            :description="__('Configure automated property watchlists, instant notifications, and market price-drop monitors.')"
+            icon="sparkles"
+            badge="Watchlists"
+        >
+            <x-slot:actions>
+                <button class="btn btn-primary shadow-xs hover:shadow transition-all inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    <span>{{ __('Create Alert') }}</span>
+                </button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.alerts.partials.tabs')
 

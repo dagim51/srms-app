@@ -1,15 +1,18 @@
 <x-layouts.dashboard :title="__('Developer Projects')">
     <div class="max-w-7xl mx-auto space-y-6">
-        <div class="flex justify-between items-center pb-2">
-            <div>
-                <p class="text-sm font-semibold text-muted dark:text-dark-subtle">{{ __('Registered Developments') }}</p>
-                <p class="text-xs text-muted dark:text-muted">{{ __('Manage towers, construction phases, and unit inventory.') }}</p>
-            </div>
-            <button class="btn btn-primary btn-sm">
-                <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                {{ __('Add Project') }}
-            </button>
-        </div>
+        <x-page-header
+            :title="__('Developer Projects')"
+            :description="__('Manage multi-unit residential developments, tower phases, sales inventory, and construction milestones.')"
+            icon="building"
+            badge="Developments"
+        >
+            <x-slot:actions>
+                <button class="btn btn-primary shadow-xs hover:shadow transition-all inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                    <span>{{ __('Add Project') }}</span>
+                </button>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($projects as $project)

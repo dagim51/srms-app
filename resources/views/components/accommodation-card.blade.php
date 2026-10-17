@@ -1,10 +1,9 @@
 @props(['accommodation', 'showPrice' => true])
 
 <div 
-    class="group relative bg-white dark:bg-[#0D1322] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+    class="group relative bg-white dark:bg-[#0D1322] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden rounded-xl shadow-sm transition-transform duration-220 hover:-translate-y-4"
     x-data="{ favorite: false }"
     @click.outside="favorite = false"
->
     {{-- Image --}}
     <div class="relative aspect-[4/3] overflow-hidden">
         <img 
@@ -63,7 +62,7 @@
         </div>
 
         {{-- Title & Location --}}
-        <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+        <h3 class="font-bold text-slate-900 dark:text-white text-lg leading-tight line-clamp-2">
             {{ $accommodation->property->title }}
         </h3>
         <div class="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">

@@ -2,10 +2,12 @@
     <x-slot name="page-title">{{ __('Investment Calculators') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Investment Calculators') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Evaluate mortgages and investment metrics for real estate assets.') }}</p>
-        </div>
+        <x-page-header
+            :title="__('Investment Calculators')"
+            :description="__('Evaluate mortgages, rental yields, cap rates, and financing feasibility for real estate investments.')"
+            icon="chart"
+            badge="Financial Calculators"
+        />
 
         @include('frontend.intelligence.partials.tabs')
 

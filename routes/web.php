@@ -71,9 +71,8 @@ Route::post('/logout', [\App\Http\Controllers\Web\AuthController::class, 'logout
 Route::middleware('auth')->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Web\DashboardWebController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/analytics-data', [\App\Http\Controllers\Web\DashboardWebController::class, 'data'])->name('dashboard.analytics.data');
 
     // Phase 15: Favorites & Collections UI
     Route::get('/dashboard/favorites', [\App\Http\Controllers\Web\FavoriteWebController::class, 'index'])->name('dashboard.favorites.index');
@@ -189,6 +188,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/sales/payment-plans', [\App\Http\Controllers\Web\DeveloperSalesWebController::class, 'paymentPlans'])->name('dashboard.sales.payment_plans');
     Route::get('/dashboard/sales/contracts', [\App\Http\Controllers\Web\DeveloperSalesWebController::class, 'contracts'])->name('dashboard.sales.contracts');
     Route::get('/dashboard/sales/handovers', [\App\Http\Controllers\Web\DeveloperSalesWebController::class, 'handovers'])->name('dashboard.sales.handovers');
+
+    // Transactions & Deals Pipeline UI
+    Route::get('/dashboard/transactions', [\App\Http\Controllers\Web\TransactionWebController::class, 'index'])->name('dashboard.transactions');
+    Route::get('/dashboard/transactions/{id}', [\App\Http\Controllers\Web\TransactionWebController::class, 'show'])->name('dashboard.transactions.show');
 
     // Phase 30: Rental & Lease Management UI
     Route::get('/dashboard/rental', [\App\Http\Controllers\Web\RentalWebController::class, 'index'])->name('dashboard.rental.index');

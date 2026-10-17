@@ -104,47 +104,34 @@
              x-transition:leave="transition ease-in duration-[180ms]"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-2 scale-[0.98]"
-             class="fixed bottom-6 right-6 z-50 bg-surface text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-warm text-sm font-medium"
+             class="fixed bottom-6 right-6 z-50 bg-slate-900 dark:bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700/80 text-sm font-medium"
              x-cloak>
-            <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center text-white flex-shrink-0">
+            <div class="w-6 h-6 rounded-full bg-[#C2410C] flex items-center justify-center text-white flex-shrink-0">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
             </div>
             <span x-text="toastMessage"></span>
         </div>
 
-        {{-- Page Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-warm dark:border-warm pb-5">
-            <div>
-                <nav class="flex items-center gap-2 text-xs text-muted mb-1">
-                    <a href="/dashboard" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-                    <span>/</span>
-                    <span class="text-muted dark:text-white font-medium">{{ __('Favorites') }}</span>
-                </nav>
-                <h1 class="text-2xl sm:text-3xl font-display font-extrabold text-muted dark:text-white tracking-tight flex items-center gap-3">
-                    <span>{{ __('Saved Favorites') }}</span>
-                    <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40">
-                        {{ $favorites->total() }} {{ __('Properties') }}
-                    </span>
-                </h1>
-                <p class="text-xs sm:text-sm text-muted dark:text-muted mt-1">
-                    {{ __('Your personal shortlist of properties across Addis Ababa and regional Ethiopia.') }}
-                </p>
-            </div>
-
-            <div class="flex items-center gap-2">
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Saved Properties"
+            description="Your personal catalog of bookmarked properties, custom watchlists, and price fluctuation tracking."
+            icon="heart"
+            badge="Favorites">
+            <x-slot:actions>
                 <a href="{{ route('dashboard.collections.index') }}" class="btn btn-secondary text-xs flex items-center gap-2" id="manage-collections-btn">
-                    <svg class="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121 12v.75m-8.625-1.5v3.75m-3.75-3.75v3.75m6-3.75v3.75M3 18.75V18a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 18v.75" /></svg>
+                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121 12v.75m-8.625-1.5v3.75m-3.75-3.75v3.75m6-3.75v3.75M3 18.75V18a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 18v.75" /></svg>
                     <span>{{ __('My Collections') }} ({{ $userCollections->count() }})</span>
                 </a>
-                <a href="{{ route('search') }}" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm" id="search-more-favorites-btn">
+                <a href="{{ route('search') }}" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm shadow-orange-500/20" id="search-more-favorites-btn">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                     <span>{{ __('Explore More') }}</span>
                 </a>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         {{-- Search & Filter Controls Bar --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="cinematic-fade-up cinematic-stagger-1 bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
             <form action="{{ route('dashboard.favorites.index') }}" method="GET" class="flex-1 w-full flex flex-col sm:flex-row items-center gap-2.5">
                 {{-- Search Input --}}
                 <div class="relative flex-1 w-full">
@@ -156,7 +143,7 @@
 
                 {{-- Purpose Filter --}}
                 <div class="w-full sm:w-44">
-                    <select name="purpose" onchange="this.form.submit()" class="form-input w-full text-xs rounded-xl py-2 font-medium">
+                    <select name="purpose" onchange="this.form.submit()" class="form-select w-full text-xs rounded-xl py-2 font-medium">
                         <option value="all">{{ __('All Purposes') }}</option>
                         <option value="For Sale" {{ request('purpose') === 'For Sale' ? 'selected' : '' }}>{{ __('For Sale') }}</option>
                         <option value="For Rent" {{ request('purpose') === 'For Rent' ? 'selected' : '' }}>{{ __('For Rent') }}</option>
@@ -167,7 +154,7 @@
 
                 {{-- Sort Filter --}}
                 <div class="w-full sm:w-36">
-                    <select name="sort" onchange="this.form.submit()" class="form-input w-full text-xs rounded-xl py-2 font-medium">
+                    <select name="sort" onchange="this.form.submit()" class="form-select w-full text-xs rounded-xl py-2 font-medium">
                         <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>{{ __('Recently Saved') }}</option>
                         <option value="oldest" {{ request('sort') === 'oldest' ? 'selected' : '' }}>{{ __('Oldest Saved') }}</option>
                     </select>
@@ -177,33 +164,22 @@
 
         {{-- FAVORITES LIST / GRID --}}
         @if($favorites->isEmpty())
-            {{-- EMPTY STATE --}}
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-12 text-center max-w-xl mx-auto my-8 shadow-sm">
-                <div class="w-20 h-20 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-500 mx-auto flex items-center justify-center mb-5">
-                    <svg class="w-10 h-10 fill-rose-500/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                </div>
-
-                <h3 class="font-display font-extrabold text-2xl text-muted dark:text-white mb-2">
-                    {{ __('No Saved Favorites Yet') }}
-                </h3>
-
-                <p class="text-sm text-muted dark:text-muted mb-6 max-w-md mx-auto leading-relaxed">
-                    {{ __("You haven't saved any properties to your favorites yet. Click the heart icon on any property in the marketplace or search engine to save it here for quick access.") }}
-                </p>
-
-                <div class="flex flex-wrap items-center justify-center gap-3">
+            <x-empty-state
+                icon="heart"
+                :title="__('No Saved Favorites Yet')"
+                :description="__('You haven\'t saved any properties to your favorites yet. Click the heart icon on any property in the marketplace or search engine to save it here for quick access.')"
+                size="lg">
+                <x-slot:actions>
                     <a href="{{ route('search') }}" class="btn btn-primary px-6 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-orange-500/20">
                         {{ __('Explore Properties') }}
                     </a>
                     <a href="{{ route('properties.index') }}" class="btn btn-secondary px-6 py-2.5 rounded-xl text-sm font-bold">
                         {{ __('Browse Marketplace') }}
                     </a>
-                </div>
-            </div>
+                </x-slot:actions>
+            </x-empty-state>
         @else
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="favorites-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cinematic-fade-up cinematic-stagger-2" id="favorites-grid">
                 @foreach($favorites as $fav)
                     @php
                         $prop = $fav->property;
@@ -213,7 +189,7 @@
                         $purpose = $listing->purpose ?? 'For Sale';
                     @endphp
 
-                    <div class="favorite-item-card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
+                    <div class="favorite-item-card card card-hover overflow-hidden flex flex-col justify-between"
                          id="favorite-card-{{ $prop->id }}">
 
                         <div>
@@ -222,13 +198,13 @@
                                 <img src="{{ $cover }}" alt="{{ $prop->title }}" class="w-full h-full object-cover">
                                 
                                 <div class="absolute top-3 left-3 z-10 flex flex-wrap gap-1.5">
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold shadow-sm bg-orange-600 text-white">
+                                    <x-badge variant="brand" size="xs">
                                         {{ __($purpose) }}
-                                    </span>
+                                    </x-badge>
                                     @if($prop->status === 'verified')
-                                        <span class="px-2 py-0.5 rounded-full text-xs font-bold shadow-sm bg-emerald-600 text-white">
+                                        <x-badge variant="success" size="xs">
                                             {{ __('Verified') }}
-                                        </span>
+                                        </x-badge>
                                     @endif
                                 </div>
 
@@ -326,7 +302,7 @@
                      x-transition:leave="ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm">
+                     class="modal-content inline-block align-bottom text-left transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                     
                     <div class="p-6 space-y-5">
                         <div class="flex items-center justify-between pb-3 border-b border-warm dark:border-warm">
@@ -372,7 +348,7 @@
                                     @foreach($userCollections as $col)
                                         <label class="flex items-center justify-between p-3 rounded-xl border border-warm dark:border-warm cursor-pointer hover:bg-surface dark:hover:bg-surface/60 transition-colors has-checked:border-primary-500 has-checked:bg-orange-50/40 dark:has-checked:bg-orange-950/20">
                                             <div class="flex items-center gap-2.5">
-                                                <input type="radio" name="target_collection" value="{{ $col->id }}" x-model="selectedCollectionId" class="text-primary-500 focus:ring-primary-500">
+                                                <input type="radio" name="target_collection" value="{{ $col->id }}" x-model="selectedCollectionId" class="form-radio">
                                                 <span class="text-xs font-bold text-muted dark:text-muted">{{ $col->name }}</span>
                                             </div>
                                             <span class="text-xs text-muted font-medium">
@@ -396,7 +372,7 @@
                                     <p class="text-xs font-bold text-muted dark:text-white">{{ __('Private Collection') }}</p>
                                     <p class="text-xs text-muted">{{ __('Only you can view and modify this collection') }}</p>
                                 </div>
-                                <input type="checkbox" x-model="newCollectionPrivate" class="rounded text-primary-500 focus:ring-primary-500 w-4 h-4">
+                                <input type="checkbox" x-model="newCollectionPrivate" class="form-checkbox">
                             </label>
                         </div>
 

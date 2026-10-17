@@ -69,49 +69,47 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-[#F9FAFB] antialiased min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-orange-600 selection:text-white transition-colors duration-300">
 
-    {{-- PUBLIC STICKY NAV --}}
+    {{-- PUBLIC STICKY NAV (AURA ESTATES FLOATING PILL) --}}
     <header id="site-header" class="fixed top-0 inset-x-0 z-50 pt-3 sm:pt-4 px-3 sm:px-6 pointer-events-none transition-all duration-300"
         x-data="{ scrolled: false }"
         x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 20)">
-        <div class="page-container pointer-events-auto relative z-50">
+        <div class="max-w-7xl mx-auto pointer-events-auto relative z-50">
             <div x-bind:class="scrolled 
-                    ? 'bg-white/95 dark:bg-[#111827]/95 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-950/5 dark:shadow-black/60' 
-                    : 'bg-white/90 dark:bg-[#111827]/85 border-slate-200/90 dark:border-slate-800/80 shadow-lg shadow-slate-950/5 dark:shadow-black/40'"
-                 class="backdrop-blur-md border rounded-2xl md:rounded-full px-4 sm:px-6 py-2 transition-all duration-300">
-                <div class="flex items-center justify-between h-13 md:h-14">
-                    {{-- Logo --}}
-                    <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group focus-brand rounded-lg" id="nav-logo">
-                        <div class="w-9 h-9 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30 group-hover:scale-105 transition-transform flex-shrink-0">
-                            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                            </svg>
+                    ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-900/5 dark:shadow-black/60' 
+                    : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/80 dark:border-slate-800/80 shadow-lg shadow-slate-900/5 dark:shadow-black/40'"
+                 class="backdrop-blur-md border rounded-2xl px-4 sm:px-6 py-2.5 transition-all duration-300">
+                <div class="flex items-center justify-between h-12 md:h-13">
+                    {{-- Aura Brand Logo --}}
+                    <a href="/" class="flex items-center gap-3 flex-shrink-0 group focus-brand rounded-xl" id="nav-logo">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md shadow-orange-500/25 group-hover:scale-105 transition-transform flex-shrink-0">
+                            A
                         </div>
                         <div class="flex flex-col">
-                            <span class="font-display font-extrabold text-slate-900 dark:text-white text-lg tracking-tight leading-none">SRMS</span>
-                            <span class="text-[10px] font-bold text-orange-600 dark:text-orange-400 tracking-wider uppercase leading-none mt-0.5">{{ __('Ethiopia') }}</span>
+                            <span class="font-serif font-bold text-lg tracking-wider block leading-none text-slate-900 dark:text-white">AURA <span class="text-orange-600 dark:text-orange-400">SRMS</span></span>
+                            <span class="text-[10px] uppercase tracking-[0.25em] text-orange-600 dark:text-orange-400 font-semibold block mt-0.5">{{ __('Estates • Ethiopia') }}</span>
                         </div>
                     </a>
 
-                    {{-- Desktop Nav with Purposeful Category Colors --}}
-                    <nav class="hidden md:flex items-center gap-1.5" aria-label="Main navigation">
-                        <a href="/search" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 {{ request()->routeIs('search') ? 'bg-violet-600 text-white shadow-sm shadow-violet-600/25' : 'text-slate-600 hover:text-violet-600 hover:bg-violet-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-violet-950/30' }}" id="nav-search">
-                            <svg class="w-3.5 h-3.5 {{ request()->routeIs('search') ? 'text-white' : 'text-violet-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    {{-- Desktop Nav Links --}}
+                    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300" aria-label="Main navigation">
+                        <a href="/search" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1.5 {{ request()->routeIs('search') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-search">
+                            <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                             <span>{{ __('Search') }}</span>
                         </a>
-                        <a href="/properties" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('properties.index') ? 'bg-orange-500 text-white shadow-sm shadow-orange-500/20' : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-orange-950/30' }}" id="nav-properties">{{ __('Properties') }}</a>
-                        <a href="/developers" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('developers.index') ? 'bg-sky-600 text-white shadow-sm shadow-sky-600/25' : 'text-slate-600 hover:text-sky-600 hover:bg-sky-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-sky-950/30' }}" id="nav-developers">{{ __('Developers') }}</a>
-                        <a href="/services" class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all {{ request()->routeIs('services.*') ? 'bg-rose-600 text-white shadow-sm shadow-rose-600/25' : 'text-slate-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-rose-950/30' }}" id="nav-services">{{ __('Services') }}</a>
+                        <a href="/properties" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('properties.index') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-properties">{{ __('Properties') }}</a>
+                        <a href="/developers" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('developers.index') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-developers">{{ __('Developers') }}</a>
+                        <a href="/services" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors {{ request()->routeIs('services.*') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-services">{{ __('Services') }}</a>
                     </nav>
 
                     {{-- Right Controls --}}
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 sm:gap-3">
                         {{-- Language Switcher --}}
                         <x-language-switcher id="nav-language-switcher" />
 
@@ -119,24 +117,24 @@
                         <x-theme-toggle id="dark-mode-toggle" />
 
                         @auth
-                            <a href="/dashboard" class="btn btn-secondary inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-orange-500 transition-colors shadow-sm" id="nav-dashboard">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <a href="/dashboard" class="btn btn-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 hover:border-orange-500 transition-colors shadow-sm" id="nav-dashboard">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                 <span>{{ __('Dashboard') }}</span>
                             </a>
                         @else
-                            <a href="/login" class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors hidden md:inline-flex" id="nav-login">{{ __('Sign In') }}</a>
-                            <a href="/register" class="btn btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white shadow-md shadow-orange-500/20 transition-all duration-200 active:scale-95 hidden md:inline-flex" id="nav-register">
-                                <span>{{ __('Get Started') }}</span>
+                            <a href="/login" class="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-orange-600 dark:text-slate-300 dark:hover:text-orange-400 transition-colors hidden md:inline-flex" id="nav-login">{{ __('Sign In') }}</a>
+                            <a href="/register" class="btn btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-300 transform hover:-translate-y-0.5 hidden md:inline-flex" id="nav-register">
+                                <span>{{ __('Book Private Tour') }}</span>
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                             </a>
                         @endauth
 
                         {{-- Mobile menu button --}}
                         <button x-data x-on:click="$dispatch('toggle-mobile-nav')"
-                                class="btn btn-ghost btn-icon md:hidden text-slate-900 dark:text-white"
+                                class="btn btn-ghost btn-icon md:hidden text-slate-900 dark:text-white p-2 rounded-xl bg-slate-100 dark:bg-slate-800"
                                 aria-label="Open menu"
                                 id="mobile-menu-toggle">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                             </svg>
                         </button>
@@ -165,32 +163,24 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 -translate-y-2"
-             class="page-container mt-2 md:hidden relative z-50 pointer-events-auto"
+             class="max-w-7xl mx-auto px-4 mt-2 md:hidden relative z-50 pointer-events-auto"
              x-cloak>
-            <div class="bg-white/98 dark:bg-[#111827]/98 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-2xl pointer-events-auto">
-                <nav class="flex flex-col gap-2" aria-label="Mobile navigation">
-                    <a href="/search" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('search') ? 'bg-violet-50 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400' : 'text-slate-900 dark:text-white hover:bg-violet-50 dark:hover:bg-white/5' }}" id="mobile-nav-search">
-                        <div class="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-950/50 flex items-center justify-center text-violet-600 dark:text-violet-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                        </div>
+            <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-2xl pointer-events-auto space-y-3">
+                <nav class="flex flex-col gap-1 text-sm font-medium" aria-label="Mobile navigation">
+                    <a href="/search" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('search') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-search">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                         <span>{{ __('Search Engine') }}</span>
                     </a>
-                    <a href="/properties" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('properties.index') ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' : 'text-slate-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-white/5' }}" id="mobile-nav-properties">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
-                        </div>
+                    <a href="/properties" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('properties.index') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-properties">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
                         <span>{{ __('Browse Properties') }}</span>
                     </a>
-                    <a href="/developers" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('developers.index') ? 'bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400' : 'text-slate-900 dark:text-white hover:bg-sky-50 dark:hover:bg-white/5' }}" id="mobile-nav-developers">
-                        <div class="w-8 h-8 rounded-lg bg-sky-100 dark:bg-sky-950/50 flex items-center justify-center text-sky-600 dark:text-sky-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
-                        </div>
+                    <a href="/developers" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('developers.index') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-developers">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
                         <span>{{ __('Developer Projects') }}</span>
                     </a>
-                    <a href="/services" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm {{ request()->routeIs('services.*') ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400' : 'text-slate-900 dark:text-white hover:bg-rose-50 dark:hover:bg-white/5' }}" id="mobile-nav-services">
-                        <div class="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-950/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
-                        </div>
+                    <a href="/services" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('services.*') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-services">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
                         <span>{{ __('Professional Services') }}</span>
                     </a>
                     
@@ -199,11 +189,11 @@
                         <x-language-switcher id="mobile-nav-language-switcher" class="w-full" />
                     </div>
                     @auth
-                        <a href="/dashboard" class="btn btn-primary w-full mt-2" id="mobile-nav-dashboard">{{ __('Go to Dashboard') }}</a>
+                        <a href="/dashboard" class="btn btn-primary w-full py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-semibold text-center" id="mobile-nav-dashboard">{{ __('Go to Dashboard') }}</a>
                     @else
                         <div class="grid grid-cols-2 gap-2 mt-2">
-                            <a href="/login" class="btn btn-secondary text-center text-xs" id="mobile-nav-login">{{ __('Sign In') }}</a>
-                            <a href="/register" class="btn btn-primary text-center text-xs" id="mobile-nav-register">{{ __('Get Started') }}</a>
+                            <a href="/login" class="btn btn-secondary text-center text-xs py-2.5 rounded-xl border border-slate-200 dark:border-slate-700" id="mobile-nav-login">{{ __('Sign In') }}</a>
+                            <a href="/register" class="btn btn-primary text-center text-xs py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-orange-500 text-white font-semibold" id="mobile-nav-register">{{ __('Get Started') }}</a>
                         </div>
                     @endauth
                 </nav>
@@ -216,79 +206,79 @@
         {{ $slot }}
     </main>
 
-    {{-- Modern High-Contrast Multicolored Footer --}}
-    <footer class="bg-white dark:bg-[#0D1322] border-t border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 mt-auto" role="contentinfo">
-        <div class="page-container py-14">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-                {{-- Brand & Trust Accreditation --}}
-                <div class="lg:col-span-2">
-                    <div class="flex items-center gap-2.5 mb-4">
-                        <div class="w-9 h-9 bg-gradient-to-tr from-orange-600 to-amber-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30">
-                            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+    {{-- AURA ESTATES LUXURY OBSIDIAN FOOTER --}}
+    <footer class="bg-slate-950 text-slate-400 py-16 border-t border-slate-800 mt-auto" role="contentinfo">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md shadow-orange-500/25">
+                            A
                         </div>
-                        <span class="font-display font-black text-slate-900 dark:text-white text-xl tracking-tight">SRMS <span class="text-orange-600 dark:text-orange-400 font-extrabold text-sm ml-1 uppercase">Ethiopia</span></span>
+                        <div>
+                            <span class="font-serif font-bold text-xl tracking-wider text-white">AURA ESTATES</span>
+                            <span class="text-[10px] uppercase tracking-[0.25em] text-orange-400 font-semibold block">SRMS Ethiopia</span>
+                        </div>
                     </div>
-                    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6 max-w-sm">
-                        {{ __("Ethiopia's premier real estate & property registry marketplace. Verified title deeds, PostGIS coordinates, and developer escrow across Addis Ababa and regional capitals.") }}
+                    <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+                        {{ __("Curating the nation's finest residential architecture and verified real estate registry for collectors and discerning investors.") }}
                     </p>
-                    <div class="flex items-center gap-2 flex-wrap text-xs">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-bold border border-emerald-200 dark:border-emerald-800/40">
+                    <div class="flex items-center gap-2 flex-wrap text-xs pt-1">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 text-emerald-400 font-semibold border border-emerald-800/50">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             {{ __('Verified Land Titles') }}
                         </span>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 font-bold border border-blue-200 dark:border-blue-800/40">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-950/60 text-orange-400 font-semibold border border-orange-800/50">
+                            <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
                             {{ __('PostGIS Geocoded') }}
                         </span>
                     </div>
                 </div>
 
-                {{-- Platform --}}
+                {{-- Destinations --}}
                 <div>
-                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Platform') }}</h3>
+                    <h3 class="text-white font-serif font-bold text-sm uppercase tracking-wider mb-4">{{ __('Destinations') }}</h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="/properties" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Browse Properties') }}</a></li>
-                        <li><a href="/properties?purpose=For+Rent" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Rental Homes') }}</a></li>
-                        <li><a href="/short-stay" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Short-Stay Accommodations') }}</a></li>
-                        <li><a href="/developers" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Developer Projects') }}</a></li>
-                        <li><a href="/services" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Professional Services') }}</a></li>
+                        <li><a href="/properties?location=Addis+Ababa" class="hover:text-orange-400 transition-colors">{{ __('Bole & Old Airport') }}</a></li>
+                        <li><a href="/properties?location=Kazanchis" class="hover:text-orange-400 transition-colors">{{ __('Kazanchis Skyline') }}</a></li>
+                        <li><a href="/properties?location=Hawassa" class="hover:text-orange-400 transition-colors">{{ __('Hawassa Lakefront') }}</a></li>
+                        <li><a href="/properties?location=Bahir+Dar" class="hover:text-orange-400 transition-colors">{{ __('Bahir Dar Resorts') }}</a></li>
+                        <li><a href="/properties?location=Bishoftu" class="hover:text-orange-400 transition-colors">{{ __('Bishoftu Lakeside') }}</a></li>
                     </ul>
                 </div>
 
-                {{-- Regional Hubs --}}
+                {{-- Portfolio --}}
                 <div>
-                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Regional Hubs') }}</h3>
+                    <h3 class="text-white font-serif font-bold text-sm uppercase tracking-wider mb-4">{{ __('Portfolio') }}</h3>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="/properties?location=Addis+Ababa" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Addis Ababa') }} (አዲስ አበባ)</a></li>
-                        <li><a href="/properties?location=Hawassa" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Hawassa') }} (ሀዋሳ)</a></li>
-                        <li><a href="/properties?location=Bahir+Dar" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Bahir Dar') }} (ባሕር ዳር)</a></li>
-                        <li><a href="/properties?location=Adama" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Adama / Nazret') }} (አዳማ)</a></li>
-                        <li><a href="/properties?location=Bishoftu" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Bishoftu') }} (ቢሾፍቱ)</a></li>
+                        <li><a href="/properties?purpose=For+Sale" class="hover:text-orange-400 transition-colors">{{ __('Curated Residences') }}</a></li>
+                        <li><a href="/properties?purpose=For+Rent" class="hover:text-orange-400 transition-colors">{{ __('Luxury Rentals') }}</a></li>
+                        <li><a href="/developers" class="hover:text-orange-400 transition-colors">{{ __('Masterplan Developments') }}</a></li>
+                        <li><a href="/services" class="hover:text-orange-400 transition-colors">{{ __('Private Advisory') }}</a></li>
                     </ul>
                 </div>
 
-                {{-- Legal & Trust --}}
+                {{-- Private Dossier Journal --}}
                 <div>
-                    <h3 class="text-slate-900 dark:text-white font-bold text-sm uppercase tracking-wider mb-4">{{ __('Security & Legal') }}</h3>
-                    <ul class="space-y-2.5 text-sm">
-                        <li><a href="/about" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Trust & Safety') }}</a></li>
-                        <li><a href="/privacy" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Privacy Policy') }}</a></li>
-                        <li><a href="/terms" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Terms of Service') }}</a></li>
-                        <li><a href="/cookie-policy" class="text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">{{ __('Escrow Guidelines') }}</a></li>
-                    </ul>
+                    <h3 class="text-white font-serif font-bold text-sm uppercase tracking-wider mb-4">{{ __('Private Journal') }}</h3>
+                    <p class="text-xs text-slate-400 mb-3">{{ __('Receive quarterly off-market dossiers and architectural market reports across Ethiopia.') }}</p>
+                    <form onsubmit="event.preventDefault(); alert('Subscribed to Aura Private Dossier');" class="flex gap-2">
+                        <input type="email" required placeholder="{{ __('Email address') }}" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition-colors">
+                        <button type="submit" class="px-3.5 py-2 rounded-xl bg-orange-600 text-white font-semibold text-xs hover:bg-orange-500 transition-colors cursor-pointer">{{ __('Join') }}</button>
+                    </form>
                 </div>
             </div>
 
-            <div class="h-px bg-slate-200 dark:bg-slate-800 mt-12 mb-8"></div>
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
-                <p>&copy; {{ date('Y') }} SRMS Real Estate Platform. {{ __('All rights reserved.') }}</p>
-                <div class="flex items-center gap-4">
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>&copy; {{ date('Y') }} Aura Estates • SRMS International LLC. {{ __('All rights reserved. Equal Housing Opportunity.') }}</p>
+                <div class="flex items-center gap-6">
                     <span class="inline-flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        {{ __('System Status: Operational') }}
+                        {{ __('Registry Operational') }}
                     </span>
                     <span>•</span>
-                    <span>{{ __("Built with pride for Ethiopia's future.") }}</span>
+                    <a href="/privacy" class="hover:text-slate-300 transition-colors">{{ __('Privacy Charter') }}</a>
+                    <a href="/terms" class="hover:text-slate-300 transition-colors">{{ __('Terms of Advisory') }}</a>
                 </div>
             </div>
         </div>

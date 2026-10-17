@@ -4,20 +4,23 @@
     'caption' => null,
     'badge' => null,
     'badgeVariant' => 'neutral', // 'brand', 'success', 'warning', 'error', 'info', 'neutral'
-    'iconColor' => 'orange', // 'orange', 'emerald', 'blue', 'purple', 'rose', 'amber', 'gray'
+    'iconColor' => 'orange', // 'orange', 'emerald', 'blue', 'purple', 'rose', 'amber', 'indigo', 'teal', 'gray'
     'icon' => null,
     'href' => null,
+    'xTextValue' => null,
 ])
 
 @php
     $iconThemes = [
-        'orange'  => 'bg-gradient-to-tr from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/20 text-orange-600 dark:text-orange-400 border border-orange-200/60 dark:border-orange-800/50 shadow-xs shadow-orange-500/10',
-        'emerald' => 'bg-gradient-to-tr from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/50 shadow-xs shadow-emerald-500/10',
-        'blue'    => 'bg-gradient-to-tr from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/20 text-sky-600 dark:text-sky-400 border border-sky-200/60 dark:border-sky-800/50 shadow-xs shadow-sky-500/10',
-        'purple'  => 'bg-gradient-to-tr from-violet-50 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/20 text-violet-600 dark:text-violet-400 border border-violet-200/60 dark:border-violet-800/50 shadow-xs shadow-violet-500/10',
-        'rose'    => 'bg-gradient-to-tr from-rose-50 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/20 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/50 shadow-xs shadow-rose-500/10',
-        'amber'   => 'bg-gradient-to-tr from-amber-50 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/20 text-amber-600 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/50 shadow-xs shadow-amber-500/10',
-        'gray'    => 'bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800',
+        'orange'  => 'bg-gradient-to-tr from-orange-500 to-amber-400 text-white shadow-md shadow-orange-500/30 ring-1 ring-orange-300/40',
+        'emerald' => 'bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-md shadow-emerald-500/30 ring-1 ring-emerald-300/40',
+        'blue'    => 'bg-gradient-to-tr from-blue-600 to-sky-400 text-white shadow-md shadow-blue-500/30 ring-1 ring-sky-300/40',
+        'purple'  => 'bg-gradient-to-tr from-purple-600 to-pink-500 text-white shadow-md shadow-purple-500/30 ring-1 ring-purple-300/40',
+        'rose'    => 'bg-gradient-to-tr from-rose-500 to-red-400 text-white shadow-md shadow-rose-500/30 ring-1 ring-rose-300/40',
+        'amber'   => 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-white shadow-md shadow-amber-500/30 ring-1 ring-amber-300/40',
+        'indigo'  => 'bg-gradient-to-tr from-indigo-600 to-violet-400 text-white shadow-md shadow-indigo-500/30 ring-1 ring-indigo-300/40',
+        'teal'    => 'bg-gradient-to-tr from-teal-500 to-cyan-400 text-white shadow-md shadow-teal-500/30 ring-1 ring-teal-300/40',
+        'gray'    => 'bg-gradient-to-tr from-slate-600 to-slate-400 text-white shadow-md shadow-slate-500/25 ring-1 ring-slate-400/40',
     ];
 
     $glowMap = [
@@ -27,13 +30,15 @@
         'purple'  => 'card-glow-violet',
         'rose'    => 'card-glow-rose',
         'amber'   => 'card-glow-amber',
+        'indigo'  => 'card-glow-violet',
+        'teal'    => 'card-glow-emerald',
         'gray'    => '',
     ];
 
     $iconClasses = $iconThemes[$iconColor] ?? $iconThemes['orange'];
     $glowClass = $glowMap[$iconColor] ?? 'card-glow-orange';
 
-    // Standardized Icons Library
+    // Standardized Colorful Icons Library
     $iconMap = [
         'banknotes' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0H3m0 0h18m0 0h.75A.75.75 0 0122 6.75v.75m0 0h-.75m0 0a60.07 60.07 0 00-15.797-2.101c-.727-.198-1.453.342-1.453 1.096V4.5M3.75 4.5v11.25c0 .621.504 1.125 1.125 1.125h14.25c.621 0 1.125-.504 1.125-1.125V4.5M12 12.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" /></svg>',
         'chart-pie' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg>',
@@ -48,6 +53,13 @@
         'database' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>',
         'heart' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>',
         'calendar' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>',
+        'tag' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.386l5.429-3.194c.828-.487 1.09-1.536.577-2.302L12.44 3.914A2.25 2.25 0 0010.84 3H9.568z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" /></svg>',
+        'cube' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>',
+        'layers' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l9.75 5.25 9.75-5.25-4.179-2.25m-11.321 4.5L2.25 16.5l9.75 5.25 9.75-5.25-4.179-2.25m-11.321-9L12 2.25l9.75 5.25-9.75 5.25L2.25 7.5z" /></svg>',
+        'key' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>',
+        'eye' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
+        'shield-check' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>',
+        'map-pin' => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>',
     ];
 
     $fallbackByColor = [
@@ -57,6 +69,8 @@
         'purple'  => $iconMap['calendar'],
         'rose'    => '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>',
         'amber'   => $iconMap['clock'],
+        'indigo'  => $iconMap['chart-pie'],
+        'teal'    => $iconMap['shield-check'],
         'gray'    => $iconMap['document'],
     ];
 
@@ -82,13 +96,13 @@
 @endphp
 
 @if ($href)
-    <a href="{{ $href }}" {{ $attributes->merge(['class' => "card card-stat card-hover {$glowClass} bg-white dark:bg-[#0D1322] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 block text-left group no-underline cursor-pointer transition-all duration-200"]) }}>
+    <a href="{{ $href }}" {{ $attributes->merge(['class' => "card card-stat stat-card-luxury {$glowClass} block text-left cursor-pointer group active:scale-[0.98] transition-all duration-200"]) }}>
 @else
-    <div {{ $attributes->merge(['class' => "card card-stat card-hover {$glowClass} bg-white dark:bg-[#0D1322] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 sm:p-6 transition-all duration-200"]) }}>
+    <div {{ $attributes->merge(['class' => "card card-stat stat-card-luxury {$glowClass} block text-left group transition-all duration-200"]) }}>
 @endif
     <div>
-        <div class="flex items-center justify-between gap-3 mb-3">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 {{ $iconClasses }}">
+        <div class="flex items-center justify-between gap-2 mb-3">
+            <div class="stat-icon-wrapper w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 ease-out group-hover:scale-105 {{ $iconClasses }}">
                 @if ($hasSlot)
                     {{ $icon }}
                 @else
@@ -97,23 +111,24 @@
             </div>
 
             @if ($badge)
-                <span class="badge badge-{{ $badgeVariant }} text-xs font-semibold ml-auto">
-                    {{ $badge }}
+                <span class="badge badge-{{ $badgeVariant }} text-[11px] font-semibold ml-auto px-2 py-0.5 rounded-full">
+                    {{ __($badge) }}
                 </span>
             @endif
         </div>
 
-        <p class="card-stat-value text-slate-900 dark:text-white mb-0.5 font-display font-extrabold text-2xl sm:text-3xl tracking-tight">
-            {{ $value }}
+        <p class="card-stat-label text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+            {{ __($label) }}
         </p>
-        <p class="card-stat-label text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium mt-1">
-            {{ $label }}
+        <p class="card-stat-value text-slate-900 dark:text-white font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] leading-tight my-1 truncate"
+           @if($xTextValue) x-text="{{ $xTextValue }}" @endif>
+            {{ $value }}
         </p>
     </div>
 
     @if ($caption)
-        <p class="card-stat-caption text-slate-400 dark:text-slate-500 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-[11px]">
-            {{ $caption }}
+        <p class="card-stat-caption text-slate-400 dark:text-slate-500 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/80 text-[11px] flex items-center justify-between">
+            <span>{{ __($caption) }}</span>
         </p>
     @endif
 

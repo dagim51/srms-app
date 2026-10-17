@@ -2,15 +2,15 @@
     <x-slot name="page-title">{{ __('Safety Center') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Trust & Safety') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage fraud reports, moderation, and user disputes.') }}</p>
-            </div>
-            <div class="flex gap-2">
-                <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50">{{ __('Create Case') }}</button>
-            </div>
-        </div>
+        <x-page-header
+            title="Trust & Safety Center"
+            description="Investigate reported listings, review dispute cases, and enforce marketplace trust and safety standards."
+            icon="shield"
+            badge="Trust & Safety">
+            <x-slot:actions>
+                <button class="btn btn-secondary text-xs text-rose-600 border-rose-200 hover:bg-rose-50">{{ __('Create Case') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.trust.partials.tabs')
 

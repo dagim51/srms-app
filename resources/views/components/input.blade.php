@@ -5,11 +5,12 @@
     'label' => null,
     'helper' => null,
     'required' => false,
+    'icon' => null,
 ])
 
 @php
     $inputId = $attributes->get('id') ?? 'input-' . uniqid();
-    $classes = 'form-input ' . ($error ? 'input-error' : '');
+    $classes = 'form-input ' . ($icon ? 'pl-10 ' : '') . ($error ? 'input-error' : '');
 @endphp
 
 <div class="w-full">
@@ -19,11 +20,19 @@
         </label>
     @endif
 
-    <input type="{{ $type }}"
-           id="{{ $inputId }}"
-           {{ $disabled ? 'disabled' : '' }}
-           {{ $attributes->merge(['class' => $classes]) }}
-           @if($required) required @endif>
+    <div class="relative">
+        @if($icon)
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                @svg($icon, 'w-4 h-4')
+            </div>
+        @endif
+
+        <input type="{{ $type }}"
+               id="{{ $inputId }}"
+               {{ $disabled ? 'disabled' : '' }}
+               {{ $attributes->merge(['class' => $classes]) }}
+               @if($required) required @endif>
+    </div>
 
     @if($error)
         <p class="form-error" role="alert">

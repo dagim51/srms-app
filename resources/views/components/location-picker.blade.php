@@ -55,49 +55,34 @@
         {{-- Region --}}
         <div>
             <label class="form-label text-xs">{{ __('Region / City') }}</label>
-            <div class="relative">
-                <select x-model="region" @change="resetBelow('region')" class="form-input appearance-none pr-10 {{ $error ? 'input-error' : '' }}">
-                    <option value="">{{ __('Select Region...') }}</option>
-                    <template x-for="r in regions" :key="r.id">
-                        <option :value="r.id" x-text="r.name + ' (' + r.localName + ')'"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </div>
-            </div>
+            <select x-model="region" @change="resetBelow('region')" class="form-select w-full {{ $error ? 'input-error' : '' }}">
+                <option value="">{{ __('Select Region...') }}</option>
+                <template x-for="r in regions" :key="r.id">
+                    <option :value="r.id" x-text="r.name + ' (' + r.localName + ')'"></option>
+                </template>
+            </select>
         </div>
 
         {{-- Zone / Sub-city --}}
         <div>
             <label class="form-label text-xs">{{ __('Zone / Sub-city') }}</label>
-            <div class="relative">
-                <select x-model="zone" @change="resetBelow('zone')" x-bind:disabled="!region" class="form-input appearance-none pr-10 disabled:opacity-50 {{ $error ? 'input-error' : '' }}">
-                    <option value="">{{ __('Select Zone...') }}</option>
-                    <template x-for="z in availableZones" :key="z.id">
-                        <option :value="z.id" x-text="z.name + ' (' + z.localName + ')'"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </div>
-            </div>
+            <select x-model="zone" @change="resetBelow('zone')" x-bind:disabled="!region" class="form-select w-full disabled:opacity-50 {{ $error ? 'input-error' : '' }}">
+                <option value="">{{ __('Select Zone...') }}</option>
+                <template x-for="z in availableZones" :key="z.id">
+                    <option :value="z.id" x-text="z.name + ' (' + z.localName + ')'"></option>
+                </template>
+            </select>
         </div>
 
         {{-- Woreda --}}
         <div>
             <label class="form-label text-xs">{{ __('Woreda') }}</label>
-            <div class="relative">
-                <select x-model="woreda" x-bind:disabled="!zone" class="form-input appearance-none pr-10 disabled:opacity-50 {{ $error ? 'input-error' : '' }}">
-                    <option value="">{{ __('Select Woreda...') }}</option>
-                    <template x-for="w in availableWoredas" :key="w.id">
-                        <option :value="w.id" x-text="w.name + ' (' + w.localName + ')'"></option>
-                    </template>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                </div>
-            </div>
+            <select x-model="woreda" x-bind:disabled="!zone" class="form-select w-full disabled:opacity-50 {{ $error ? 'input-error' : '' }}">
+                <option value="">{{ __('Select Woreda...') }}</option>
+                <template x-for="w in availableWoredas" :key="w.id">
+                    <option :value="w.id" x-text="w.name + ' (' + w.localName + ')'"></option>
+                </template>
+            </select>
         </div>
     </div>
     

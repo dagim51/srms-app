@@ -53,7 +53,7 @@
     $isVerified = $targetProperty && $targetProperty->status === 'verified';
 @endphp
 
-<article class="property-card card card-hover bg-white dark:bg-[#0D1322] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden group flex flex-col md:flex-row relative"
+<article class="property-card card card-hover bg-white dark:bg-[#0D1322] border border-slate-200/80 dark:border-slate-800/80 rounded-xl overflow-hidden group flex flex-col md:flex-row relative"
          x-data="{ favorited: false, loading: false }"
          data-listing-id="{{ $propId }}"
          data-lat="{{ $targetProperty->latitude ?? '' }}"
@@ -118,7 +118,7 @@
                         <svg class="w-3.5 h-3.5 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
                         <span>{{ __('Addis Ababa, Ethiopia') }}</span>
                     </p>
-                    <h3 class="font-display font-bold text-slate-900 dark:text-white text-lg line-clamp-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                    <h3 class="font-display font-bold text-slate-900 dark:text-white text-lg line-clamp-1">
                         <a href="{{ route('properties.show', $propId) }}" class="focus:outline-none">
                             {{ $title }}
                         </a>

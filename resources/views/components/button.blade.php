@@ -10,7 +10,7 @@
 
 @php
     $variantClasses = match ($variant) {
-        'primary' => 'btn-primary',
+        'primary', 'two-tone' => 'btn-primary',
         'secondary' => 'btn-secondary',
         'ghost' => 'btn-ghost',
         'danger' => 'btn-danger',

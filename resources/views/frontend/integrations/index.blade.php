@@ -2,10 +2,11 @@
     <x-slot name="page-title">{{ __('Integrations Status') }}</x-slot>
 
     <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Connected Services') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Manage external APIs, payment gateways, and third-party integrations.') }}</p>
-        </div>
+        <x-page-header
+            title="External System Integrations"
+            description="Manage PostGIS mapping providers, payment gateway webhooks, SMS notification channels, and banking APIs."
+            icon="cube"
+            badge="Integrations" />
 
         @include('frontend.integrations.partials.tabs')
 

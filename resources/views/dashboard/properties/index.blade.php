@@ -3,53 +3,106 @@
 
     @section('page-title', __('Properties'))
     @section('breadcrumb')
-        <a href="/dashboard" class="hover:text-muted dark:hover:text-muted">{{ __('Dashboard') }}</a>
-        <span class="mx-1.5 text-muted dark:text-muted">/</span>
-        <span class="text-muted dark:text-dark-subtle">{{ __('Properties') }}</span>
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'url' => '/dashboard'],
+            ['label' => __('Properties')]
+        ]" />
     @endsection
 
     <div class="space-y-6 page-enter pb-12 font-sans">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-                <h2 class="text-lg font-bold font-display text-muted dark:text-white">{{ __('All Properties') }}</h2>
-                <p class="text-xs text-muted dark:text-muted">{{ __('Manage real estate inventory, media, and features.') }}</p>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('dashboard.properties.map') }}" class="btn btn-outline text-xs text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800">
+        <x-page-header
+            title="Property Inventory"
+            description="Manage registered real estate inventory, cadastral boundaries, architectural media galleries, and listing controls."
+            icon="building"
+            badge="Inventory">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.properties.map') }}" class="btn btn-outline btn-sm text-xs text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800">
                     <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
                     {{ __('GIS Map Explorer') }}
                 </a>
-                <a href="{{ route('dashboard.properties.media.demo') }}" class="btn btn-outline text-xs">
+                <a href="{{ route('dashboard.properties.media.demo') }}" class="btn btn-outline btn-sm text-xs">
                     <svg class="w-4 h-4 mr-1 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     {{ __('Media Manager') }}
                 </a>
-                <a href="/dashboard/properties/create" class="btn btn-primary text-xs shadow-sm shadow-orange-500/20">
+                <a href="/dashboard/properties/create" class="btn btn-primary btn-sm text-xs shadow-sm shadow-orange-500/20">
                     <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                     {{ __('Add Property') }}
                 </a>
+            </x-slot:actions>
+        </x-page-header>
+        
+        {{-- Top KPI Stat Cards --}}
+        @php
+            $totalPropertiesCount = \App\Models\Property::count();
+            $activeMarketCount = \App\Models\Listing::where('status', 'published')->count();
+            $totalMediaAssets = \App\Models\PropertyMedia::count();
+            $verifiedCount = \App\Models\Listing::where('verification_status', 'verified')->count();
+        @endphp
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="cinematic-fade-up cinematic-stagger-1">
+                <x-card-stat
+                    :label="__('Total Properties')"
+                    :value="$totalPropertiesCount"
+                    iconColor="orange"
+                    icon="building"
+                    :badge="__('Inventory')"
+                    badgeVariant="brand"
+                    caption="{{ __('Cataloged real estate units') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-2">
+                <x-card-stat
+                    :label="__('Market Listings')"
+                    :value="$activeMarketCount"
+                    iconColor="emerald"
+                    icon="tag"
+                    :badge="__('Published')"
+                    badgeVariant="success"
+                    caption="{{ __('Active on marketplace') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-3">
+                <x-card-stat
+                    :label="__('Media Assets')"
+                    :value="$totalMediaAssets"
+                    iconColor="blue"
+                    icon="sparkles"
+                    :badge="__('Media')"
+                    badgeVariant="info"
+                    caption="{{ __('High-res photos & galleries') }}"
+                />
+            </div>
+            <div class="cinematic-fade-up cinematic-stagger-4">
+                <x-card-stat
+                    :label="__('Verified Listings')"
+                    :value="$verifiedCount"
+                    iconColor="purple"
+                    icon="shield-check"
+                    :badge="__('Verified')"
+                    badgeVariant="brand"
+                    caption="{{ __('Audited deed certificates') }}"
+                />
             </div>
         </div>
 
+        <div class="cinematic-fade-up cinematic-stagger-2">
         <x-card padding="p-0" class="overflow-hidden">
-            <div class="border-b border-warm dark:border-[#273244] p-4 flex flex-wrap items-center justify-between gap-3 bg-surface/50 dark:bg-[#172033]/50">
+            <div class="border-b border-warm dark:border-dark-border p-4 flex flex-wrap items-center justify-between gap-3 bg-surface/50 dark:bg-dark-surface/50">
                 <div class="relative flex-1 min-w-55">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                    </div>
-                    <x-input type="text" placeholder="{{ __('Search properties by title or address...') }}" class="pl-9 w-full text-xs" />
+                    <x-input type="text" placeholder="{{ __('Search properties by title or address...') }}" class="w-full text-xs" icon="magnifying-glass" />
                 </div>
             </div>
 
             @if(isset($properties) && $properties->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-surface dark:bg-[#172033] text-muted dark:text-muted border-b border-warm dark:border-[#273244] text-xs uppercase tracking-wider">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <th class="py-3 px-4 font-semibold">{{ __('Property') }}</th>
-                                <th class="py-3 px-4 font-semibold">{{ __('Details') }}</th>
-                                <th class="py-3 px-4 font-semibold">{{ __('Media Gallery') }}</th>
-                                <th class="py-3 px-4 font-semibold">{{ __('Status') }}</th>
-                                <th class="py-3 px-4 font-semibold text-right">{{ __('Actions') }}</th>
+                                <th>{{ __('Property') }}</th>
+                                <th>{{ __('Details') }}</th>
+                                <th>{{ __('Media Gallery') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-warm dark:divide-[#273244]">
@@ -124,5 +177,6 @@
                 </div>
             @endif
         </x-card>
+        </div>
     </div>
 </x-layouts.dashboard>
