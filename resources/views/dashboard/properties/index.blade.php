@@ -36,7 +36,7 @@
             $totalPropertiesCount = \App\Models\Property::count();
             $activeMarketCount = \App\Models\Listing::where('status', 'published')->count();
             $totalMediaAssets = \App\Models\PropertyMedia::count();
-            $verifiedCount = \App\Models\Listing::where('verification_status', 'verified')->count();
+            $verifiedCount = \App\Models\Property::where('status', 'verified')->count();
         @endphp
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="cinematic-fade-up cinematic-stagger-1">
