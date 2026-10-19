@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ListingResource;
 use App\Models\Listing;
 use Illuminate\Http\Request;
 
@@ -27,15 +28,20 @@ class PublicListingController extends Controller
 
         if ($request->filled('sort')) {
             $sort = $request->sort;
-            if ($sort === 'price_asc') $query->orderBy('price', 'asc');
-            elseif ($sort === 'price_desc') $query->orderBy('price', 'desc');
-            elseif ($sort === 'newest') $query->orderBy('published_at', 'desc');
+            if ($sort === 'price_asc') {
+                $query->orderBy('price', 'asc');
+            } elseif ($sort === 'price_desc') {
+                $query->orderBy('price', 'desc');
+            } elseif ($sort === 'newest') {
+                $query->orderBy('published_at', 'desc');
+            }
         } else {
             $query->orderBy('published_at', 'desc');
         }
 
         $listings = $query->paginate(15);
-        return response()->json($listings);
+
+        return ListingResource::collection($listings);
     }
 
     public function show(Listing $listing)
@@ -45,15 +51,15 @@ class PublicListingController extends Controller
         }
 
         $listing->load([
-            'property.media' => function($q) {
+            'property.media' => function ($q) {
                 $q->where('visibility', 'public');
             },
-            'property.category', 
+            'property.category',
             'property.type',
             'property.amenities',
-            'property.features'
+            'property.features',
         ]);
 
-        return response()->json(['data' => $listing]);
+        return response()->json(['data' => new ListingResource($listing)]);
     }
 }

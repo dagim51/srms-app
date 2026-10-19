@@ -86,8 +86,9 @@ class PublicDiscoveryTest extends TestCase
 
         $response = $this->getJson("/api/v1/public/listings/{$listing->id}");
         $response->assertStatus(200);
-        
-        $media = $response->json('data.property.media');
+
+        // PropertyResource uses 'gallery' for media collection
+        $media = $response->json('data.property.gallery');
         $this->assertCount(1, $media);
         $this->assertEquals('public', $media[0]['visibility']);
     }

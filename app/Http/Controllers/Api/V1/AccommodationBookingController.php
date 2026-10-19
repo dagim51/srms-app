@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AccommodationBookingResource;
 use App\Models\AccommodationBooking;
 use App\Services\Bookings\BookingManager;
 use Illuminate\Http\Request;
@@ -19,17 +20,17 @@ class AccommodationBookingController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        
+
         $bookings = AccommodationBooking::with(['accommodation.property', 'user:id,name'])
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhereHas('accommodation', function ($q) use ($user) {
-                          $q->where('host_id', $user->id);
-                      });
+                    ->orWhereHas('accommodation', function ($q) use ($user) {
+                        $q->where('host_id', $user->id);
+                    });
             })
             ->paginate(15);
-            
-        return response()->json(['data' => $bookings]);
+
+        return response()->json(['data' => AccommodationBookingResource::collection($bookings)]);
     }
 
     public function store(Request $request)
@@ -40,10 +41,12 @@ class AccommodationBookingController extends Controller
             'check_out_date' => 'required|date|after:check_in_date',
             'guests' => 'required|integer|min:1',
         ]);
-        
+
         try {
             $booking = $this->bookingManager->create($validated, auth()->id());
-            return response()->json(['data' => $booking], 201);
+            $booking->load('accommodation.property', 'user:id,name');
+
+            return response()->json(['data' => new AccommodationBookingResource($booking)], 201);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (\DomainException $e) {
@@ -54,13 +57,13 @@ class AccommodationBookingController extends Controller
     public function update(Request $request, string $id)
     {
         $booking = AccommodationBooking::with('accommodation')->findOrFail($id);
-        
+
         $validated = $request->validate([
             'status' => 'required|string|in:confirmed,cancelled',
         ]);
-        
+
         $user = auth()->user();
-        
+
         try {
             if ($validated['status'] === 'cancelled' && $booking->user_id === $user->id) {
                 // Guest cancelling
@@ -75,8 +78,10 @@ class AccommodationBookingController extends Controller
             } else {
                 abort(403, 'Unauthorized.');
             }
-            
-            return response()->json(['data' => $booking]);
+
+            $booking->load('accommodation.property', 'user:id,name');
+
+            return response()->json(['data' => new AccommodationBookingResource($booking)]);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }

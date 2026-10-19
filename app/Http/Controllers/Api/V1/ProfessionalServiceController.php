@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\ServiceProviderProfile;
+use App\Http\Resources\ServiceListingResource;
+use App\Http\Resources\ServiceProviderProfileResource;
+use App\Http\Resources\ServiceRequestResource;
 use App\Models\ServiceListing;
+use App\Models\ServiceProviderProfile;
 use App\Models\ServiceRequest;
+use Illuminate\Http\Request;
 
 class ProfessionalServiceController extends Controller
 {
@@ -22,12 +26,14 @@ class ProfessionalServiceController extends Controller
             $validated
         );
 
-        return response()->json(['data' => $profile], 201);
+        return response()->json(['data' => new ServiceProviderProfileResource($profile)], 201);
     }
 
     public function storeListing(Request $request, ServiceProviderProfile $profile)
     {
-        if ($profile->user_id !== $request->user()->id) abort(403, 'Unauthorized action.');
+        if ($profile->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -37,7 +43,8 @@ class ProfessionalServiceController extends Controller
         ]);
 
         $listing = $profile->listings()->create($validated);
-        return response()->json(['data' => $listing], 201);
+
+        return response()->json(['data' => new ServiceListingResource($listing)], 201);
     }
 
     public function storeRequest(Request $request, ServiceListing $listing)
@@ -57,7 +64,9 @@ class ProfessionalServiceController extends Controller
             'agreed_price' => $listing->price,
         ]);
 
-        return response()->json(['data' => $serviceReq], 201);
+        $serviceReq->load('listing.profile', 'customer', 'property');
+
+        return response()->json(['data' => new ServiceRequestResource($serviceReq)], 201);
     }
 
     public function updateRequestStatus(Request $request, ServiceRequest $serviceRequest)
@@ -65,19 +74,25 @@ class ProfessionalServiceController extends Controller
         // Only provider can accept/reject/complete, customer can cancel
         $isProvider = $serviceRequest->listing->profile->user_id === $request->user()->id;
         $isCustomer = $serviceRequest->customer_id === $request->user()->id;
-        
-        if (!$isProvider && !$isCustomer) abort(403, 'Unauthorized action.');
+
+        if (! $isProvider && ! $isCustomer) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $validated = $request->validate([
-            'status' => 'required|string|in:accepted,rejected,completed,cancelled'
+            'status' => 'required|string|in:accepted,rejected,completed,cancelled',
         ]);
 
-        if ($validated['status'] === 'cancelled' && !$isCustomer) abort(403, 'Only customers can cancel.');
-        if (in_array($validated['status'], ['accepted', 'rejected', 'completed']) && !$isProvider) {
+        if ($validated['status'] === 'cancelled' && ! $isCustomer) {
+            abort(403, 'Only customers can cancel.');
+        }
+        if (in_array($validated['status'], ['accepted', 'rejected', 'completed']) && ! $isProvider) {
             abort(403, 'Only providers can update to this status.');
         }
 
         $serviceRequest->update(['status' => $validated['status']]);
-        return response()->json(['data' => $serviceRequest]);
+        $serviceRequest->load('listing.profile', 'customer', 'property');
+
+        return response()->json(['data' => new ServiceRequestResource($serviceRequest)]);
     }
 }

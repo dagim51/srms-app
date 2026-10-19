@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Resources\UserResource;
 use App\Models\ApiToken;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -37,9 +39,9 @@ class AuthController extends Controller
 
         return response()->json([
             'data' => [
-                'user' => $user,
-                'token' => $plainTextToken
-            ]
+                'user' => new UserResource($user),
+                'token' => $plainTextToken,
+            ],
         ], 201);
     }
 
@@ -50,17 +52,17 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (!Auth::attempt($validated)) {
+        if (! Auth::attempt($validated)) {
             return response()->json([
                 'error' => [
                     'code' => 'INVALID_CREDENTIALS',
-                    'message' => 'Invalid credentials provided.'
-                ]
+                    'message' => 'Invalid credentials provided.',
+                ],
             ], 401);
         }
 
         $user = Auth::user();
-        
+
         $plainTextToken = Str::random(40);
         ApiToken::create([
             'user_id' => $user->id,
@@ -70,9 +72,9 @@ class AuthController extends Controller
 
         return response()->json([
             'data' => [
-                'user' => $user,
-                'token' => $plainTextToken
-            ]
+                'user' => new UserResource($user),
+                'token' => $plainTextToken,
+            ],
         ]);
     }
 
@@ -84,7 +86,7 @@ class AuthController extends Controller
         }
 
         Auth::guard('web')->logout();
-        
+
         // Return 204 No Content for successful logout
         return response()->json(null, 204);
     }
@@ -92,15 +94,15 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
-        
+
         $user = User::where('email', $request->email)->first();
-        if (!$user) {
+        if (! $user) {
             // Return 200 to prevent email enumeration
             return response()->json(['message' => 'If an account exists, a reset link has been sent.']);
         }
 
-        $token = \Illuminate\Support\Facades\Password::createToken($user);
-        
+        $token = Password::createToken($user);
+
         // In a real app, send email here. We just return it for testing purposes.
         return response()->json(['message' => 'Reset token generated.', 'token' => $token]);
     }
@@ -113,21 +115,21 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $status = \Illuminate\Support\Facades\Password::reset(
+        $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->setRememberToken(Str::random(60));
-                
+
                 $user->save();
-                
+
                 // Invalidate all API tokens upon password reset
                 ApiToken::where('user_id', $user->id)->delete();
             }
         );
 
-        if ($status == \Illuminate\Support\Facades\Password::PASSWORD_RESET) {
+        if ($status == Password::PASSWORD_RESET) {
             return response()->json(['message' => 'Password reset successfully.']);
         }
 

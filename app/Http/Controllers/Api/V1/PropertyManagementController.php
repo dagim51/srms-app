@@ -3,68 +3,68 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\MaintenanceTicket;
+use App\Http\Resources\CleaningTaskResource;
+use App\Http\Resources\MaintenanceTicketResource;
 use App\Models\CleaningTask;
+use App\Models\MaintenanceTicket;
+use App\Services\Operations\MaintenanceService;
+use Illuminate\Http\Request;
 
 class PropertyManagementController extends Controller
 {
+    public function __construct(
+        protected MaintenanceService $maintenanceService
+    ) {}
+
     public function storeTicket(Request $request)
     {
         $validated = $request->validate([
             'property_id' => 'required|uuid|exists:properties,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'priority' => 'nullable|string|in:low,medium,high,urgent'
+            'priority' => 'nullable|string|in:low,medium,high,urgent',
         ]);
 
-        $ticket = MaintenanceTicket::create([
-            'property_id' => $validated['property_id'],
-            'reported_by' => auth()->id(),
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'priority' => $validated['priority'] ?? 'medium',
-            'status' => 'open'
-        ]);
+        $ticket = $this->maintenanceService->createTicket(auth()->id(), $validated);
+        $ticket->load('property', 'reporter', 'assignee');
 
-        return response()->json(['data' => $ticket], 201);
+        return response()->json(['data' => new MaintenanceTicketResource($ticket)], 201);
     }
 
     public function updateTicketStatus(Request $request, MaintenanceTicket $ticket)
     {
         $validated = $request->validate([
-            'status' => 'required|string|in:open,assigned,in_progress,waiting,completed,closed'
+            'status' => 'required|string|in:open,assigned,in_progress,waiting,completed,closed',
         ]);
 
-        $ticket->update(['status' => $validated['status']]);
+        $ticket = $this->maintenanceService->updateTicketStatus($ticket, $validated['status']);
+        $ticket->load('property', 'reporter', 'assignee');
 
-        return response()->json(['data' => $ticket]);
+        return response()->json(['data' => new MaintenanceTicketResource($ticket)]);
     }
 
     public function storeCleaningTask(Request $request)
     {
         $validated = $request->validate([
             'property_id' => 'required|uuid|exists:properties,id',
-            'notes' => 'nullable|string'
+            'notes' => 'nullable|string',
         ]);
 
-        $task = CleaningTask::create([
-            'property_id' => $validated['property_id'],
-            'status' => 'pending',
-            'notes' => $validated['notes'] ?? null
-        ]);
+        $task = $this->maintenanceService->createCleaningTask($validated);
+        $task->load('property', 'cleaner');
 
-        return response()->json(['data' => $task], 201);
+        return response()->json(['data' => new CleaningTaskResource($task)], 201);
     }
 
     public function updateCleaningStatus(Request $request, CleaningTask $task)
     {
         $validated = $request->validate([
-            'status' => 'required|string|in:pending,assigned,in_progress,inspection,ready'
+            'status' => 'required|string|in:pending,assigned,in_progress,inspection,ready',
         ]);
 
-        $task->update(['status' => $validated['status']]);
+        $task = $this->maintenanceService->updateCleaningStatus($task, $validated['status']);
+        $task->load('property', 'cleaner');
 
-        return response()->json(['data' => $task]);
+        return response()->json(['data' => new CleaningTaskResource($task)]);
     }
 }

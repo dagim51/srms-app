@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CollectionPropertyResource;
+use App\Http\Resources\CollectionResource;
 use App\Models\Collection;
 use App\Models\CollectionProperty;
 use Illuminate\Http\Request;
@@ -13,23 +15,24 @@ class CollectionController extends Controller
     public function index(Request $request)
     {
         $collections = Collection::where('user_id', $request->user()->id)->get();
-        return response()->json(['data' => $collections]);
+
+        return response()->json(['data' => CollectionResource::collection($collections)]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'is_private' => 'boolean'
+            'is_private' => 'boolean',
         ]);
 
         $collection = Collection::create([
             'user_id' => $request->user()->id,
             'name' => $request->name,
-            'is_private' => $request->is_private ?? true
+            'is_private' => $request->is_private ?? true,
         ]);
 
-        return response()->json(['data' => $collection], 201);
+        return response()->json(['data' => new CollectionResource($collection)], 201);
     }
 
     public function show(Request $request, Collection $collection)
@@ -38,16 +41,11 @@ class CollectionController extends Controller
             abort(403, 'Unauthorized access to private collection.');
         }
 
-        $collection->load(['properties.property.listings' => function($q) {
+        $collection->load(['properties.property.listings' => function ($q) {
             $q->where('status', 'published');
         }]);
 
-        return response()->json([
-            'data' => $collection, 
-            'debug_is_private' => $collection->is_private,
-            'debug_user_id' => $collection->user_id,
-            'debug_req_user' => $request->user()?->id
-        ]);
+        return response()->json(['data' => new CollectionResource($collection)]);
     }
 
     public function destroy(Request $request, Collection $collection)
@@ -57,6 +55,7 @@ class CollectionController extends Controller
         }
 
         $collection->delete();
+
         return response()->json(null, 204);
     }
 
@@ -70,12 +69,14 @@ class CollectionController extends Controller
 
         $item = CollectionProperty::firstOrCreate([
             'collection_id' => $collection->id,
-            'property_id' => $request->property_id
+            'property_id' => $request->property_id,
         ], [
-            'sort_order' => CollectionProperty::where('collection_id', $collection->id)->max('sort_order') + 1
+            'sort_order' => CollectionProperty::where('collection_id', $collection->id)->max('sort_order') + 1,
         ]);
 
-        return response()->json(['data' => $item], 201);
+        $item->load('property');
+
+        return response()->json(['data' => new CollectionPropertyResource($item)], 201);
     }
 
     public function removeProperty(Request $request, Collection $collection, $propertyId)
@@ -99,7 +100,7 @@ class CollectionController extends Controller
 
         $request->validate([
             'properties' => 'required|array',
-            'properties.*' => 'exists:collection_properties,id'
+            'properties.*' => 'exists:collection_properties,id',
         ]);
 
         DB::transaction(function () use ($request, $collection) {
