@@ -17,11 +17,13 @@ class Offer extends Model
         'parent_offer_id',
         'amount',
         'status',
+        'expires_at',
         'notes',
     ];
 
     protected $casts = [
         'amount' => 'float',
+        'expires_at' => 'datetime',
     ];
 
     public function listing()
@@ -42,5 +44,10 @@ class Offer extends Model
     public function counterOffers()
     {
         return $this->hasMany(Offer::class, 'parent_offer_id');
+    }
+
+    public function events()
+    {
+        return $this->hasMany(OfferEvent::class);
     }
 }

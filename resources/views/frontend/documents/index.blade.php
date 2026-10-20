@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Document Center') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
         <x-page-header
             :title="__('Document Center')"
             :description="__('Secure file storage, identity verifications, contracts, and digital document management.')"
@@ -56,14 +56,29 @@
         </div>
 
         <div class="card overflow-hidden">
-            <div class="p-6 border-b border-slate-200/80 dark:border-slate-800/80 flex gap-4 flex-wrap">
-                <input type="text" placeholder="{{ __('Search files...') }}" class="input w-full max-w-sm">
-                <select class="input max-w-xs">
-                    <option>{{ __('All Types') }}</option>
-                    <option>{{ __('Identity Document') }}</option>
-                    <option>{{ __('Contract') }}</option>
-                    <option>{{ __('Financial Document') }}</option>
-                </select>
+            <div class="p-6 border-b border-slate-200/80 dark:border-slate-800/80">
+                <form method="GET" action="{{ route('dashboard.documents.index') }}" class="flex flex-wrap items-center gap-3">
+                    <div class="relative flex-1 min-w-56">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="{{ __('Search files by ID, name, owner, or status...') }}"
+                               class="form-input search-input pl-9 pr-8 w-full text-sm">
+                        @if(request('search'))
+                            <a href="{{ route('dashboard.documents.index') }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </a>
+                        @endif
+                    </div>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.documents.index') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium px-2 py-1.5">{{ __('Reset') }}</a>
+                    @endif
+                </form>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

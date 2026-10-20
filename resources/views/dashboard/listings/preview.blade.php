@@ -17,6 +17,12 @@
     @endphp
 
     <div class="max-w-6xl mx-auto page-enter pb-16 space-y-6">
+        <x-page-header
+            title="Listing Marketplace Preview"
+            :description="__('Live preview of public marketplace display for') . ' ' . ($listing->property->title ?? 'this property') . '.'"
+            icon="tag"
+            badge="Preview" />
+
         {{-- Preview Banner & Actions Bar --}}
         <div class="bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-3">

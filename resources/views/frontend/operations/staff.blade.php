@@ -1,14 +1,16 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Staff & Vendors') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Staff & Vendors') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage maintenance staff, cleaners, and third-party vendors.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Add Personnel') }}</button>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Facility Staff & Service Vendors"
+            description="Coordinate on-site maintenance technicians, professional cleaners, security personnel, and third-party contractors."
+            icon="users"
+            badge="Staff Directory">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Add Personnel') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.operations.partials.tabs')
 

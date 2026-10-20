@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Valuation Tool') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('Valuation Tool')"
             :description="__('Estimate accurate market property valuations using recent comparable sales, spatial proximity, and algorithmic intelligence.')"

@@ -1,28 +1,23 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Lead') }}: {{ $lead['name'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.crm.leads') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                {{ __('Back to Leads') }}
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $lead['name'] }}</h1>
-                    <div class="flex items-center gap-3 mt-2">
-                        <span class="badge badge-neutral uppercase">{{ __($lead['status']) }}</span>
-                        <span class="text-muted">&bull;</span>
-                        <span class="text-muted dark:text-dark-subtle font-medium">{{ $lead['value'] }}</span>
-                    </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="$lead['name']"
+            :description="__('Status:') . ' ' . __($lead['status']) . ' • ' . __('Deal Value:') . ' ' . $lead['value'] . ' • ' . __('Created') . ' ' . $lead['created']"
+            icon="chart"
+            :badge="$lead['status']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dashboard.crm.leads') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Leads') }}
+                    </a>
+                    <button class="btn btn-secondary text-xs">{{ __('Log Activity') }}</button>
+                    <button class="btn btn-primary text-xs">{{ __('Convert to Client') }}</button>
                 </div>
-                <div class="flex gap-2">
-                    <button class="btn btn-secondary">{{ __('Log Activity') }}</button>
-                    <button class="btn btn-primary">{{ __('Convert to Client') }}</button>
-                </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

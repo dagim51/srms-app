@@ -146,12 +146,12 @@ Route::prefix('v1')->group(function () {
         
         // Booking Engine (Phase 23)
         Route::get('/accommodation-bookings', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'index']);
-        Route::post('/accommodation-bookings', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'store']);
+        Route::post('/accommodation-bookings', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'store'])->middleware('idempotency');
         Route::patch('/accommodation-bookings/{accommodationBooking}', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'update']);
         
         // Payments & Transactions (Phase 24)
         Route::get('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'index']);
-        Route::post('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'store'])->name('payments');
+        Route::post('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'store'])->name('payments')->middleware('idempotency');
         Route::patch('/payments/{payment}', [\App\Http\Controllers\Api\V1\PaymentController::class, 'update']);
         
         // Companies & Organizations (Phase 26)

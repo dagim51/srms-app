@@ -8,7 +8,14 @@
         <span class="text-muted dark:text-white font-medium truncate max-w-52 inline-block align-bottom">{{ $conversation->subject }}</span>
     </x-slot>
 
-    <div class="max-w-5xl mx-auto h-[calc(100vh-140px)] flex flex-col bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+    <div class="max-w-5xl mx-auto page-enter space-y-4">
+        <x-page-header
+            :title="$conversation->subject"
+            description="Direct message thread between verified buyers, agents, owners, and developers with real-time audit logs."
+            icon="chat"
+            badge="Messages" />
+
+        <div class="h-[calc(100vh-280px)] min-h-[500px] flex flex-col bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
         
         {{-- Header --}}
         <div class="p-4 border-b border-warm dark:border-[#273244] bg-surface/50 dark:bg-surface/30 flex items-center justify-between flex-shrink-0">
@@ -105,4 +112,5 @@
             @enderror
         </div>
     </div>
+</div>
 </x-layouts.dashboard>

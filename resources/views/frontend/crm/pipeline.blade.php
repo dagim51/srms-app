@@ -1,11 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Pipeline') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto h-[calc(100vh-140px)] flex flex-col">
-        <div class="mb-6 flex-shrink-0">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Sales Pipeline') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Drag and drop leads through the sales process.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter h-[calc(100vh-140px)] flex flex-col space-y-4">
+        <x-page-header
+            title="Visual Deal Pipeline"
+            description="Kanban-style sales and lease negotiation stages from initial inquiry to closed deals."
+            icon="chart"
+            badge="Deal Pipeline" />
 
         @include('frontend.crm.partials.tabs')
 

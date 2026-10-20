@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Models\Listing;
-use Illuminate\Support\Facades\Gate;
+use App\Services\Listings\ListingPublisher;
+use Illuminate\Http\Request;
 
 class ListingModerationController extends Controller
 {
+    public function __construct(
+        protected ListingPublisher $listingPublisher
+    ) {}
+
     public function index(Request $request)
     {
         if (!$request->user()->hasRole('Administrator')) {
@@ -32,22 +35,16 @@ class ListingModerationController extends Controller
         ]);
 
         $action = $validated['action'];
-        
+        $comments = $validated['comments'] ?? null;
+        $moderatorId = $request->user()->id;
+
         if ($action === 'approve') {
-            $listing->status = 'approved';
+            $listing = $this->listingPublisher->approve($listing, $moderatorId, $comments);
         } elseif ($action === 'reject') {
-            $listing->status = 'rejected';
+            $listing = $this->listingPublisher->reject($listing, $moderatorId, $comments);
         } elseif ($action === 'suspend') {
-            $listing->status = 'suspended';
+            $listing = $this->listingPublisher->suspend($listing, $moderatorId, $comments);
         }
-
-        $listing->save();
-
-        $listing->moderations()->create([
-            'moderator_id' => $request->user()->id,
-            'action' => $action,
-            'comments' => $validated['comments'] ?? null
-        ]);
 
         return response()->json(['message' => "Listing {$action}d successfully", 'listing' => $listing]);
     }

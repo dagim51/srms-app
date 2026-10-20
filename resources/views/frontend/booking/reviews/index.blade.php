@@ -1,13 +1,12 @@
 <x-layouts.app>
     <x-slot name="title">{{ __('My Reviews - SRMS') }}</x-slot>
 
-    <div class="page-container pt-32 pb-24 max-w-7xl">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white">{{ __('My Reviews') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage the reviews you\'ve written for your stays.') }}</p>
-            </div>
-        </div>
+    <div class="page-container pt-32 pb-24 max-w-7xl page-enter">
+        <x-page-header
+            title="My Reviews"
+            description="Manage reviews you've written for your completed stays and accommodations."
+            icon="sparkles"
+            badge="Reviews" />
 
         @if(session('success'))
             <div class="mb-8 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 font-medium flex items-center gap-2">

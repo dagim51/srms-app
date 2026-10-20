@@ -1,20 +1,43 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Leases') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Leases') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage rental agreements and terms.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Create Lease') }}</button>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Lease Agreements"
+            description="Draft, execute, and monitor long-term tenancy contracts, security deposits, and renewal terms."
+            icon="document"
+            badge="Leases">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Create Lease') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.rental.partials.tabs')
 
         <div class="card overflow-hidden">
-            <div class="p-6 border-b border-[#EBDBC9] dark:border-[#273244] flex gap-4">
-                <input type="text" placeholder="{{ __('Search leases...') }}" class="input w-full max-w-md">
+            <div class="p-6 border-b border-[#EBDBC9] dark:border-[#273244]">
+                <form method="GET" action="{{ route('dashboard.rental.leases') }}" class="flex items-center gap-3 max-w-md">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input type="text"
+                               name="search"
+                               value="{{ request('search') }}"
+                               placeholder="{{ __('Search leases by ID, tenant, or unit...') }}"
+                               class="form-input search-input pl-9 pr-8 w-full text-sm">
+                        @if(request('search'))
+                            <a href="{{ route('dashboard.rental.leases') }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </a>
+                        @endif
+                    </div>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.rental.leases') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium whitespace-nowrap">{{ __('Reset') }}</a>
+                    @endif
+                </form>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

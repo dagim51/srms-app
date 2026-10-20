@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Teams') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Teams') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Group your agents into logical units for better management.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Teams"
+            description="Group your agents and staff into operational units for coordinated listing management."
+            icon="users"
+            badge="Teams" />
 
         @include('frontend.organization.partials.tabs')
 

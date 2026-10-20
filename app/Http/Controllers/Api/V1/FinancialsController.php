@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\LedgerAccount;
 use App\Models\LedgerEntry;
 use App\Models\Invoice;
+use App\Http\Resources\LedgerAccountResource;
+use App\Http\Resources\LedgerEntryResource;
+use App\Http\Resources\InvoiceResource;
 
 class FinancialsController extends Controller
 {
@@ -19,7 +22,7 @@ class FinancialsController extends Controller
         ]);
 
         $account = LedgerAccount::create($validated);
-        return response()->json(['data' => $account], 201);
+        return (new LedgerAccountResource($account))->response()->setStatusCode(201);
     }
 
     public function recordDoubleEntry(Request $request)
@@ -54,7 +57,7 @@ class FinancialsController extends Controller
             $entry->lines()->create($line);
         }
 
-        return response()->json(['data' => $entry->load('lines')], 201);
+        return (new LedgerEntryResource($entry->load('lines')))->response()->setStatusCode(201);
     }
 
     public function storeInvoice(Request $request)
@@ -72,6 +75,6 @@ class FinancialsController extends Controller
             'status' => 'draft'
         ]);
 
-        return response()->json(['data' => $invoice], 201);
+        return (new InvoiceResource($invoice))->response()->setStatusCode(201);
     }
 }

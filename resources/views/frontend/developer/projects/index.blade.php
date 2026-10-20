@@ -1,5 +1,5 @@
 <x-layouts.dashboard :title="__('Developer Projects')">
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6 page-enter">
         <x-page-header
             :title="__('Developer Projects')"
             :description="__('Manage multi-unit residential developments, tower phases, sales inventory, and construction milestones.')"

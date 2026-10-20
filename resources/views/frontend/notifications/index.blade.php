@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot name="title">{{ __('Notifications - SRMS') }}</x-slot>
 
-    <div class="page-container pt-32 pb-24 max-w-5xl relative z-10">
+    <div class="page-container pt-32 pb-24 max-w-5xl relative z-10 page-enter">
         
         <x-page-header
             :title="__('Notifications')"

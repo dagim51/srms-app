@@ -1,25 +1,20 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">Alert: {{ $alert['name'] }}</x-slot>
 
-    <div class="max-w-4xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.alerts.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
+    <div class="max-w-4xl mx-auto page-enter">
+        <div class="mb-4">
+            <a href="{{ route('dashboard.alerts.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 transition-colors w-max">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Back to Alerts
             </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="badge badge-neutral uppercase text-xs">{{ $alert['type'] }}</span>
-                        @if($alert['status'] === 'active')
-                            <span class="badge badge-success uppercase text-xs">{{ __('Active') }}</span>
-                        @else
-                            <span class="badge badge-error uppercase text-xs">{{ __('Paused') }}</span>
-                        @endif
-                    </div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $alert['name'] }}</h1>
-                </div>
+        </div>
+
+        <x-page-header
+            :title="$alert['name']"
+            :description="'Type: ' . strtoupper($alert['type']) . ' • Status: ' . strtoupper($alert['status'])"
+            icon="sparkles"
+            :badge="strtoupper($alert['status'])">
+            <x-slot:actions>
                 <div class="flex gap-2">
                     @if($alert['status'] === 'active')
                         <button class="btn btn-secondary border-error-200 text-error-600 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Pause Alert') }}</button>
@@ -28,8 +23,8 @@
                     @endif
                     <button class="btn btn-primary">{{ __('Save Changes') }}</button>
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="space-y-8">
             <!-- Search Criteria -->

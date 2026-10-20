@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Professional Services') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('Professional Services')"
             :description="__('Find and hire verified real estate lawyers, certified land surveyors, architects, and engineering consultants.')"
@@ -17,10 +17,29 @@
 
         <!-- Search & Categories -->
         <div class="mb-8 space-y-4">
-            <div class="flex gap-4">
-                <input type="text" placeholder="{{ __('Search for a service or professional...') }}" class="input flex-1">
-                <button class="btn btn-primary">{{ __('Search') }}</button>
-            </div>
+            <form action="{{ route('dashboard.services.index') }}" method="GET" class="flex gap-4">
+                @if(request('category'))
+                    <input type="hidden" name="category" value="{{ request('category') }}">
+                @endif
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                           name="q"
+                           value="{{ request('q') }}"
+                           placeholder="{{ __('Search for a service or professional...') }}"
+                           class="form-input search-input pl-9 pr-8 w-full text-sm">
+                    @if(request('q'))
+                        <a href="{{ route('dashboard.services.index', request()->except('q')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+                <button type="submit" class="btn btn-primary">{{ __('Search') }}</button>
+            </form>
             <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 <a href="{{ route('dashboard.services.index') }}" class="btn {{ !request('category') ? 'bg-surface text-white' : 'bg-white dark:bg-surface text-muted dark:text-dark-subtle border-warm dark:border-warm hover:bg-surface' }} border-none rounded-full whitespace-nowrap px-6">{{ __('All Categories') }}</a>
                 @foreach($categories as $cat)

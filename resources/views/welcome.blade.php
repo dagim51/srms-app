@@ -108,7 +108,7 @@
             </div>
 
             <!-- ==================== INTERACTIVE SEARCH CONSOLE ==================== -->
-            <div class="mt-12 lg:-mt-8 relative z-20 max-w-6xl mx-auto cinematic-fade-up cinematic-stagger-2">
+            <div class="mt-14 lg:mt-16 relative z-20 max-w-6xl mx-auto cinematic-fade-up cinematic-stagger-2">
                 <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-900/10 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6">
                     
                     <!-- Status Tabs (All / For Sale / For Rent / Land / New Projects) -->

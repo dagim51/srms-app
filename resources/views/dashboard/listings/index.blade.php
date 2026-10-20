@@ -116,8 +116,13 @@
             {{-- Filter Form --}}
             <form method="GET" action="{{ route('dashboard.listings.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm">
                 <div class="md:col-span-4 relative">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search title, code, purpose...') }}" class="form-input w-full pl-9 text-xs">
-                    <svg class="w-4 h-4 text-muted absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search title, code, purpose...') }}" class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.listings.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
                 </div>
 
                 <div class="md:col-span-3">

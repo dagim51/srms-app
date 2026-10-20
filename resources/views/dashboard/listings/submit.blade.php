@@ -18,6 +18,12 @@
     @endphp
 
     <div class="max-w-4xl mx-auto page-enter pb-16 space-y-6">
+        <x-page-header
+            title="Submit Listing for Review"
+            :description="__('Perform pre-flight checks and submit') . ' ' . ($listing->property->title ?? 'this property') . ' ' . __('for compliance and marketplace publication.')"
+            icon="shield"
+            badge="Moderation" />
+
         {{-- Flash Messages --}}
         @if(session('error'))
             <x-alert type="error">

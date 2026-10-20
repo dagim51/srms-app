@@ -98,18 +98,28 @@ class AdminWebController extends Controller
                 'locale' => 'en',
             ]);
 
-            // Assign role if role model exists
-            $roleModel = \App\Models\Role::where('name', $validated['role'])->first();
-            if ($roleModel) {
-                $user->roles()->attach($roleModel->id, [
-                    'organization_id' => $validated['organization_id'] ?? null
-                ]);
+            // Assign role using HasRoles trait
+            if (!empty($validated['role'])) {
+                $user->assignRole($validated['role'], $validated['organization_id'] ?? null);
             }
 
             return redirect()->route('dashboard.admin.users')->with('success', "User '{$user->name}' was successfully created with role '{$validated['role']}'.");
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Could not create user: ' . $e->getMessage());
         }
+    }
+
+    public function updateUserRole(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'role' => 'required|string',
+            'organization_id' => 'nullable|string',
+        ]);
+
+        $user = \App\Models\User::findOrFail($id);
+        $user->syncRoles([$validated['role']], $validated['organization_id'] ?? null);
+
+        return redirect()->back()->with('success', "User '{$user->name}' role successfully updated to '{$validated['role']}'.");
     }
 
     public function userShow($id)
@@ -352,14 +362,45 @@ class AdminWebController extends Controller
         }
     }
 
-    public function audit()
+    public function audit(Request $request)
     {
-        $logs = [
+        $query = \App\Models\AuditLog::with('actor')->latest();
+
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('event', 'like', "%{$search}%")
+                  ->orWhere('notes', 'like', "%{$search}%")
+                  ->orWhere('ip_address', 'like', "%{$search}%");
+            });
+        }
+
+        $dbLogs = $query->take(50)->get()->map(function ($l) {
+            $actorName = $l->actor ? "{$l->actor->name}" : 'System';
+            $action = ucfirst($l->event);
+            if ($l->auditable_type) {
+                $action .= ' ' . class_basename($l->auditable_type);
+            }
+            if ($l->notes) {
+                $action .= " - {$l->notes}";
+            }
+
+            return [
+                'id' => 'AUD-' . strtoupper(substr(str_replace('-', '', $l->id), 0, 6)),
+                'user' => $actorName,
+                'action' => $action,
+                'ip' => $l->ip_address ?? '127.0.0.1',
+                'date' => $l->created_at ? $l->created_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+            ];
+        })->toArray();
+
+        $mockLogs = [
             ['id' => 'AUD-101', 'user' => 'Admin (USR-001)', 'action' => 'Suspended User USR-904', 'ip' => '10.0.0.5', 'date' => '2026-10-08 15:45:12'],
             ['id' => 'AUD-102', 'user' => 'System', 'action' => 'Generated Monthly Invoices', 'ip' => 'localhost', 'date' => '2026-10-01 00:00:01'],
             ['id' => 'AUD-103', 'user' => 'Admin (USR-001)', 'action' => 'Updated Platform Fee to 5%', 'ip' => '10.0.0.5', 'date' => '2026-09-15 11:20:00'],
             ['id' => 'AUD-104', 'user' => 'Sara Tadesse (USR-902)', 'action' => 'Deleted Listing LST-405', 'ip' => '197.156.12.34', 'date' => '2026-10-07 09:15:22'],
         ];
+
+        $logs = !empty($dbLogs) ? $dbLogs : $mockLogs;
 
         return view('frontend.admin.audit', compact('logs'));
     }

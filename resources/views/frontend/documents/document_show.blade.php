@@ -1,35 +1,26 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">Document: {{ $document['name'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.documents.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Back to Documents
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-2xl bg-surface-subtle dark:bg-surface flex items-center justify-center text-muted shrink-0">
-                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="badge badge-success uppercase text-xs">{{ $document['status'] }}</span>
-                            <span class="text-xs text-muted uppercase tracking-wide">{{ $document['type'] }}</span>
-                        </div>
-                        <h1 class="text-2xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $document['name'] }}</h1>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="btn btn-secondary text-primary-600 border-primary-200 hover:bg-primary-50 flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        Secure Download
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="$document['name']"
+            :description="__('Status:') . ' ' . __($document['status']) . ' • ' . __('Type:') . ' ' . __($document['type']) . ' • ' . __('Uploaded') . ' ' . $document['date']"
+            icon="document"
+            :badge="$document['status']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('dashboard.documents.index') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Documents') }}
+                    </a>
+                    <button class="btn btn-secondary text-primary-600 border-primary-200 hover:bg-primary-50 text-xs flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        {{ __('Secure Download') }}
                     </button>
-                    <button class="btn btn-secondary">{{ __('Upload New Version') }}</button>
+                    <button class="btn btn-primary text-xs">{{ __('Upload New Version') }}</button>
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

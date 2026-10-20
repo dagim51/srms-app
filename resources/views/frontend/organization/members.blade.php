@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Members & Agents') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Members & Agents') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Manage the staff and agents associated with your organization.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Members & Agents"
+            description="Manage staff, authorized real estate agents, and credentials associated with your organization."
+            icon="users"
+            badge="Staff" />
 
         @include('frontend.organization.partials.tabs')
 

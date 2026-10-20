@@ -1,31 +1,26 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ $project['name'] }} - Dashboard</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.projects.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
+    <div class="max-w-7xl mx-auto page-enter">
+        <div class="mb-4">
+            <a href="{{ route('dashboard.projects.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 transition-colors w-max">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Back to Projects
             </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $project['name'] }}</h1>
-                    <div class="flex items-center gap-3 mt-2">
-                        <span class="badge {{ $project['status'] === 'under_construction' ? 'badge-primary' : 'badge-neutral' }} uppercase">{{ str_replace('_', ' ', $project['status']) }}</span>
-                        <span class="text-muted">&bull;</span>
-                        <span class="text-muted dark:text-dark-subtle font-medium flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            {{ $project['location'] }}
-                        </span>
-                    </div>
-                </div>
+        </div>
+
+        <x-page-header
+            :title="$project['name']"
+            :description="$project['location'] . ' • Status: ' . str_replace('_', ' ', $project['status'])"
+            icon="building"
+            :badge="str_replace('_', ' ', strtoupper($project['status']))">
+            <x-slot:actions>
                 <div class="flex gap-2">
                     <a href="{{ route('projects.show', $project['id']) }}" target="_blank" class="btn btn-secondary">{{ __('View Public Page') }}</a>
                     <button class="btn btn-primary">{{ __('Edit Project') }}</button>
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.developer.projects.partials.tabs')
 

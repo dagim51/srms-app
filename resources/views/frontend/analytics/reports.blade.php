@@ -1,17 +1,19 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Report Builder') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Report Builder') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Generate custom analytical reports for your portfolio.') }}</p>
-            </div>
-            <button class="btn btn-primary flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                {{ __('New Report') }}
-            </button>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Report Builder"
+            description="Generate custom analytical reports and financial summaries for your portfolio."
+            icon="document"
+            badge="Reports">
+            <x-slot:actions>
+                <button class="btn btn-primary flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                    {{ __('New Report') }}
+                </button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.analytics.partials.tabs')
 

@@ -2,21 +2,39 @@
     <x-slot name="page-title">{{ __('Advanced Map Search') }}</x-slot>
 
     <!-- Full-bleed map container minus sidebar -->
-    <div class="h-[calc(100vh-6rem)] -mt-6 -mx-4 sm:-mx-6 lg:-mx-8 flex flex-col md:flex-row relative">
+    <div class="h-[calc(100vh-6rem)] -mt-6 -mx-4 sm:-mx-6 lg:-mx-8 flex flex-col md:flex-row relative page-enter">
         
         <!-- Map Sidebar (Filters & Results) -->
-        <div class="w-full md:w-96 bg-white dark:bg-[#1E293B] border-r border-warm dark:border-warm flex flex-col h-1/2 md:h-full z-10 shadow-xl overflow-hidden shrink-0 absolute md:static bottom-0 left-0">
+        <div x-data="{ searchQuery: '' }" class="w-full md:w-96 bg-white dark:bg-[#1E293B] border-r border-warm dark:border-warm flex flex-col h-1/2 md:h-full z-10 shadow-xl overflow-hidden shrink-0 absolute md:static bottom-0 left-0">
             <!-- Filter Header -->
-            <div class="p-4 border-b border-warm dark:border-warm sticky top-0 bg-white dark:bg-[#1E293B] z-20">
+            <div class="p-4 border-b border-warm dark:border-warm sticky top-0 bg-white dark:bg-[#1E293B] z-20 space-y-3">
+                <x-page-header
+                    title="GIS Spatial Map"
+                    description="Spatial radius, boundary zoning, and PostGIS queries."
+                    icon="map-pin"
+                    badge="Spatial GIS" />
                 <h2 class="font-bold text-muted dark:text-white mb-3">{{ __('Map Filters') }}</h2>
-                <input type="text" placeholder="{{ __('Search neighborhood or zip...') }}" class="input w-full mb-2">
+                <div class="relative w-full mb-2">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                           x-model="searchQuery"
+                           placeholder="{{ __('Search neighborhood or zip...') }}"
+                           class="form-input search-input w-full pl-9 pr-8 mb-0 text-sm">
+                    <button type="button" x-show="searchQuery" @click="searchQuery = ''" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
                 <div class="flex gap-2 mb-3">
-                    <select class="input text-xs py-1.5 px-2 h-auto flex-1">
+                    <select class="form-select text-xs py-1.5 px-2 h-auto flex-1">
                         <option>{{ __('Any Type') }}</option>
                         <option>{{ __('Apartment') }}</option>
                         <option>{{ __('Villa') }}</option>
                     </select>
-                    <select class="input text-xs py-1.5 px-2 h-auto flex-1">
+                    <select class="form-select text-xs py-1.5 px-2 h-auto flex-1">
                         <option>{{ __('Any Price') }}</option>
                         <option>&lt; 20k ETB</option>
                         <option>{{ __('20k - 50k ETB') }}</option>
@@ -25,7 +43,7 @@
                 </div>
                 <div class="flex items-center justify-between text-xs font-medium">
                     <span class="text-muted">{{ __('124 Results in view') }}</span>
-                    <button class="text-primary-600 hover:text-primary-700">{{ __('Clear Area') }}</button>
+                    <button type="button" @click="searchQuery = ''" class="text-primary-600 hover:text-primary-700">{{ __('Clear Area') }}</button>
                 </div>
             </div>
 
@@ -33,7 +51,8 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 @foreach($properties as $prop)
                     @if(!$prop['cluster'])
-                    <div class="border border-warm dark:border-warm rounded-xl p-3 hover:shadow-md transition-shadow bg-surface dark:bg-surface/30 cursor-pointer">
+                    <div x-show="!searchQuery || '{{ strtolower($prop['title']) }}'.includes(searchQuery.toLowerCase())"
+                         class="border border-warm dark:border-warm rounded-xl p-3 hover:shadow-md transition-shadow bg-surface dark:bg-surface/30 cursor-pointer">
                         <div class="h-24 bg-surface-subtle dark:bg-surface rounded-lg mb-2 overflow-hidden">
                             <!-- Placeholder image -->
                         </div>

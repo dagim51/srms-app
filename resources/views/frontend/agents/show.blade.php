@@ -1,8 +1,17 @@
 <x-layouts.app>
     <x-slot name="title">{{ $agent['name'] }} - {{ $agent['title'] }} | SRMS</x-slot>
 
-    <div class="page-container pt-32 pb-24 max-w-7xl relative z-10">
+    <div class="page-container pt-32 pb-24 max-w-7xl relative z-10 page-enter">
         
+        <x-page-header
+            :title="$agent['name'] . ' - ' . $agent['title']"
+            :description="'Licensed Real Estate Agent • ' . count($listings) . ' Active Listings'"
+            icon="user"
+            badge="Agent Profile">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Contact Agent') }}</button>
+            </x-slot:actions>
+        </x-page-header>
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm mb-8">
             <div class="h-32 bg-primary-600 w-full relative">
                 <!-- Cover Image / Brand Color -->

@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="title">{{ $collection->name }} - Collections</x-slot>
 
-    <div class="space-y-6"
+    <div class="space-y-6 page-enter"
          x-data="{
              moveModalOpen: false,
              editModalOpen: false,
@@ -88,55 +88,30 @@
             <span x-text="toastMessage"></span>
         </div>
 
-        {{-- Top Navigation & Actions --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-warm dark:border-warm pb-5">
-            <div>
-                <nav class="flex items-center gap-2 text-xs text-muted mb-1">
-                    <a href="/dashboard" class="hover:text-primary-600 transition-colors">{{ __('Dashboard') }}</a>
-                    <span>/</span>
-                    <a href="{{ route('dashboard.collections.index') }}" class="hover:text-primary-600 transition-colors">{{ __('Collections') }}</a>
-                    <span>/</span>
-                    <span class="text-muted dark:text-white font-medium truncate max-w-xs">{{ $collection->name }}</span>
-                </nav>
-
-                <div class="flex items-center gap-3">
-                    <h1 class="text-2xl sm:text-3xl font-display font-extrabold text-muted dark:text-white tracking-tight" id="collection-title-display">
-                        {{ $collection->name }}
-                    </h1>
-                    @if($collection->is_private)
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-subtle dark:bg-surface text-muted dark:text-dark-subtle border border-warm dark:border-warm">
-                            <svg class="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                            Private
-                        </span>
-                    @else
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" /></svg>
-                            Shared
-                        </span>
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            :title="$collection->name"
+            :description="__('Curated property portfolio containing') . ' ' . $collection->properties->count() . ' ' . Str::plural('property', $collection->properties->count()) . ' ' . __('for private review or collaborative sharing.')"
+            icon="folder"
+            badge="Collection">
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    @if($isOwner)
+                        <button type="button" 
+                                @click="editModalOpen = true"
+                                class="btn btn-secondary text-xs flex items-center gap-1.5"
+                                id="edit-collection-btn">
+                            <svg class="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                            <span>{{ __('Edit') }}</span>
+                        </button>
                     @endif
+                    <a href="{{ route('search') }}" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm" id="collection-add-more-btn">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <span>{{ __('Add Properties') }}</span>
+                    </a>
                 </div>
-
-                <p class="text-xs sm:text-sm text-muted dark:text-muted mt-1">
-                    {{ $collection->properties->count() }} {{ Str::plural('property', $collection->properties->count()) }} in this collection
-                </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-                @if($isOwner)
-                    <button type="button" 
-                            @click="editModalOpen = true"
-                            class="btn btn-secondary text-xs flex items-center gap-1.5"
-                            id="edit-collection-btn">
-                        <svg class="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
-                        <span>{{ __('Edit') }}</span>
-                    </button>
-                @endif
-                <a href="{{ route('search') }}" class="btn btn-primary text-xs flex items-center gap-1.5 shadow-sm" id="collection-add-more-btn">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                    <span>{{ __('Add Properties') }}</span>
-                </a>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         {{-- PROPERTIES IN THIS COLLECTION --}}
         @if($collection->properties->isEmpty())

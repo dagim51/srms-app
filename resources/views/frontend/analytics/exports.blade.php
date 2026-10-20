@@ -1,13 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Export Status') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Export Status') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Monitor asynchronous report generation and bulk downloads.') }}</p>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Export Status"
+            description="Monitor asynchronous report generation and bulk downloads."
+            icon="document"
+            badge="Exports" />
 
         @include('frontend.analytics.partials.tabs')
 

@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Offer;
 use App\Models\Listing;
+use App\Models\Offer;
+use App\Services\Offers\NegotiationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 
 class OfferWebController extends Controller
 {
+    public function __construct(
+        protected NegotiationService $negotiationService
+    ) {}
+
     protected function getActiveUser()
     {
         return Auth::user();
@@ -52,19 +58,15 @@ class OfferWebController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $listing = Listing::findOrFail($request->listing_id);
-
-        if ($listing->owner_actor_id === $user->id) {
-            return back()->withErrors(['amount' => 'You cannot make an offer on your own listing.']);
+        try {
+            $offer = $this->negotiationService->submitOffer($user->id, [
+                'listing_id' => $request->listing_id,
+                'amount' => $request->amount,
+                'notes' => $request->notes,
+            ]);
+        } catch (InvalidArgumentException $e) {
+            return back()->withErrors(['amount' => $e->getMessage()]);
         }
-
-        $offer = Offer::create([
-            'listing_id' => $listing->id,
-            'buyer_id' => $user->id,
-            'amount' => $request->amount,
-            'status' => 'pending',
-            'notes' => $request->notes,
-        ]);
 
         return redirect()->route('dashboard.offers.show', $offer)->with('success', 'Offer submitted successfully!');
     }
@@ -125,34 +127,17 @@ class OfferWebController extends Controller
         ]);
 
         if ($request->action === 'accept') {
-            $offer->update(['status' => 'accepted']);
+            $this->negotiationService->acceptOffer($offer, $user->id);
             return back()->with('success', 'Offer accepted!');
         } 
         
         if ($request->action === 'reject') {
-            $offer->update(['status' => 'rejected']);
+            $this->negotiationService->rejectOffer($offer, $user->id);
             return back()->with('success', 'Offer rejected.');
         } 
         
         if ($request->action === 'counter') {
-            // Mark current as countered
-            $offer->update(['status' => 'countered']);
-
-            // The buyer ID for the counteroffer is the original buyer, the agent is acting on the listing
-            // Wait, if agent counters, the buyer is still the same.
-            
-            $newOffer = Offer::create([
-                'listing_id' => $offer->listing_id,
-                'buyer_id' => $offer->buyer_id, // Always keep the original buyer
-                'parent_offer_id' => $offer->id,
-                'amount' => $request->counter_amount,
-                'status' => 'pending',
-                'notes' => $request->notes,
-                // We could use an 'actor_id' if we wanted to track who made the specific offer, 
-                // but we can infer: if it's the seller countering, the offer amount changes, but how do we know who made it?
-                // For this mock, we can just say if it's not the buyer, it's the seller.
-            ]);
-
+            $this->negotiationService->counterOffer($offer, $user->id, (float) $request->counter_amount, $request->notes);
             return back()->with('success', 'Counteroffer sent!');
         }
     }

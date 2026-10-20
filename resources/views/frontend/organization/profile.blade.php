@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Company Profile') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Company Profile') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Manage your company\'s public and internal details.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Company Profile"
+            description="Manage your organization's legal identity, branding, and contact details."
+            icon="building"
+            badge="Profile" />
 
         @include('frontend.organization.partials.tabs')
 

@@ -59,7 +59,13 @@ class AmenityCatalogController extends Controller
         ]);
 
         if (empty($validated['code'])) {
-            $validated['code'] = Str::slug($validated['name_en'], '_');
+            $baseCode = Str::slug($validated['name_en'], '_') ?: 'amenity';
+            $code = $baseCode;
+            $counter = 1;
+            while (Amenity::where('code', $code)->exists()) {
+                $code = $baseCode . '_' . $counter++;
+            }
+            $validated['code'] = $code;
         }
 
         Amenity::create($validated);

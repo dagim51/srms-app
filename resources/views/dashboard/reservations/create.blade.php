@@ -8,9 +8,14 @@
         <span class="text-muted dark:text-white font-medium">{{ __('New') }}</span>
     </x-slot>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Reserve Property"
+            description="Submit formal reservation requests, schedule holding deposit transfers, and secure property allocations."
+            icon="key"
+            badge="Reservations" />
+
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
-            <h2 class="text-xl font-bold font-display text-muted dark:text-white mb-6">{{ __('Reserve Property') }}</h2>
             
             @if(session('error'))
                 <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">

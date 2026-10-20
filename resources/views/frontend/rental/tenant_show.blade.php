@@ -1,33 +1,22 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Tenant Profile') }}: {{ $tenant['name'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <a href="{{ route('dashboard.rental.tenants') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                    {{ __('Back to Tenants') }}
-                </a>
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-2xl">
-                        {{ substr($tenant['name'], 0, 1) }}
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $tenant['name'] }}</h1>
-                        <div class="flex items-center gap-3 mt-1 text-sm text-muted">
-                            <span class="badge {{ $tenant['status'] === 'active' ? 'badge-success' : 'badge-warning' }} uppercase">{{ $tenant['status'] }}</span>
-                            <span>&bull;</span>
-                            <span>{{ $tenant['email'] }}</span>
-                            <span>&bull;</span>
-                            <span>{{ $tenant['phone'] }}</span>
-                        </div>
-                    </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="$tenant['name']"
+            :description="$tenant['email'] . ' • ' . $tenant['phone'] . ' • ' . __('Status:') . ' ' . $tenant['status']"
+            icon="users"
+            :badge="$tenant['status']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dashboard.rental.tenants') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Tenants') }}
+                    </a>
+                    <button class="btn btn-secondary text-xs">{{ __('Edit Profile') }}</button>
                 </div>
-            </div>
-            <div class="flex gap-2">
-                <button class="btn btn-secondary">{{ __('Edit Profile') }}</button>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

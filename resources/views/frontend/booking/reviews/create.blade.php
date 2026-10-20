@@ -1,20 +1,21 @@
 <x-layouts.app>
     <x-slot name="title">{{ __('Write a Review') }} - {{ $booking->accommodation->property->title }}</x-slot>
 
-    <div class="page-container pt-28 pb-24">
+    <div class="page-container pt-28 pb-24 page-enter">
         <div class="max-w-3xl mx-auto">
             
-            {{-- Header --}}
-            <div class="mb-8">
-                <a href="{{ route('booking.show', $booking) }}" class="inline-flex items-center gap-2 text-muted hover:text-muted dark:text-muted dark:hover:text-muted text-sm mb-6">
+            <div class="mb-4">
+                <a href="{{ route('booking.show', $booking) }}" class="inline-flex items-center gap-2 text-muted hover:text-muted dark:text-muted dark:hover:text-muted text-sm transition-colors">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     {{ __('Back to booking') }}
                 </a>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white">
-                    {{ __('Write a review for') }} {{ $booking->accommodation->property->title }}
-                </h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Help future guests by sharing your experience.') }}</p>
             </div>
+
+            <x-page-header
+                :title="__('Write a review for') . ' ' . $booking->accommodation->property->title"
+                description="Help future guests by sharing your verified stay experience and rating."
+                icon="sparkles"
+                badge="Review" />
 
             @if($errors->any())
                 <div class="mb-8 p-4 rounded-2xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 text-rose-800 dark:text-rose-300 text-sm">

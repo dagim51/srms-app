@@ -99,6 +99,10 @@
 
                     {{-- Desktop Nav Links --}}
                     <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600 dark:text-slate-300" aria-label="Main navigation">
+                        <a href="{{ route('home') }}" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1.5 {{ request()->routeIs('home') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-home">
+                            <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                            <span>{{ __('Home') }}</span>
+                        </a>
                         <a href="/search" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex items-center gap-1.5 {{ request()->routeIs('search') ? 'text-orange-600 dark:text-orange-400 font-bold' : '' }}" id="nav-search">
                             <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                             <span>{{ __('Search') }}</span>
@@ -167,6 +171,10 @@
              x-cloak>
             <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-2xl pointer-events-auto space-y-3">
                 <nav class="flex flex-col gap-1 text-sm font-medium" aria-label="Mobile navigation">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('home') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-home">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                        <span>{{ __('Home') }}</span>
+                    </a>
                     <a href="/search" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('search') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-search">
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                         <span>{{ __('Search Engine') }}</span>

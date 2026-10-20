@@ -40,8 +40,13 @@
         }
     @endphp
 
-    <div class="max-w-5xl mx-auto space-y-6">
-        
+    <div class="max-w-5xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Offer & Negotiation Details"
+            :description="__('Review offer timeline, counter-proposals, escrow terms, and contractual deposit milestones for') . ' ' . ($listing->property->title ?? 'this listing') . '.'"
+            icon="document"
+            badge="Negotiation" />
+
         @if(session('success'))
             <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200 flex items-center justify-between">
                 <div class="flex items-center gap-2">

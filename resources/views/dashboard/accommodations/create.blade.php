@@ -8,12 +8,14 @@
         <span class="text-muted dark:text-white font-medium">{{ __('New') }}</span>
     </x-slot>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Setup New Accommodation"
+            description="Convert one of your properties into a bookable short-term stay with customized night rates and guest policies."
+            icon="key"
+            badge="Accommodations" />
+
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
-            <div class="mb-8 border-b border-warm dark:border-warm pb-6">
-                <h2 class="text-xl font-bold font-display text-muted dark:text-white mb-2">{{ __('Setup New Accommodation') }}</h2>
-                <p class="text-muted text-sm">{{ __('Convert one of your properties into a bookable short-term stay.') }}</p>
-            </div>
 
             @if($properties->isEmpty())
                 <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium">

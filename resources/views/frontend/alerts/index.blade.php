@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Saved Searches & Alerts') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('Saved Searches & Alerts')"
             :description="__('Configure automated property watchlists, instant notifications, and market price-drop monitors.')"

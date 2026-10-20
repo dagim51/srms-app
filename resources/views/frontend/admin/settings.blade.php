@@ -1,14 +1,16 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Global Settings') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto space-y-6">
-        <div class="flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Global Settings') }}</h1>
-                <p class="text-muted dark:text-muted mt-1.5 text-sm">{{ __('Configure platform-wide settings and integrations.') }}</p>
-            </div>
-            <a href="{{ route('dashboard.settings', ['tab' => 'platform']) }}" class="btn btn-primary font-bold shadow-xs">{{ __('Open Full Platform Settings') }}</a>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Global System Settings"
+            description="Configure platform-wide financial thresholds, regional currencies, notification channels, and operational integrations."
+            icon="cog"
+            badge="Administration">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.settings', ['tab' => 'platform']) }}" class="btn btn-primary font-bold shadow-xs">{{ __('Open Full Platform Settings') }}</a>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.admin.partials.tabs')
 

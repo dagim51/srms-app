@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Listing Assistant') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('AI Listing Assistant')"
             :description="__('Generate compelling marketing copy, amenity highlights, and bilingual property descriptions in seconds.')"

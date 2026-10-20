@@ -7,23 +7,21 @@
         <span class="text-muted dark:text-dark-subtle">{{ __('Create User') }}</span>
     @endsection
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto page-enter space-y-6">
 
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <a href="{{ route('dashboard.admin.users') }}" class="inline-flex items-center gap-1.5 text-xs text-orange-600 hover:text-orange-700 font-bold mb-2">
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Create New User Account"
+            description="Provision credentials, associate organization branch, and define operational access levels."
+            icon="users"
+            badge="User Provisioning">
+            <x-slot:actions>
+                <a href="{{ route('dashboard.admin.users') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
-                    {{ __('Back to User Directory') }}
+                    {{ __('Back to Users') }}
                 </a>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">
-                    {{ __('Add New User & Set Permissions') }}
-                </h1>
-                <p class="text-muted dark:text-muted mt-1 text-sm">
-                    {{ __('Provision credentials, associate organization branch, and define operational access.') }}
-                </p>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         @if (session('error'))
             <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm font-semibold">

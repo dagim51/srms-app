@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\TenantProfile;
+use App\Http\Resources\LeaseResource;
+use App\Http\Resources\RentalApplicationResource;
+use App\Http\Resources\TenantProfileResource;
 use App\Models\RentalApplication;
-use App\Models\Lease;
-use App\Models\RentSchedule;
-use Carbon\Carbon;
+use App\Services\Rentals\LeaseService;
+use Illuminate\Http\Request;
 
 class RentalController extends Controller
 {
+    public function __construct(
+        protected LeaseService $leaseService
+    ) {}
+
     public function storeTenantProfile(Request $request)
     {
         $validated = $request->validate([
@@ -19,12 +23,9 @@ class RentalController extends Controller
             'annual_income' => 'nullable|numeric',
         ]);
         
-        $profile = TenantProfile::updateOrCreate(
-            ['user_id' => auth()->id()],
-            $validated
-        );
+        $profile = $this->leaseService->storeTenantProfile(auth()->id(), $validated);
         
-        return response()->json(['data' => $profile], 201);
+        return (new TenantProfileResource($profile))->response()->setStatusCode(201);
     }
     
     public function storeApplication(Request $request)
@@ -35,17 +36,9 @@ class RentalController extends Controller
             'message' => 'nullable|string'
         ]);
         
-        $profile = TenantProfile::where('user_id', auth()->id())->firstOrFail();
+        $application = $this->leaseService->submitApplication(auth()->id(), $validated);
         
-        $application = RentalApplication::create([
-            'property_id' => $validated['property_id'],
-            'tenant_profile_id' => $profile->id,
-            'status' => 'pending',
-            'proposed_rent' => $validated['proposed_rent'] ?? null,
-            'message' => $validated['message'] ?? null,
-        ]);
-        
-        return response()->json(['data' => $application], 201);
+        return (new RentalApplicationResource($application))->response()->setStatusCode(201);
     }
     
     public function approveApplication(Request $request, RentalApplication $application)
@@ -57,32 +50,8 @@ class RentalController extends Controller
             'deposit_amount' => 'required|numeric',
         ]);
         
-        $application->update(['status' => 'approved']);
+        $lease = $this->leaseService->approveApplication($application, $validated);
         
-        $lease = Lease::create([
-            'property_id' => $application->property_id,
-            'tenant_profile_id' => $application->tenant_profile_id,
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
-            'rent_amount' => $validated['rent_amount'],
-            'deposit_amount' => $validated['deposit_amount'],
-            'status' => 'active',
-        ]);
-        
-        // Auto-generate rent schedules for the duration (monthly)
-        $start = Carbon::parse($validated['start_date']);
-        $end = Carbon::parse($validated['end_date']);
-        
-        while ($start < $end) {
-            RentSchedule::create([
-                'lease_id' => $lease->id,
-                'due_date' => $start->copy()->toDateString(),
-                'amount' => $validated['rent_amount'],
-                'status' => 'unpaid',
-            ]);
-            $start->addMonth();
-        }
-        
-        return response()->json(['data' => $lease->load('schedules')], 201);
+        return (new LeaseResource($lease->load('schedules')))->response()->setStatusCode(201);
     }
 }

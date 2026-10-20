@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\CrmActivity;
 use App\Models\OrganizationMember;
+use App\Http\Resources\LeadResource;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -20,7 +21,7 @@ class LeadController extends Controller
             ->orderByDesc('created_at')
             ->paginate(15);
             
-        return response()->json(['data' => $leads]);
+        return LeadResource::collection($leads);
     }
 
     public function store(Request $request)
@@ -47,7 +48,7 @@ class LeadController extends Controller
         
         $lead = Lead::create($validated);
         
-        return response()->json(['data' => $lead], 201);
+        return (new LeadResource($lead))->response()->setStatusCode(201);
     }
 
     public function update(Request $request, Lead $lead)
@@ -68,7 +69,7 @@ class LeadController extends Controller
         
         $lead->update($validated);
         
-        return response()->json(['data' => $lead]);
+        return new LeadResource($lead);
     }
     
     public function addActivity(Request $request, Lead $lead)

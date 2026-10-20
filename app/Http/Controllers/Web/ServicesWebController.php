@@ -173,8 +173,16 @@ class ServicesWebController extends Controller
             ['id' => 'PRO-003', 'name' => 'Bole Architecture Group', 'category' => 'Architects', 'rating' => 4.8, 'reviews' => 82, 'rate' => 'Custom Quote'],
         ]);
 
-        if ($request->has('category')) {
+        if ($request->has('category') && $request->input('category') !== '') {
             $professionals = $professionals->where('category', $request->input('category'));
+        }
+
+        if ($request->filled('q')) {
+            $q = strtolower(trim($request->input('q')));
+            $professionals = $professionals->filter(function($p) use ($q) {
+                return str_contains(strtolower($p['name']), $q)
+                    || str_contains(strtolower($p['category']), $q);
+            });
         }
 
         return view('frontend.services.index', ['categories' => $categories, 'professionals' => $professionals->values()]);

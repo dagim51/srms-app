@@ -10,12 +10,14 @@
         <span class="text-muted dark:text-white font-medium">{{ __('Edit') }}</span>
     </x-slot>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Edit Accommodation Specs"
+            :description="__('Update room configurations and house rules for') . ' ' . $accommodation->property->title . '.'"
+            icon="key"
+            badge="Accommodations" />
+
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
-            <div class="mb-8 border-b border-warm dark:border-warm pb-6">
-                <h2 class="text-xl font-bold font-display text-muted dark:text-white mb-2">{{ __('Edit Accommodation Specs') }}</h2>
-                <p class="text-muted text-sm">{{ __('Update room configurations and house rules for') }} {{ $accommodation->property->title }}.</p>
-            </div>
 
             <form action="{{ route('dashboard.accommodations.update', $accommodation) }}" method="POST" class="space-y-6">
                 @csrf @method('PUT')

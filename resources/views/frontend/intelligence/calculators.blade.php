@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Investment Calculators') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('Investment Calculators')"
             :description="__('Evaluate mortgages, rental yields, cap rates, and financing feasibility for real estate investments.')"

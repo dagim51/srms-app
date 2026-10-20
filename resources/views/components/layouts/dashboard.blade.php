@@ -510,20 +510,23 @@
 
                 {{-- Center: Global Quick Command Search (Desktop) --}}
                 <div class="hidden md:flex items-center flex-1 max-w-md mx-4">
-                    <div class="relative w-full">
+                    <form action="{{ route('search') }}" method="GET" class="w-full relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                             </svg>
                         </div>
                         <input type="text"
+                               name="q"
+                               id="dashboard-global-search-input"
+                               value="{{ request('q') }}"
                                placeholder="{{ __('Search properties, transactions, clients... (⌘K)') }}"
                                class="w-full pl-9 pr-12 py-1.5 text-xs bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 rounded-xl text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
                                aria-label="Global search">
                         <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
                             <kbd class="px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md">⌘K</kbd>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 {{-- Topbar Right --}}
@@ -570,7 +573,7 @@
                 @endif
 
                 {{-- Page heading is provided by the topbar (title + breadcrumb); no duplicated hero. --}}
-                <div class="page-content-wrapper page-enter w-full">
+                <div class="page-content-wrapper w-full">
                     {{ $slot }}
                 </div>
             </main>
@@ -579,6 +582,19 @@
 
     {{-- Toast Container --}}
     <div id="toast-container" class="fixed bottom-6 right-6 z-[80] flex flex-col gap-3" aria-live="polite"></div>
+
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                const searchInput = document.getElementById('dashboard-global-search-input');
+                if (searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
+    </script>
 
     @stack('scripts')
 </body>

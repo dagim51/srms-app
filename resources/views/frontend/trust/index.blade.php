@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Safety Center') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             title="Trust & Safety Center"
             description="Investigate reported listings, review dispute cases, and enforce marketplace trust and safety standards."

@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Integrations Status') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             title="External System Integrations"
             description="Manage PostGIS mapping providers, payment gateway webhooks, SMS notification channels, and banking APIs."

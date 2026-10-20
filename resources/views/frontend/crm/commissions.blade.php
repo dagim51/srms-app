@@ -1,11 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Commissions') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Commissions Summary') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Track your earnings and pending payouts.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Commissions Summary"
+            description="Track real estate agent sales commissions, payout statuses, milestone releases, and split accounting."
+            icon="cash"
+            badge="Commissions" />
 
         @include('frontend.crm.partials.tabs')
 

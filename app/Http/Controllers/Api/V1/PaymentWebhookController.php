@@ -55,6 +55,18 @@ class PaymentWebhookController extends Controller
             return response()->json(['code' => 'INVALID_PAYLOAD', 'msg' => 'Missing out_trade_no'], 400);
         }
 
+        // Idempotency / Replay protection: if payment already completed, return OK immediately
+        $existing = Payment::where(function ($q) use ($outTradeNo) {
+            $q->where('transaction_reference', $outTradeNo)
+              ->orWhere('id', $outTradeNo)
+              ->orWhere('metadata->gateway_order_ref', $outTradeNo);
+        })->first();
+
+        if ($existing && $existing->status === 'completed' && in_array($tradeStatus, ['SUCCESS', 'TRADE_SUCCESS', 'completed', 'paid'])) {
+            Log::info('Telebirr webhook duplicate ignored', ['out_trade_no' => $outTradeNo]);
+            return response()->json(['code' => 'SUCCESS', 'msg' => 'Already processed']);
+        }
+
         try {
             match ($tradeStatus) {
                 'SUCCESS', 'TRADE_SUCCESS', 'completed', 'paid' => $this->handleSuccess($outTradeNo, $payload),

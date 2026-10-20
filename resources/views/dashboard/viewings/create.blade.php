@@ -8,9 +8,14 @@
         <span class="text-muted dark:text-white font-medium">{{ __('Request') }}</span>
     </x-slot>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Schedule Property Viewing"
+            description="Arrange an on-site private walkthrough, coordinate appointment times with the host agent, and request virtual tours."
+            icon="calendar"
+            badge="Viewings" />
+
         <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
-            <h2 class="text-xl font-bold font-display text-muted dark:text-white mb-6">{{ __('Schedule Property Viewing') }}</h2>
             
             @if($listing)
                 <div class="flex items-start gap-4 p-4 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 mb-8">

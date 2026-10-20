@@ -46,7 +46,13 @@ class FeatureCatalogController extends Controller
         ]);
 
         if (empty($validated['code'])) {
-            $validated['code'] = Str::slug($validated['name_en'], '_');
+            $baseCode = Str::slug($validated['name_en'], '_') ?: 'feature';
+            $code = $baseCode;
+            $counter = 1;
+            while (PropertyFeature::where('code', $code)->exists()) {
+                $code = $baseCode . '_' . $counter++;
+            }
+            $validated['code'] = $code;
         }
 
         PropertyFeature::create($validated);

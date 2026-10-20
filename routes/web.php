@@ -228,19 +228,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/trust/disputes', [\App\Http\Controllers\Web\TrustWebController::class, 'disputes'])->name('dashboard.trust.disputes');
     Route::get('/dashboard/trust/cases/{id}', [\App\Http\Controllers\Web\TrustWebController::class, 'caseShow'])->name('dashboard.trust.cases.show');
 
-    // Phase 35: Administration Platform UI
-    Route::get('/dashboard/admin', [\App\Http\Controllers\Web\AdminWebController::class, 'index'])->name('dashboard.admin.index');
-    Route::get('/dashboard/admin/users', [\App\Http\Controllers\Web\AdminWebController::class, 'users'])->name('dashboard.admin.users');
-    Route::get('/dashboard/admin/users/create', [\App\Http\Controllers\Web\AdminWebController::class, 'userCreate'])->name('dashboard.admin.users.create');
-    Route::post('/dashboard/admin/users', [\App\Http\Controllers\Web\AdminWebController::class, 'userStore'])->name('dashboard.admin.users.store');
-    Route::get('/dashboard/users', [\App\Http\Controllers\Web\AdminWebController::class, 'users'])->name('dashboard.users');
-    Route::get('/dashboard/users/create', [\App\Http\Controllers\Web\AdminWebController::class, 'userCreate'])->name('dashboard.users.create');
-    Route::post('/dashboard/users', [\App\Http\Controllers\Web\AdminWebController::class, 'userStore'])->name('dashboard.users.store');
-    Route::get('/dashboard/admin/users/{id}', [\App\Http\Controllers\Web\AdminWebController::class, 'userShow'])->name('dashboard.admin.users.show');
-    Route::get('/dashboard/admin/permissions', [\App\Http\Controllers\Web\AdminWebController::class, 'permissions'])->name('dashboard.admin.permissions');
-    Route::post('/dashboard/admin/permissions', [\App\Http\Controllers\Web\AdminWebController::class, 'updatePermissions'])->name('dashboard.admin.permissions.update');
-    Route::get('/dashboard/admin/audit', [\App\Http\Controllers\Web\AdminWebController::class, 'audit'])->name('dashboard.admin.audit');
-    Route::get('/dashboard/admin/settings', [\App\Http\Controllers\Web\AdminWebController::class, 'settings'])->name('dashboard.admin.settings');
+    // Phase 35: Administration Platform UI (Restricted to Administrator role)
+    Route::middleware('role:Administrator')->group(function () {
+        Route::get('/dashboard/admin', [\App\Http\Controllers\Web\AdminWebController::class, 'index'])->name('dashboard.admin.index');
+        Route::get('/dashboard/admin/users', [\App\Http\Controllers\Web\AdminWebController::class, 'users'])->name('dashboard.admin.users');
+        Route::get('/dashboard/admin/users/create', [\App\Http\Controllers\Web\AdminWebController::class, 'userCreate'])->name('dashboard.admin.users.create');
+        Route::post('/dashboard/admin/users', [\App\Http\Controllers\Web\AdminWebController::class, 'userStore'])->name('dashboard.admin.users.store');
+        Route::post('/dashboard/admin/users/{id}/role', [\App\Http\Controllers\Web\AdminWebController::class, 'updateUserRole'])->name('dashboard.admin.users.role');
+        Route::get('/dashboard/users', [\App\Http\Controllers\Web\AdminWebController::class, 'users'])->name('dashboard.users');
+        Route::get('/dashboard/users/create', [\App\Http\Controllers\Web\AdminWebController::class, 'userCreate'])->name('dashboard.users.create');
+        Route::post('/dashboard/users', [\App\Http\Controllers\Web\AdminWebController::class, 'userStore'])->name('dashboard.users.store');
+        Route::get('/dashboard/admin/users/{id}', [\App\Http\Controllers\Web\AdminWebController::class, 'userShow'])->name('dashboard.admin.users.show');
+        Route::get('/dashboard/admin/permissions', [\App\Http\Controllers\Web\AdminWebController::class, 'permissions'])->name('dashboard.admin.permissions');
+        Route::post('/dashboard/admin/permissions', [\App\Http\Controllers\Web\AdminWebController::class, 'updatePermissions'])->name('dashboard.admin.permissions.update');
+        Route::get('/dashboard/admin/audit', [\App\Http\Controllers\Web\AdminWebController::class, 'audit'])->name('dashboard.admin.audit');
+        Route::get('/dashboard/admin/settings', [\App\Http\Controllers\Web\AdminWebController::class, 'settings'])->name('dashboard.admin.settings');
+    });
 
     // Account & Platform Settings
     Route::get('/dashboard/settings', [\App\Http\Controllers\Web\SettingsWebController::class, 'index'])->name('dashboard.settings');
@@ -283,18 +286,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/ai/search', [\App\Http\Controllers\Web\AiSearchWebController::class, 'search'])->name('dashboard.ai.search');
     Route::match(['get', 'post'], '/dashboard/ai/assistant', [\App\Http\Controllers\Web\AiSearchWebController::class, 'assistant'])->name('dashboard.ai.assistant');
 
-    // Dashboard properties (scaffold)
-    Route::get('/dashboard/properties', function () {
-        $properties = \App\Models\Property::with(['media'])->latest()->paginate(10);
-        return view('dashboard.properties.index', compact('properties'));
-    });
-    Route::get('/dashboard/properties/create', function () {
-        return view('dashboard.properties.create');
-    });
-    Route::post('/dashboard/properties', function (\Illuminate\Http\Request $request) {
-        // Mock save logic
-        return redirect('/dashboard/properties')->with('success', 'Property successfully created!');
-    });
+    // Dashboard properties (PropertyWebController)
+    Route::get('/dashboard/properties', [\App\Http\Controllers\Web\PropertyWebController::class, 'index'])->name('dashboard.properties.index');
+    Route::get('/dashboard/properties/create', [\App\Http\Controllers\Web\PropertyWebController::class, 'create'])->name('dashboard.properties.create');
+    Route::post('/dashboard/properties', [\App\Http\Controllers\Web\PropertyWebController::class, 'store'])->name('dashboard.properties.store');
+    Route::get('/dashboard/properties/{property}/edit', [\App\Http\Controllers\Web\PropertyWebController::class, 'edit'])->name('dashboard.properties.edit');
+    Route::put('/dashboard/properties/{property}', [\App\Http\Controllers\Web\PropertyWebController::class, 'update'])->name('dashboard.properties.update');
+    Route::delete('/dashboard/properties/{property}', [\App\Http\Controllers\Web\PropertyWebController::class, 'destroy'])->name('dashboard.properties.destroy');
 
     // Phase 11: Listing Core UI
     Route::get('/dashboard/listings', [\App\Http\Controllers\Web\ListingController::class, 'index'])->name('dashboard.listings.index');

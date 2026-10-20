@@ -11,8 +11,19 @@
             <div class="absolute top-0 right-0 w-full max-w-3xl h-full max-h-3xl rounded-full bg-amber-400/10 blur-[120px] pointer-events-none"></div>
         @endif
 
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10">
-            
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 relative z-10 page-enter">
+
+            <x-page-header
+                :title="'Booking: ' . $booking->reference"
+                :description="'Property: ' . $booking->accommodation->property->title . ' • Status: ' . strtoupper($booking->status)"
+                icon="calendar"
+                :badge="strtoupper($booking->status)">
+                <x-slot:actions>
+                    <a href="{{ route('dashboard.reservations.index') }}" class="btn btn-secondary text-xs">
+                        {{ __('View All Reservations') }}
+                    </a>
+                </x-slot:actions>
+            </x-page-header>
             @if(session('success'))
                 <div class="mb-10 p-5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 font-medium border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-md animate-fade-in flex items-center gap-3 shadow-sm">
                     <svg class="w-6 h-6 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

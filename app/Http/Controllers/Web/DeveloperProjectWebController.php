@@ -76,19 +76,36 @@ class DeveloperProjectWebController extends Controller
         return view('frontend.developer.projects.buildings', compact('project', 'buildings'));
     }
 
-    public function units($id)
+    public function units(Request $request, $id)
     {
         $project = collect($this->projects)->firstWhere('id', (int) $id);
         if (!$project) abort(404);
 
-        $units = [
+        $units = collect([
             ['id' => 101, 'number' => 'A-101', 'type' => '2 Bedroom', 'floor' => 1, 'price' => '8,500,000 ETB', 'status' => 'available'],
             ['id' => 102, 'number' => 'A-102', 'type' => '3 Bedroom', 'floor' => 1, 'price' => '12,000,000 ETB', 'status' => 'sold'],
             ['id' => 201, 'number' => 'A-201', 'type' => '2 Bedroom', 'floor' => 2, 'price' => '8,600,000 ETB', 'status' => 'reserved'],
             ['id' => 202, 'number' => 'A-202', 'type' => '3 Bedroom', 'floor' => 2, 'price' => '12,200,000 ETB', 'status' => 'available'],
-        ];
+        ]);
 
-        return view('frontend.developer.projects.units', compact('project', 'units'));
+        if ($request->filled('search')) {
+            $q = strtolower(trim($request->search));
+            $units = $units->filter(function($u) use ($q) {
+                return str_contains(strtolower($u['number']), $q)
+                    || str_contains(strtolower($u['type']), $q)
+                    || str_contains(strtolower($u['status']), $q)
+                    || str_contains(strtolower((string)$u['floor']), $q);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $units = $units->where('status', $request->status);
+        }
+
+        return view('frontend.developer.projects.units', [
+            'project' => $project,
+            'units' => $units->values()
+        ]);
     }
 
     public function progress($id)

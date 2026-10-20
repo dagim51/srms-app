@@ -164,6 +164,107 @@ class BookingManager
     }
 
     /**
+     * Calculate an itemized detailed price breakdown including dynamic rules,
+     * weekend surcharges, cleaning fee, platform service fee, and taxes.
+     */
+    public function calculateDetailedPrice(Accommodation $accommodation, string $checkIn, string $checkOut, array $options = []): array
+    {
+        $start = \Carbon\Carbon::parse($checkIn);
+        $end = \Carbon\Carbon::parse($checkOut);
+        $nights = max(1, (int) $start->diffInDays($end));
+
+        $baseNightlyRate = (float) ($accommodation->listing->price ?? $accommodation->property->price ?? 100);
+        $baseSubtotal = $baseNightlyRate * $nights;
+
+        // Day by day breakdown to analyze weekends
+        $dailyBreakdown = [];
+        $weekendNights = 0;
+        $current = $start->copy();
+
+        while ($current->lt($end)) {
+            // Friday (5) and Saturday (6) considered weekend nights
+            $isWeekend = in_array($current->dayOfWeek, [\Carbon\Carbon::FRIDAY, \Carbon\Carbon::SATURDAY]);
+            if ($isWeekend) {
+                $weekendNights++;
+            }
+            $dailyBreakdown[] = [
+                'date' => $current->toDateString(),
+                'day_of_week' => $current->format('l'),
+                'is_weekend' => $isWeekend,
+                'rate' => $baseNightlyRate,
+            ];
+            $current->addDay();
+        }
+
+        // Weekend surcharge (default 10% on weekend nights if option enabled or rules dictate)
+        $weekendMultiplier = $options['weekend_multiplier'] ?? 0.10;
+        $weekendSurcharge = round($weekendNights * $baseNightlyRate * $weekendMultiplier, 2);
+
+        // Fetch applicable accommodation pricing rules
+        $rules = \App\Models\AccommodationPricingRule::where('accommodation_id', $accommodation->id)
+            ->where(function ($q) use ($checkIn, $checkOut) {
+                $q->where(function ($q2) use ($checkIn, $checkOut) {
+                    $q2->whereNull('start_date')
+                       ->orWhere(function ($q3) use ($checkIn, $checkOut) {
+                           $q3->where('start_date', '<', $checkOut)
+                              ->where('end_date', '>', $checkIn);
+                       });
+                });
+            })
+            ->orderByDesc('priority')
+            ->get();
+
+        $pricingAdjustments = [];
+        $ruleAdjustmentTotal = 0.0;
+
+        foreach ($rules as $rule) {
+            $adjAmount = 0.0;
+            if ($rule->price_modifier_type === 'fixed') {
+                $adjAmount = ($rule->price_modifier_value * $nights) - $baseSubtotal;
+            } else {
+                $adjAmount = $baseSubtotal * ($rule->price_modifier_value / 100);
+            }
+            $ruleAdjustmentTotal += $adjAmount;
+            $pricingAdjustments[] = [
+                'rule_id' => $rule->id,
+                'type' => $rule->type,
+                'modifier_type' => $rule->price_modifier_type,
+                'modifier_value' => (float) $rule->price_modifier_value,
+                'adjustment_amount' => round($adjAmount, 2),
+            ];
+        }
+
+        $staySubtotal = round($baseSubtotal + $weekendSurcharge + $ruleAdjustmentTotal, 2);
+
+        // Mandatory fees
+        $cleaningFee = (float) ($options['cleaning_fee'] ?? 50.00);
+        $serviceFeeRate = $options['service_fee_rate'] ?? 0.05; // 5% service fee
+        $serviceFee = round($staySubtotal * $serviceFeeRate, 2);
+        $taxRate = $options['tax_rate'] ?? 0.15; // 15% VAT
+        $taxAmount = round(($staySubtotal + $serviceFee) * $taxRate, 2);
+
+        $totalPrice = round($staySubtotal + $cleaningFee + $serviceFee + $taxAmount, 2);
+
+        return [
+            'check_in_date' => $checkIn,
+            'check_out_date' => $checkOut,
+            'nights' => $nights,
+            'base_nightly_rate' => $baseNightlyRate,
+            'base_subtotal' => round($baseSubtotal, 2),
+            'weekend_nights' => $weekendNights,
+            'weekend_surcharge' => $weekendSurcharge,
+            'pricing_rules' => $pricingAdjustments,
+            'stay_subtotal' => $staySubtotal,
+            'cleaning_fee' => $cleaningFee,
+            'service_fee' => $serviceFee,
+            'tax_amount' => $taxAmount,
+            'total_price' => $totalPrice,
+            'currency' => 'ETB',
+            'daily_breakdown' => $dailyBreakdown,
+        ];
+    }
+
+    /**
      * Bulk confirm bookings.
      */
     public function bulkConfirm(Collection $bookings, ?string $confirmedBy = null): Collection

@@ -10,10 +10,15 @@
     </x-slot:breadcrumb>
 
     <div x-data="{
-        showCreateModal: false,
-        showEditModal: false,
+        showCreateModal: {{ $errors->any() && old('_action') === 'create' ? 'true' : 'false' }},
+        showEditModal: {{ $errors->any() && old('_action') === 'edit' ? 'true' : 'false' }},
         showDeleteModal: false,
-        activeFeature: { id: '', name_en: '', code: '', status: 'active' },
+        activeFeature: { 
+            id: '{{ old('id', '') }}', 
+            name_en: '{{ old('name_en', '') }}', 
+            code: '{{ old('code', '') }}', 
+            status: '{{ old('status', 'active') }}' 
+        },
         deleteUrl: '',
         
         openEdit(item) {
@@ -26,7 +31,7 @@
             this.deleteUrl = '/dashboard/features/' + id;
             this.showDeleteModal = true;
         }
-    }" class="space-y-6 page-enter pb-12 font-sans">
+    }" class="space-y-6 pb-12 font-sans">
 
         {{-- Success Flash Alert --}}
         @if (session('success'))
@@ -119,8 +124,13 @@
                             name="search" 
                             value="{{ request('search') }}" 
                             placeholder="Search features (e.g. Marble, Ceilings)..." 
-                            class="form-input pl-9 w-full text-sm"
+                            class="form-input search-input pl-9 pr-8 w-full text-sm"
                         >
+                        @if(request('search'))
+                            <a href="{{ route('dashboard.features.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </a>
+                        @endif
                     </div>
 
                     <select name="status" onchange="this.form.submit()" class="form-select text-sm min-w-30">
@@ -270,21 +280,22 @@
 
                     <form action="{{ route('dashboard.features.store') }}" method="POST" class="space-y-4">
                         @csrf
+                        <input type="hidden" name="_action" value="create">
                         <div>
                             <x-label for="create_feature_name_en" required>Feature Name (English)</x-label>
-                            <x-input type="text" id="create_feature_name_en" name="name_en" placeholder="{{ __('e.g. Italian Marble Flooring, High Ceilings') }}" required class="w-full" />
+                            <x-input type="text" id="create_feature_name_en" name="name_en" value="{{ old('_action') === 'create' ? old('name_en') : '' }}" placeholder="{{ __('e.g. Italian Marble Flooring, High Ceilings') }}" required class="w-full" />
                         </div>
 
                         <div>
                             <x-label for="create_feature_code">System Code (Optional)</x-label>
-                            <x-input type="text" id="create_feature_code" name="code" placeholder="e.g. italian_marble (auto-generated if empty)" class="w-full font-mono text-xs" />
+                            <x-input type="text" id="create_feature_code" name="code" value="{{ old('_action') === 'create' ? old('code') : '' }}" placeholder="e.g. italian_marble (auto-generated if empty)" class="w-full font-mono text-xs" />
                         </div>
 
                         <div>
                             <x-label for="create_feature_status" required>Status</x-label>
                             <select id="create_feature_status" name="status" class="form-select w-full">
-                                <option value="active" selected>{{ __('Active') }}</option>
-                                <option value="inactive">{{ __('Inactive') }}</option>
+                                <option value="active" {{ old('_action') === 'create' && old('status') === 'inactive' ? '' : 'selected' }}>{{ __('Active') }}</option>
+                                <option value="inactive" {{ old('_action') === 'create' && old('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                             </select>
                         </div>
 

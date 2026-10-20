@@ -17,6 +17,12 @@
     @endphp
 
     <div class="max-w-7xl mx-auto page-enter pb-16 space-y-6" x-data="{ selectedAction: 'approve', reasonText: '' }">
+        <x-page-header
+            title="Listing Inspection Workbench"
+            :description="__('Detailed moderation review, document checks, and approval workbench for') . ' ' . ($listing->property->title ?? 'this listing') . '.'"
+            icon="shield"
+            badge="Trust & Safety" />
+
         {{-- Flash Messages --}}
         @if(session('error'))
             <x-alert type="error">

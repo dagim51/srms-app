@@ -50,6 +50,13 @@ class DatabaseSeeder extends Seeder
         // Moderation users + listing states (published, pending, rejected)
         $this->call(ModerationUserSeeder::class);
 
-        $this->command?->info('Core database seeded successfully. Run with --class=DemoDataSeeder for richer demo data.');
+        // Advanced Verticals: Rental, Developer Sales, Operations, Finance, Trust
+        $this->call(RentalSeeder::class);
+        $this->call(DeveloperSalesSeeder::class);
+        $this->call(OperationsSeeder::class);
+        $this->call(FinancialLedgerSeeder::class);
+        $this->call(TrustSafetySeeder::class);
+
+        $this->command?->info('Core database seeded successfully with advanced operational domains.');
     }
 }

@@ -34,7 +34,7 @@
         isGranted(code) {
             return this.activePermissions.includes(code);
         }
-    }" class="max-w-7xl mx-auto space-y-6">
+    }" class="max-w-7xl mx-auto page-enter space-y-6">
 
         {{-- Flash Alerts --}}
         @if (session('success'))
@@ -47,35 +47,28 @@
             </div>
         @endif
 
-        {{-- Page Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-                <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 mb-1">
-                    <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                    {{ __('Role-Based Access Control (RBAC)') }}
+        {{-- Standardized Page Header Card --}}
+        <x-page-header
+            title="Access Control & Permissions Matrix"
+            description="Determine exactly what roles and users are allowed to do across properties, marketplace listings, escrow finances, and system operations."
+            icon="shield"
+            badge="RBAC Matrix">
+            <x-slot:actions>
+                {{-- Mode Switcher Pill --}}
+                <div class="flex items-center p-1 rounded-xl bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] shadow-xs">
+                    <button type="button" @click="viewMode = 'role'"
+                            :class="viewMode === 'role' ? 'bg-[#FFEFE0] dark:bg-[#172033] text-orange-700 dark:text-orange-300 font-bold shadow-2xs' : 'text-muted dark:text-muted hover:text-muted'"
+                            class="px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+                        {{ __('Role Matrix') }}
+                    </button>
+                    <button type="button" @click="viewMode = 'user'"
+                            :class="viewMode === 'user' ? 'bg-[#FFEFE0] dark:bg-[#172033] text-orange-700 dark:text-orange-300 font-bold shadow-2xs' : 'text-muted dark:text-muted hover:text-muted'"
+                            class="px-3.5 py-1.5 rounded-lg text-xs transition-all cursor-pointer">
+                        {{ __('User Inspector') }}
+                    </button>
                 </div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">
-                    {{ __('Access Control & Permissions Matrix') }}
-                </h1>
-                <p class="text-muted dark:text-muted mt-1.5 text-sm max-w-2xl">
-                    {{ __('Determine exactly what roles and users are allowed to do across properties, marketplace listings, escrow finances, and system operations.') }}
-                </p>
-            </div>
-            
-            {{-- Mode Switcher Pill --}}
-            <div class="flex items-center p-1 rounded-xl bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] shadow-xs">
-                <button type="button" @click="viewMode = 'role'"
-                        :class="viewMode === 'role' ? 'bg-[#FFEFE0] dark:bg-[#172033] text-orange-700 dark:text-orange-300 font-bold shadow-2xs' : 'text-muted dark:text-muted hover:text-muted'"
-                        class="px-3.5 py-1.5 rounded-lg text-xs transition-all">
-                    {{ __('Role Matrix') }}
-                </button>
-                <button type="button" @click="viewMode = 'user'"
-                        :class="viewMode === 'user' ? 'bg-[#FFEFE0] dark:bg-[#172033] text-orange-700 dark:text-orange-300 font-bold shadow-2xs' : 'text-muted dark:text-muted hover:text-muted'"
-                        class="px-3.5 py-1.5 rounded-lg text-xs transition-all">
-                    {{ __('User Inspector') }}
-                </button>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.admin.partials.tabs')
 

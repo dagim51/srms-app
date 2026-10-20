@@ -39,10 +39,27 @@ class CrmWebController extends Controller
         return view('frontend.crm.index', compact('stats', 'leads'));
     }
 
-    public function leads()
+    public function leads(Request $request)
     {
-        $leads = $this->leads;
-        return view('frontend.crm.leads', compact('leads'));
+        $leads = collect($this->leads);
+        
+        if ($request->filled('search')) {
+            $q = strtolower(trim($request->search));
+            $leads = $leads->filter(function($l) use ($q) {
+                return str_contains(strtolower($l['name']), $q)
+                    || str_contains(strtolower($l['property']), $q)
+                    || str_contains(strtolower($l['assigned_to']), $q)
+                    || str_contains(strtolower($l['status']), $q);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $leads = $leads->where('status', $request->status);
+        }
+
+        return view('frontend.crm.leads', [
+            'leads' => $leads->values()
+        ]);
     }
 
     public function leadShow($id)
@@ -85,14 +102,27 @@ class CrmWebController extends Controller
         return view('frontend.crm.pipeline', compact('pipeline'));
     }
 
-    public function clients()
+    public function clients(Request $request)
     {
-        $clients = [
+        $clients = collect([
             ['id' => 1, 'name' => 'Abebe Kebede', 'email' => 'abebe@example.com', 'phone' => '+251 911 234567', 'type' => 'Buyer', 'properties' => 1],
             ['id' => 2, 'name' => 'Sara Tadesse', 'email' => 'sara@example.com', 'phone' => '+251 912 345678', 'type' => 'Tenant', 'properties' => 0],
             ['id' => 3, 'name' => 'Dawit Girma', 'email' => 'dawit@example.com', 'phone' => '+251 913 456789', 'type' => 'Seller', 'properties' => 2],
-        ];
-        return view('frontend.crm.clients', compact('clients'));
+        ]);
+
+        if ($request->filled('search')) {
+            $q = strtolower(trim($request->search));
+            $clients = $clients->filter(function($c) use ($q) {
+                return str_contains(strtolower($c['name']), $q)
+                    || str_contains(strtolower($c['email']), $q)
+                    || str_contains(strtolower($c['phone']), $q)
+                    || str_contains(strtolower($c['type']), $q);
+            });
+        }
+
+        return view('frontend.crm.clients', [
+            'clients' => $clients->values()
+        ]);
     }
 
     public function tasks()

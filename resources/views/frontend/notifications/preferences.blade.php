@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot name="title">{{ __('Notification Preferences - SRMS') }}</x-slot>
 
-    <div class="page-container pt-32 pb-24 max-w-3xl relative z-10">
+    <div class="page-container pt-32 pb-24 max-w-3xl relative z-10 page-enter">
         
         <a href="{{ route('dashboard.notifications.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>

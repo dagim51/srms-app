@@ -19,6 +19,12 @@
     @endphp
 
     <div class="max-w-4xl mx-auto page-enter pb-16 space-y-6">
+        <x-page-header
+            title="Listing Lifecycle Status"
+            :description="__('Track the verification, moderation, publishing lifecycle, and compliance audit log for') . ' ' . ($listing->property->title ?? 'this property') . '.'"
+            icon="shield"
+            badge="Trust & Safety" />
+
         {{-- Flash Messages --}}
         @if(session('success'))
             <x-alert type="success">

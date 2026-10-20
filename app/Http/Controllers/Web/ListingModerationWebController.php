@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ListingModerationWebController extends Controller
 {
+    public function __construct(
+        protected \App\Services\Listings\ListingPublisher $listingPublisher
+    ) {}
+
     /**
      * Enforce authorization: only Administrator / Moderator can access.
      */
@@ -111,23 +115,15 @@ class ListingModerationWebController extends Controller
             return back()->with('error', 'A clear rejection reason or explanation is mandatory when rejecting a listing.');
         }
 
+        $moderatorId = Auth::id() ?? User::whereHas('roles', fn($q) => $q->where('name', 'Administrator'))->first()->id;
+
         if ($action === 'approve') {
-            $listing->status = 'published';
-            $listing->published_at = $listing->published_at ?? now();
+            $this->listingPublisher->approve($listing, $moderatorId, $comment);
         } elseif ($action === 'reject') {
-            $listing->status = 'rejected';
+            $this->listingPublisher->reject($listing, $moderatorId, $comment);
         } elseif ($action === 'suspend') {
-            $listing->status = 'suspended';
+            $this->listingPublisher->suspend($listing, $moderatorId, $comment);
         }
-
-        $listing->save();
-
-        // Record in moderation audit trail
-        $listing->moderations()->create([
-            'moderator_id' => Auth::id() ?? User::whereHas('roles', fn($q) => $q->where('name', 'Administrator'))->first()->id,
-            'action' => $action,
-            'comments' => $comment,
-        ]);
 
         $statusText = match($action) {
             'approve' => 'Approved & Published to Marketplace',

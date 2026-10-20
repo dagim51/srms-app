@@ -1,13 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Recommendations') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('For You') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Personalized property recommendations based on your preferences and saved searches.') }}</p>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Personalized Recommendations"
+            description="Personalized property recommendations based on your preferences, criteria, and saved searches."
+            icon="sparkles"
+            badge="For You" />
 
         @include('frontend.alerts.partials.tabs')
 

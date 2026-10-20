@@ -7,7 +7,7 @@
         <span class="text-muted dark:text-dark-subtle">{{ __('Create Organization') }}</span>
     @endsection
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6 page-enter">
 
         {{-- Header --}}
         <div>
@@ -15,13 +15,13 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
                 {{ __('Back to Organization Directory') }}
             </a>
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">
-                {{ __('Register New Real Estate Entity') }}
-            </h1>
-            <p class="text-muted dark:text-muted mt-1 text-sm">
-                {{ __('Provision a multi-tenant organization account for property developers, agencies, or management brokerages.') }}
-            </p>
         </div>
+
+        <x-page-header
+            title="Register New Real Estate Entity"
+            description="Provision a multi-tenant organization account for property developers, agencies, or management brokerages."
+            icon="building"
+            badge="Registration" />
 
         @if (session('error'))
             <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-sm font-semibold">

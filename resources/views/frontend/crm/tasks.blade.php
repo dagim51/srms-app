@@ -1,14 +1,16 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Tasks & Follow-ups') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Tasks & Follow-ups') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Keep track of your CRM activities.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Create Task') }}</button>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="CRM Tasks & Follow-ups"
+            description="Schedule call reminders, client site visits, contract signings, and critical milestone alerts."
+            icon="calendar"
+            badge="Tasks">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Create Task') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.crm.partials.tabs')
 

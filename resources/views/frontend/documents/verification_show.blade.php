@@ -1,38 +1,23 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">Verification: {{ $verification['id'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.documents.verifications') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Back to Verifications
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        @php
-                            $sClass = 'badge-neutral';
-                            if ($verification['status'] === 'approved') $sClass = 'badge-success';
-                            if ($verification['status'] === 'pending_review') $sClass = 'badge-warning';
-                            if ($verification['status'] === 'rejected') $sClass = 'badge-error';
-                        @endphp
-                        <span class="badge {{ $sClass }} uppercase">{{ str_replace('_', ' ', $verification['status']) }}</span>
-                        <span class="badge badge-neutral uppercase">{{ $verification['type'] }}</span>
-                    </div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $verification['subject'] }}</h1>
-                    <div class="flex items-center gap-3 mt-2 text-sm text-muted">
-                        <span>Verification {{ $verification['id'] }}</span>
-                        <span>&bull;</span>
-                        <span>Submitted {{ date('M d, Y H:i', strtotime($verification['submitted'])) }}</span>
-                    </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="$verification['subject']"
+            :description="__('Verification') . ' ' . $verification['id'] . ' • ' . __('Type:') . ' ' . __($verification['type']) . ' • ' . __('Status:') . ' ' . str_replace('_', ' ', $verification['status'])"
+            icon="document"
+            :badge="$verification['status']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('dashboard.documents.verifications') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Verifications') }}
+                    </a>
+                    <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20 text-xs">{{ __('Reject') }}</button>
+                    <button class="btn btn-primary bg-success-600 hover:bg-success-700 border-success-600 text-xs">{{ __('Approve') }}</button>
                 </div>
-                <div class="flex gap-2 flex-wrap">
-                    <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Reject') }}</button>
-                    <button class="btn btn-primary bg-success-600 hover:bg-success-700 border-success-600">{{ __('Approve') }}</button>
-                </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

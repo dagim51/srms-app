@@ -11,6 +11,11 @@
     @endsection
 
     <div class="max-w-6xl mx-auto page-enter pb-12 space-y-6 font-sans">
+        <x-page-header
+            title="Property Media Manager"
+            :description="__('Upload architectural photography, virtual tour media, floorplans, and property showcase galleries for') . ' ' . ($property->title ?? 'this property') . '.'"
+            icon="building"
+            badge="Media" />
 
         {{-- Flash Alerts --}}
         @if (session('success'))

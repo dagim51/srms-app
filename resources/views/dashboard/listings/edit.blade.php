@@ -16,6 +16,24 @@
     @endphp
 
     <div class="max-w-5xl mx-auto page-enter pb-16 space-y-6">
+        <x-page-header
+            title="Edit Listing"
+            :description="__('Update pricing models, lease tenures, and publishing status for') . ' ' . ($listing->property->title ?? 'this property') . '.'"
+            icon="tag"
+            badge="Listing Editor">
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dashboard.listings.preview', $listing) }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        {{ __('Preview') }}
+                    </a>
+                    <a href="{{ route('dashboard.listings.index') }}" class="btn btn-ghost text-xs">
+                        {{ __('Back to Listings') }}
+                    </a>
+                </div>
+            </x-slot:actions>
+        </x-page-header>
+
         {{-- Flash Messages --}}
         @if(session('success'))
             <x-alert type="success">

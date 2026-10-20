@@ -15,7 +15,7 @@
             status: 'active',
             send_invite: true
         }
-    }" class="max-w-7xl mx-auto space-y-6">
+    }" class="max-w-7xl mx-auto page-enter space-y-6">
 
         {{-- Flash alerts --}}
         @if (session('success'))

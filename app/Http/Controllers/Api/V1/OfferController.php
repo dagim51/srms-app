@@ -3,11 +3,19 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OfferResource;
 use App\Models\Offer;
+use App\Services\Offers\NegotiationService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 class OfferController extends Controller
 {
+    public function __construct(
+        protected NegotiationService $negotiationService
+    ) {}
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -21,7 +29,7 @@ class OfferController extends Controller
             })
             ->paginate(15);
             
-        return response()->json(['data' => $offers]);
+        return OfferResource::collection($offers);
     }
 
     public function store(Request $request)
@@ -31,25 +39,16 @@ class OfferController extends Controller
             'amount' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
             'parent_offer_id' => 'nullable|exists:offers,id',
+            'expires_at' => 'nullable|date',
         ]);
         
-        $listing = \App\Models\Listing::findOrFail($validated['listing_id']);
-        
-        // Cannot make an offer on your own listing
-        if ($listing->owner_actor_id === auth()->id()) {
-            return response()->json(['message' => 'You cannot make an offer on your own listing.'], 422);
+        try {
+            $offer = $this->negotiationService->submitOffer(auth()->id(), $validated);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
         
-        $offer = Offer::create([
-            'listing_id' => $validated['listing_id'],
-            'buyer_id' => auth()->id(),
-            'amount' => $validated['amount'],
-            'notes' => $validated['notes'] ?? null,
-            'parent_offer_id' => $validated['parent_offer_id'] ?? null,
-            'status' => 'pending',
-        ]);
-        
-        return response()->json(['data' => $offer], 201);
+        return (new OfferResource($offer))->response()->setStatusCode(201);
     }
 
     public function update(Request $request, Offer $offer)
@@ -60,27 +59,20 @@ class OfferController extends Controller
         
         $user = auth()->user();
         
-        // Only buyer can withdraw
-        if ($validated['status'] === 'withdrawn') {
-            if ($offer->buyer_id !== $user->id) {
-                abort(403, 'Unauthorized.');
+        try {
+            if ($validated['status'] === 'withdrawn') {
+                $offer = $this->negotiationService->withdrawOffer($offer, $user->id);
+            } elseif ($validated['status'] === 'accepted') {
+                $offer = $this->negotiationService->acceptOffer($offer, $user->id);
+            } elseif ($validated['status'] === 'rejected') {
+                $offer = $this->negotiationService->rejectOffer($offer, $user->id);
             }
-        } 
-        // Only owner can accept/reject
-        else {
-            $listing = $offer->listing;
-            if ($listing->owner_actor_id !== $user->id) {
-                abort(403, 'Unauthorized.');
-            }
+        } catch (AuthorizationException $e) {
+            abort(403, 'Unauthorized.');
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
         
-        // Status transitions
-        if ($offer->status !== 'pending') {
-            return response()->json(['message' => 'Can only update pending offers.'], 422);
-        }
-        
-        $offer->update(['status' => $validated['status']]);
-        
-        return response()->json(['data' => $offer]);
+        return new OfferResource($offer);
     }
 }

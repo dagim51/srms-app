@@ -1,11 +1,12 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Integration History') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Integration History') }}</h1>
-            <p class="text-muted dark:text-muted mt-2">{{ __('Audit log for webhook deliveries, sync states, and API errors.') }}</p>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter">
+        <x-page-header
+            title="Integration History"
+            description="Audit log for webhook deliveries, sync states, and API errors."
+            icon="document"
+            badge="Audit Log" />
 
         @include('frontend.integrations.partials.tabs')
 

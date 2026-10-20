@@ -8,7 +8,13 @@
         ]" />
     </x-slot:breadcrumb>
 
-    <div class="space-y-6">
+    <div class="space-y-6 page-enter">
+        <x-page-header
+            :title="__('Deal & Escrow Audit: ') . $deal['id']"
+            description="Complete transactional audit trail, escrow milestones, participant legal verification, and disbursement records."
+            icon="cash"
+            badge="Escrow Deal" />
+
         {{-- Back Navigation & Action Bar --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <a href="{{ route('dashboard.transactions') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors w-max">

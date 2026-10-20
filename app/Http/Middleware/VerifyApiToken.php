@@ -17,12 +17,7 @@ class VerifyApiToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // First, check if already authenticated via session
-        if (Auth::check()) {
-            return $next($request);
-        }
-
-        // Check for bearer token
+        // Check for bearer token first if present in request headers
         $token = $request->bearerToken();
         if ($token) {
             $apiToken = ApiToken::where('token', hash('sha256', $token))
@@ -35,6 +30,13 @@ class VerifyApiToken
                 $apiToken->update(['last_used_at' => now()]);
                 return $next($request);
             }
+
+            return response()->json(['error' => ['code' => 'UNAUTHENTICATED', 'message' => 'Unauthenticated.']], 401);
+        }
+
+        // Otherwise check if already authenticated via web session
+        if (Auth::check()) {
+            return $next($request);
         }
 
         return response()->json(['error' => ['code' => 'UNAUTHENTICATED', 'message' => 'Unauthenticated.']], 401);

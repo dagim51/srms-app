@@ -87,11 +87,46 @@
 
         <div class="cinematic-fade-up cinematic-stagger-2">
         <x-card padding="p-0" class="overflow-hidden">
-            <div class="border-b border-warm dark:border-dark-border p-4 flex flex-wrap items-center justify-between gap-3 bg-surface/50 dark:bg-dark-surface/50">
-                <div class="relative flex-1 min-w-55">
-                    <x-input type="text" placeholder="{{ __('Search properties by title or address...') }}" class="w-full text-xs" icon="magnifying-glass" />
+            {{-- Filter and Search Form --}}
+            <form method="GET" action="{{ route('dashboard.properties.index') }}" class="border-b border-warm dark:border-dark-border p-4 flex flex-wrap items-center justify-between gap-3 bg-surface/50 dark:bg-dark-surface/50">
+                <div class="relative flex-1 min-w-56">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           placeholder="{{ __('Search properties by title, code, or address...') }}"
+                           class="form-input search-input pl-9 pr-8 w-full text-xs sm:text-sm">
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.properties.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
                 </div>
-            </div>
+
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <select name="status" onchange="this.form.submit()" class="form-select text-xs py-2 pr-8 w-auto min-w-32">
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
+                        <option value="available" {{ request('status') === 'available' ? 'selected' : '' }}>{{ __('Available') }}</option>
+                        <option value="verified" {{ request('status') === 'verified' ? 'selected' : '' }}>{{ __('Verified') }}</option>
+                        <option value="sold" {{ request('status') === 'sold' ? 'selected' : '' }}>{{ __('Sold') }}</option>
+                        <option value="rented" {{ request('status') === 'rented' ? 'selected' : '' }}>{{ __('Rented') }}</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-secondary text-xs py-2 px-3.5">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        <span>{{ __('Filter') }}</span>
+                    </button>
+
+                    @if(request('search') || request('status') || request('type_id'))
+                        <a href="{{ route('dashboard.properties.index') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium px-2 py-1.5 whitespace-nowrap">{{ __('Reset') }}</a>
+                    @endif
+                </div>
+            </form>
 
             @if(isset($properties) && $properties->count() > 0)
                 <div class="overflow-x-auto">

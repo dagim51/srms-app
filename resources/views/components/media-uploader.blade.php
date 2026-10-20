@@ -38,13 +38,22 @@
     handleDrop(e) {
         this.isDragging = false;
         const files = Array.from(e.dataTransfer.files);
+        if (!this.propertyId && this.$refs.fileInput) {
+            try {
+                this.$refs.fileInput.files = e.dataTransfer.files;
+            } catch (err) {
+                // Browser security fallback
+            }
+        }
         this.processFiles(files);
     },
 
     handleFileSelect(e) {
         const files = Array.from(e.target.files);
         this.processFiles(files);
-        e.target.value = '';
+        if (this.propertyId) {
+            e.target.value = '';
+        }
     },
 
     processFiles(files) {

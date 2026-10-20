@@ -4,7 +4,10 @@ namespace App\Services\Listings;
 
 use App\Actions\PublishListing;
 use App\Actions\UnpublishListing;
+use App\Events\Listings\ListingApproved;
 use App\Events\Listings\ListingPublished;
+use App\Events\Listings\ListingRejected;
+use App\Events\Listings\ListingSuspended;
 use App\Events\Listings\ListingUnpublished;
 use App\Models\Listing;
 use Illuminate\Database\Eloquent\Collection;
@@ -68,6 +71,70 @@ class ListingPublisher
         $listing->save();
 
         return $listing;
+    }
+
+    /**
+     * Approve a listing (moderator action).
+     */
+    public function approve(Listing $listing, string $moderatorId, ?string $comments = null): Listing
+    {
+        return DB::transaction(function () use ($listing, $moderatorId, $comments) {
+            $listing->status = 'approved';
+            $listing->published_at = $listing->published_at ?? now();
+            $listing->save();
+
+            $listing->moderations()->create([
+                'moderator_id' => $moderatorId,
+                'action' => 'approve',
+                'comments' => $comments,
+            ]);
+
+            event(new ListingApproved($listing, $moderatorId, $comments));
+
+            return $listing;
+        });
+    }
+
+    /**
+     * Reject a listing (moderator action).
+     */
+    public function reject(Listing $listing, string $moderatorId, ?string $comments = null): Listing
+    {
+        return DB::transaction(function () use ($listing, $moderatorId, $comments) {
+            $listing->status = 'rejected';
+            $listing->save();
+
+            $listing->moderations()->create([
+                'moderator_id' => $moderatorId,
+                'action' => 'reject',
+                'comments' => $comments,
+            ]);
+
+            event(new ListingRejected($listing, $moderatorId, $comments));
+
+            return $listing;
+        });
+    }
+
+    /**
+     * Suspend a listing (moderator action).
+     */
+    public function suspend(Listing $listing, string $moderatorId, ?string $comments = null): Listing
+    {
+        return DB::transaction(function () use ($listing, $moderatorId, $comments) {
+            $listing->status = 'suspended';
+            $listing->save();
+
+            $listing->moderations()->create([
+                'moderator_id' => $moderatorId,
+                'action' => 'suspend',
+                'comments' => $comments,
+            ]);
+
+            event(new ListingSuspended($listing, $moderatorId, $comments));
+
+            return $listing;
+        });
     }
 
     /**

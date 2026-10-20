@@ -1,38 +1,20 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">Case: {{ $case['id'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.trust.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
+    <div class="max-w-7xl mx-auto page-enter">
+        <div class="mb-4">
+            <a href="{{ route('dashboard.trust.index') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 transition-colors w-max">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Back to Trust & Safety
             </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        @php
-                            $sClass = 'badge-neutral';
-                            if ($case['status'] === 'escalated') $sClass = 'badge-error';
-                            if ($case['status'] === 'investigating') $sClass = 'badge-warning';
-                            if ($case['status'] === 'resolved') $sClass = 'badge-success';
-                        @endphp
-                        <span class="badge {{ $sClass }} uppercase">{{ $case['status'] }}</span>
-                        <span class="badge badge-neutral uppercase">{{ $case['type'] }}</span>
-                        @if($case['priority'] === 'high')
-                            <span class="inline-flex items-center gap-1.5 py-1 px-2 rounded-md bg-error-50 dark:bg-error-900/20 text-error-700 dark:text-error-400 font-bold text-xs">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                High Priority
-                            </span>
-                        @endif
-                    </div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $case['subject'] }}</h1>
-                    <div class="flex items-center gap-3 mt-2 text-sm text-muted">
-                        <span>Case {{ $case['id'] }}</span>
-                        <span>&bull;</span>
-                        <span>Filed on {{ $case['created_at'] }}</span>
-                    </div>
-                </div>
+        </div>
+
+        <x-page-header
+            :title="$case['subject']"
+            :description="'Case ' . $case['id'] . ' • Filed on ' . $case['created_at']"
+            icon="shield"
+            :badge="strtoupper($case['status'])">
+            <x-slot:actions>
                 <div class="flex gap-2 flex-wrap">
                     <button class="btn btn-secondary flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -40,8 +22,8 @@
                     </button>
                     <button class="btn btn-primary bg-success-600 hover:bg-success-700 border-success-600">{{ __('Resolve Case') }}</button>
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

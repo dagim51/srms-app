@@ -5,7 +5,7 @@
         <span class="text-muted dark:text-dark-subtle">{{ __('Organization') }}</span>
     @endsection
 
-    <div class="max-w-7xl mx-auto space-y-6" x-data="{ showOrgModal: false }">
+    <div class="max-w-7xl mx-auto space-y-6 page-enter" x-data="{ showOrgModal: false }">
         
         {{-- Standardized Page Header Card --}}
         <x-page-header

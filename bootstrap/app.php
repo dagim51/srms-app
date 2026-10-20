@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'api.token' => \App\Http\Middleware\VerifyApiToken::class,
             'org.scope' => \App\Http\Middleware\OrganizationScope::class,
+            'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'permission' => \App\Http\Middleware\CheckPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

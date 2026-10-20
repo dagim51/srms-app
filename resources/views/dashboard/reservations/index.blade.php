@@ -7,7 +7,7 @@
         ]" />
     </x-slot:breadcrumb>
 
-    <div class="space-y-6">
+    <div class="space-y-6 page-enter">
         <x-page-header
             title="Marketplace Reservations"
             description="Oversee short-stay accommodation bookings, check-in schedules, and guest reservation statuses."

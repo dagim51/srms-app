@@ -1,7 +1,7 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Portfolio View') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto page-enter">
         <x-page-header
             :title="__('Portfolio Overview')"
             :description="__('Track overall performance, unrealized equity, cash flows, and capital appreciation across your property portfolio.')"

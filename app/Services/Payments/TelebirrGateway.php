@@ -77,6 +77,15 @@ class TelebirrGateway implements PaymentGatewayInterface
      */
     public function verify(string $transactionRef): array
     {
+        // Mock mode for testing
+        if (app()->environment('testing') && empty($this->config['app_id'])) {
+            return [
+                'code' => 'SUCCESS',
+                'trade_status' => 'SUCCESS',
+                'out_trade_no' => $transactionRef,
+            ];
+        }
+
         $endpoint = $this->config['api_url'] . '/payment/query';
 
         $payload = [
@@ -107,6 +116,17 @@ class TelebirrGateway implements PaymentGatewayInterface
      */
     public function refund(string $transactionRef, float $amount, string $reason): array
     {
+        // Mock mode for testing
+        if (app()->environment('testing') && empty($this->config['app_id'])) {
+            return [
+                'code' => 'SUCCESS',
+                'refund_id' => 'REF-' . uniqid(),
+                'out_trade_no' => $transactionRef,
+                'refund_amount' => $amount,
+                'reason' => $reason,
+            ];
+        }
+
         $endpoint = $this->config['api_url'] . '/payment/refund';
 
         $payload = [

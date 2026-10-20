@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\DevelopmentProject;
+use App\Http\Resources\DevelopmentBuildingResource;
+use App\Http\Resources\DevelopmentProjectResource;
+use App\Http\Resources\DevelopmentUnitResource;
+use App\Http\Resources\PaymentPlanResource;
 use App\Models\DevelopmentBuilding;
-use App\Models\DevelopmentUnit;
-use App\Models\PaymentPlan;
+use App\Models\DevelopmentProject;
 use App\Models\OrganizationMember;
+use App\Services\Development\DeveloperSalesService;
+use Illuminate\Http\Request;
 
 class DevelopmentController extends Controller
 {
-    private function checkAccess($orgId)
-    {
-        $isMember = OrganizationMember::where('organization_id', $orgId)
-            ->where('user_id', auth()->id())
-            ->exists();
-        if (!$isMember) abort(403, 'Unauthorized.');
-    }
+    public function __construct(
+        protected DeveloperSalesService $developerSalesService
+    ) {}
 
     public function index()
     {
@@ -26,7 +25,7 @@ class DevelopmentController extends Controller
         $projects = DevelopmentProject::whereIn('organization_id', $userOrgs)
             ->with(['buildings', 'paymentPlans'])
             ->get();
-        return response()->json(['data' => $projects]);
+        return DevelopmentProjectResource::collection($projects);
     }
 
     public function storeProject(Request $request)
@@ -40,31 +39,24 @@ class DevelopmentController extends Controller
             'progress_percentage' => 'nullable|integer|min:0|max:100'
         ]);
 
-        $this->checkAccess($validated['organization_id']);
-        $project = DevelopmentProject::create($validated);
-        return response()->json(['data' => $project], 201);
+        $project = $this->developerSalesService->createProject(auth()->id(), $validated);
+        return (new DevelopmentProjectResource($project))->response()->setStatusCode(201);
     }
 
     public function storeBuilding(Request $request, DevelopmentProject $project)
     {
-        $this->checkAccess($project->organization_id);
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'total_floors' => 'nullable|integer',
             'status' => 'nullable|string'
         ]);
 
-        $building = $project->buildings()->create($validated);
-        return response()->json(['data' => $building], 201);
+        $building = $this->developerSalesService->createBuilding($project, auth()->id(), $validated);
+        return (new DevelopmentBuildingResource($building))->response()->setStatusCode(201);
     }
 
     public function storeUnit(Request $request, DevelopmentBuilding $building)
     {
-        // Building -> Project -> Organization
-        $project = $building->project;
-        $this->checkAccess($project->organization_id);
-
         $validated = $request->validate([
             'floor_name' => 'nullable|string',
             'unit_number' => 'required|string',
@@ -72,20 +64,18 @@ class DevelopmentController extends Controller
             'price' => 'nullable|numeric'
         ]);
 
-        $unit = $building->units()->create($validated);
-        return response()->json(['data' => $unit], 201);
+        $unit = $this->developerSalesService->createUnit($building, auth()->id(), $validated);
+        return (new DevelopmentUnitResource($unit))->response()->setStatusCode(201);
     }
     
     public function storePaymentPlan(Request $request, DevelopmentProject $project)
     {
-        $this->checkAccess($project->organization_id);
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string'
         ]);
 
-        $plan = $project->paymentPlans()->create($validated);
-        return response()->json(['data' => $plan], 201);
+        $plan = $this->developerSalesService->createPaymentPlan($project, auth()->id(), $validated);
+        return (new PaymentPlanResource($plan))->response()->setStatusCode(201);
     }
 }

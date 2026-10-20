@@ -10,10 +10,16 @@
     </x-slot:breadcrumb>
 
     <div x-data="{
-        showCreateModal: false,
-        showEditModal: false,
+        showCreateModal: {{ $errors->any() && old('_action') === 'create' ? 'true' : 'false' }},
+        showEditModal: {{ $errors->any() && old('_action') === 'edit' ? 'true' : 'false' }},
         showDeleteModal: false,
-        activeAmenity: { id: '', name_en: '', category: '', code: '', status: 'active' },
+        activeAmenity: { 
+            id: '{{ old('id', '') }}', 
+            name_en: '{{ old('name_en', '') }}', 
+            category: '{{ old('category', '') }}', 
+            code: '{{ old('code', '') }}', 
+            status: '{{ old('status', 'active') }}' 
+        },
         deleteUrl: '',
         
         openEdit(item) {
@@ -26,7 +32,7 @@
             this.deleteUrl = '/dashboard/amenities/' + id;
             this.showDeleteModal = true;
         }
-    }" class="space-y-6 page-enter pb-12 font-sans">
+    }" class="space-y-6 pb-12 font-sans">
 
         {{-- Success Flash Alert --}}
         @if (session('success'))
@@ -130,8 +136,13 @@
                             name="search" 
                             value="{{ request('search') }}" 
                             placeholder="{{ __('Search amenities or codes...') }}" 
-                            class="form-input pl-9 w-full text-sm"
+                            class="form-input search-input pl-9 pr-8 w-full text-sm"
                         >
+                        @if(request('search'))
+                            <a href="{{ route('dashboard.amenities.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </a>
+                        @endif
                     </div>
 
                     <select name="category" onchange="this.form.submit()" class="form-select text-sm min-w-36">
@@ -294,9 +305,10 @@
 
                     <form action="{{ route('dashboard.amenities.store') }}" method="POST" class="space-y-4">
                         @csrf
+                        <input type="hidden" name="_action" value="create">
                         <div>
                             <x-label for="create_name_en" required>Amenity Name (English)</x-label>
-                            <x-input type="text" id="create_name_en" name="name_en" placeholder="{{ __('e.g. Swimming Pool, Solar Power') }}" required class="w-full" />
+                            <x-input type="text" id="create_name_en" name="name_en" value="{{ old('_action') === 'create' ? old('name_en') : '' }}" placeholder="{{ __('e.g. Swimming Pool, Solar Power') }}" required class="w-full" />
                         </div>
 
                         <div>
@@ -307,6 +319,7 @@
                                     id="create_category" 
                                     name="category" 
                                     list="categories-list" 
+                                    value="{{ old('_action') === 'create' ? old('category') : '' }}"
                                     placeholder="{{ __('e.g. Utilities, Security, Wellness') }}" 
                                     required 
                                     class="form-input w-full"
@@ -322,14 +335,14 @@
 
                         <div>
                             <x-label for="create_code">System Code (Optional)</x-label>
-                            <x-input type="text" id="create_code" name="code" placeholder="e.g. swimming_pool (auto-generated if empty)" class="w-full font-mono text-xs" />
+                            <x-input type="text" id="create_code" name="code" value="{{ old('_action') === 'create' ? old('code') : '' }}" placeholder="e.g. swimming_pool (auto-generated if empty)" class="w-full font-mono text-xs" />
                         </div>
 
                         <div>
                             <x-label for="create_status" required>Status</x-label>
                             <select id="create_status" name="status" class="form-select w-full">
-                                <option value="active" selected>{{ __('Active') }}</option>
-                                <option value="inactive">{{ __('Inactive') }}</option>
+                                <option value="active" {{ old('_action') === 'create' && old('status') === 'inactive' ? '' : 'selected' }}>{{ __('Active') }}</option>
+                                <option value="inactive" {{ old('_action') === 'create' && old('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
                             </select>
                         </div>
 

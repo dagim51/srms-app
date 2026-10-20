@@ -36,8 +36,13 @@
         }
     @endphp
 
-    <div class="max-w-5xl mx-auto space-y-6">
-        
+    <div class="max-w-5xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Reservation Details"
+            :description="__('Detailed booking breakdown, stay dates, guest occupancy, and payment settlement for') . ' ' . ($reservation->listing->property->title ?? 'this reservation') . '.'"
+            icon="key"
+            badge="Reservations" />
+
         @if(session('success'))
             <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
                 {{ session('success') }}

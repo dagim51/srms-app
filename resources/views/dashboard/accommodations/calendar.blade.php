@@ -18,7 +18,13 @@
         $nextMonth = $currentDate->copy()->addMonth();
     @endphp
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Availability & Calendar"
+            description="Manage reservation schedules, night blocks, dynamic seasonal pricing, and check-in availability."
+            icon="calendar"
+            badge="Calendar" />
+
         @if(session('success'))
             <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
                 {{ session('success') }}

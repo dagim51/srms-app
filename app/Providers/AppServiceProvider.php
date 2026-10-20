@@ -75,5 +75,43 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(PaymentCompleted::class, PaymentCompletedListener::class);
         Event::listen(PaymentFailed::class, PaymentFailedListener::class);
         Event::listen(PaymentRefunded::class, PaymentRefundedListener::class);
+        Event::listen(\App\Events\Rentals\LeaseActivated::class, \App\Listeners\LeaseActivatedListener::class);
+        Event::listen(\App\Events\Offers\OfferSubmitted::class, \App\Listeners\OfferNegotiationListener::class);
+        Event::listen(\App\Events\Offers\OfferAccepted::class, \App\Listeners\OfferNegotiationListener::class);
+        Event::listen(\App\Events\Offers\OfferRejected::class, \App\Listeners\OfferNegotiationListener::class);
+        Event::listen(\App\Events\Offers\OfferWithdrawn::class, \App\Listeners\OfferNegotiationListener::class);
+        Event::listen(\App\Events\Offers\OfferCountered::class, \App\Listeners\OfferNegotiationListener::class);
+        Event::listen(\App\Events\Development\ProjectMilestoneCompleted::class, \App\Listeners\DevelopmentProjectListener::class);
+        Event::listen(\App\Events\Development\DevelopmentUnitReserved::class, \App\Listeners\DevelopmentProjectListener::class);
+        Event::listen(\App\Events\Operations\TicketCreated::class, \App\Listeners\MaintenanceTicketListener::class);
+        Event::listen(\App\Events\Operations\TicketDispatched::class, \App\Listeners\MaintenanceTicketListener::class);
+        Event::listen(\App\Events\Operations\TicketResolved::class, \App\Listeners\MaintenanceTicketListener::class);
+        Event::listen(\App\Events\Listings\ListingApproved::class, \App\Listeners\ListingModerationListener::class);
+        Event::listen(\App\Events\Listings\ListingRejected::class, \App\Listeners\ListingModerationListener::class);
+        Event::listen(\App\Events\Listings\ListingSuspended::class, \App\Listeners\ListingModerationListener::class);
+        Event::listen(\App\Events\Trust\DisputeOpened::class, \App\Listeners\DisputeListener::class);
+        Event::listen(\App\Events\Trust\DisputeResolved::class, \App\Listeners\DisputeListener::class);
+
+        // Register Multi-Tenant Policies
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Lease::class, \App\Policies\LeasePolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\AccommodationBooking::class, \App\Policies\AccommodationBookingPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\DevelopmentProject::class, \App\Policies\DevelopmentProjectPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Payment::class, \App\Policies\PaymentPolicy::class);
+        \Illuminate\Support\Facades\Gate::policy(\App\Models\Dispute::class, \App\Policies\DisputePolicy::class);
+
+        // RBAC: Grant Administrator super-admin access across all abilities
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            if ($user instanceof \App\Models\User && $user->hasRole('Administrator')) {
+                return true;
+            }
+        });
+
+        // RBAC: Fallback to database-driven permissions if no policy denies it explicitly
+        \Illuminate\Support\Facades\Gate::after(function ($user, $ability, $result) {
+            if (($result === null || $result === false) && $user instanceof \App\Models\User) {
+                return $user->hasPermissionTo($ability) ? true : null;
+            }
+            return $result;
+        });
     }
 }

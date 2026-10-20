@@ -21,8 +21,13 @@
         $canEdit = in_array($viewing->status, ['requested', 'confirmed', 'rescheduled']);
     @endphp
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        
+    <div class="max-w-4xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Viewing Appointment Details"
+            :description="__('Detailed on-site walkthrough schedule, buyer/agent contact details, and viewing feedback for') . ' ' . ($viewing->listing->property->title ?? 'this property') . '.'"
+            icon="calendar"
+            badge="Viewings" />
+
         @if(session('success'))
             <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
                 {{ session('success') }}

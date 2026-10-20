@@ -1,14 +1,16 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Cleaning & Readiness') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ __('Cleaning & Readiness') }}</h1>
-                <p class="text-muted dark:text-muted mt-2">{{ __('Manage housekeeping, inspections, and unit turnovers.') }}</p>
-            </div>
-            <button class="btn btn-primary">{{ __('Schedule Cleaning') }}</button>
-        </div>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Housekeeping & Turnover Readiness"
+            description="Manage unit turnover inspections, cleaning rosters, ready-for-occupancy verification, and sanitization logs."
+            icon="ticket"
+            badge="Housekeeping">
+            <x-slot:actions>
+                <button class="btn btn-primary">{{ __('Schedule Cleaning') }}</button>
+            </x-slot:actions>
+        </x-page-header>
 
         @include('frontend.operations.partials.tabs')
 

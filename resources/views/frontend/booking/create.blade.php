@@ -6,7 +6,19 @@
         <div class="absolute top-0 right-0 w-full max-w-3xl h-full max-h-3xl bg-primary-400/5 rounded-full blur-[120px]"></div>
     </div>
 
-    <div class="page-container pt-28 pb-24">
+    <div class="page-container pt-28 pb-24 page-enter">
+
+        <x-page-header
+            :title="'Request to Book: ' . $accommodation->property->title"
+            description="Review accommodation dates, pricing details, and secure your reservation."
+            icon="calendar"
+            badge="Reservation">
+            <x-slot:actions>
+                <a href="{{ route('properties.show', $accommodation->property) }}" class="btn btn-secondary text-xs">
+                    {{ __('Back to Property') }}
+                </a>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-16 gap-y-12 items-start">
 

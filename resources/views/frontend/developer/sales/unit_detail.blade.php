@@ -1,30 +1,20 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">Unit {{ $unit['number'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.sales.units') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
+    <div class="max-w-7xl mx-auto page-enter">
+        <div class="mb-4">
+            <a href="{{ route('dashboard.sales.units') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 transition-colors w-max">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 Back to Inventory
             </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">Unit {{ $unit['number'] }}</h1>
-                    <div class="flex items-center gap-3 mt-2">
-                        @php
-                            $badgeClass = 'badge-neutral';
-                            if ($unit['status'] === 'available') $badgeClass = 'badge-success';
-                            if ($unit['status'] === 'reserved') $badgeClass = 'badge-warning';
-                            if ($unit['status'] === 'contracted') $badgeClass = 'badge-primary';
-                            if ($unit['status'] === 'sold') $badgeClass = 'badge-primary';
-                            if ($unit['status'] === 'blocked') $badgeClass = 'badge-error';
-                        @endphp
-                        <span class="badge {{ $badgeClass }} uppercase">{{ $unit['status'] }}</span>
-                        <span class="text-muted">&bull;</span>
-                        <span class="text-muted dark:text-dark-subtle font-medium">{{ $unit['project'] }} &mdash; {{ $unit['building'] }}</span>
-                    </div>
-                </div>
+        </div>
+
+        <x-page-header
+            :title="'Unit ' . $unit['number']"
+            :description="$unit['project'] . ' — ' . $unit['building'] . ' • Status: ' . strtoupper($unit['status'])"
+            icon="building"
+            :badge="strtoupper($unit['status'])">
+            <x-slot:actions>
                 <div class="flex gap-2">
                     @if($unit['status'] === 'available')
                         <a href="{{ route('dashboard.sales.reservation', $unit['id']) }}" class="btn btn-primary">{{ __('Make Reservation') }}</a>
@@ -34,8 +24,8 @@
                         <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Cancel Reservation') }}</button>
                     @endif
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Services\Payments\PaymentService;
+use App\Http\Resources\PaymentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -24,7 +25,7 @@ class PaymentController extends Controller
             ->orderByDesc('created_at')
             ->paginate(15);
 
-        return response()->json(['data' => $payments]);
+        return PaymentResource::collection($payments);
     }
 
     public function store(Request $request)
@@ -55,7 +56,7 @@ class PaymentController extends Controller
             ]);
 
             return response()->json([
-                'data' => $result['payment'],
+                'data' => (new PaymentResource($result['payment']))->resolve(),
                 'gateway' => $result['gateway_data'],
             ], 201);
         } catch (\InvalidArgumentException $e) {
@@ -68,7 +69,7 @@ class PaymentController extends Controller
     public function show(Payment $payment)
     {
         Gate::authorize('view', $payment);
-        return response()->json(['data' => $payment]);
+        return new PaymentResource($payment);
     }
 
     public function update(Request $request, Payment $payment)
@@ -103,7 +104,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        return response()->json(['data' => $payment]);
+        return new PaymentResource($payment);
     }
 
     public function verify(Request $request, Payment $payment)

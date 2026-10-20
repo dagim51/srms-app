@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Viewing;
+use App\Http\Resources\ViewingResource;
 use Illuminate\Http\Request;
 
 class ViewingController extends Controller
@@ -17,7 +18,7 @@ class ViewingController extends Controller
             ->with(['listing.property', 'requester', 'agent'])
             ->get();
             
-        return response()->json(['data' => $viewings]);
+        return ViewingResource::collection($viewings);
     }
 
     public function store(Request $request)
@@ -49,7 +50,7 @@ class ViewingController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
         
-        return response()->json(['data' => $viewing], 201);
+        return (new ViewingResource($viewing))->response()->setStatusCode(201);
     }
 
     public function show(Viewing $viewing)
@@ -62,7 +63,7 @@ class ViewingController extends Controller
         
         $viewing->load(['listing.property', 'requester', 'agent']);
         
-        return response()->json(['data' => $viewing]);
+        return new ViewingResource($viewing);
     }
 
     public function update(Request $request, Viewing $viewing)
@@ -85,7 +86,7 @@ class ViewingController extends Controller
         
         $viewing->update($validated);
         
-        return response()->json(['data' => $viewing]);
+        return new ViewingResource($viewing);
     }
 
     public function destroy(Viewing $viewing)

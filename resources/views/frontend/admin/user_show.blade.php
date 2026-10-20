@@ -1,41 +1,27 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">User: {{ $user['id'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.admin.users') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                Back to Users
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-full bg-surface-subtle dark:bg-surface flex items-center justify-center font-bold text-muted dark:text-dark-subtle text-2xl shrink-0">
-                        {{ substr($user['name'], 0, 1) }}
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            @if($user['status'] === 'active')
-                                <span class="badge badge-success uppercase text-xs">{{ __('Active') }}</span>
-                            @else
-                                <span class="badge badge-error uppercase text-xs">{{ $user['status'] }}</span>
-                            @endif
-                            <span class="badge badge-neutral uppercase text-xs">{{ $user['role'] }}</span>
-                        </div>
-                        <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $user['name'] }}</h1>
-                        <p class="text-sm text-muted mt-1">{{ $user['email'] }} &bull; {{ $user['id'] }}</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="btn btn-secondary">{{ __('Reset Password') }}</button>
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="$user['name']"
+            :description="$user['email'] . ' • ' . $user['id'] . ' • ' . __('Role:') . ' ' . $user['role']"
+            icon="users"
+            :badge="$user['role']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dashboard.admin.users') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Users') }}
+                    </a>
+                    <button class="btn btn-secondary text-xs">{{ __('Reset Password') }}</button>
                     @if($user['status'] === 'active')
-                        <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Suspend User') }}</button>
+                        <button class="btn btn-secondary text-xs text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Suspend User') }}</button>
                     @else
-                        <button class="btn btn-secondary text-success-600 border-success-200 hover:bg-success-50 dark:hover:bg-success-900/20">{{ __('Reactivate') }}</button>
+                        <button class="btn btn-secondary text-xs text-success-600 border-success-200 hover:bg-success-50 dark:hover:bg-success-900/20">{{ __('Reactivate') }}</button>
                     @endif
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">
@@ -84,22 +70,19 @@
 
             <div class="space-y-8">
                 <div class="card p-6">
-                    <h3 class="card-title text-lg mb-4">{{ __('Roles & Permissions') }}</h3>
-                    <div class="space-y-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-warm dark:border-warm dark:bg-surface" {{ $user['role'] === 'Tenant' ? 'checked' : '' }}>
-                            <span class="text-sm font-medium text-muted dark:text-white">{{ __('Tenant Access') }}</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-warm dark:border-warm dark:bg-surface" {{ $user['role'] === 'Property Manager' ? 'checked' : '' }}>
-                            <span class="text-sm font-medium text-muted dark:text-white">{{ __('Property Manager') }}</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-warm dark:border-warm dark:bg-surface" {{ $user['role'] === 'Admin' ? 'checked' : '' }}>
-                            <span class="text-sm font-medium text-muted dark:text-white">{{ __('System Administrator') }}</span>
-                        </label>
-                    </div>
-                    <button class="btn btn-primary w-full mt-6">{{ __('Update Permissions') }}</button>
+                    <h3 class="card-title text-lg mb-4">{{ __('Role Assignment') }}</h3>
+                    <form method="POST" action="{{ route('dashboard.admin.users.role', is_array($user) ? $user['id'] : $user->id) }}">
+                        @csrf
+                        <div class="space-y-2">
+                            @foreach(['Administrator', 'Property Manager', 'Agent', 'Developer', 'Host', 'Seller', 'User'] as $r)
+                                <label class="flex items-center gap-3 cursor-pointer p-2 rounded-xl hover:bg-surface dark:hover:bg-surface/50 transition-colors">
+                                    <input type="radio" name="role" value="{{ $r }}" class="w-4 h-4 text-primary-600 border-warm dark:border-warm dark:bg-surface" {{ (is_array($user) ? $user['role'] : $user->role) === $r ? 'checked' : '' }}>
+                                    <span class="text-sm font-medium text-muted dark:text-white">{{ $r }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full mt-6">{{ __('Update Role') }}</button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -1,39 +1,28 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Transaction') }}: {{ $transaction['id'] }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('dashboard.finance.transactions') }}" class="text-sm font-medium text-muted hover:text-muted dark:hover:text-white flex items-center gap-2 mb-4 transition-colors w-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                {{ __('Back to Transactions') }}
-            </a>
-            
-            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        @php
-                            $sClass = 'badge-neutral';
-                            if ($transaction['status'] === 'completed') $sClass = 'badge-success';
-                            if ($transaction['status'] === 'processing') $sClass = 'badge-primary';
-                            if ($transaction['status'] === 'failed') $sClass = 'badge-error';
-                        @endphp
-                        <span class="badge {{ $sClass }} uppercase">{{ __($transaction['status']) }}</span>
-                        <span class="badge badge-neutral uppercase">{{ __($transaction['type']) }}</span>
-                    </div>
-                    <h1 class="text-3xl font-extrabold font-display text-muted dark:text-white tracking-tight">{{ $transaction['id'] }}</h1>
-                    <p class="text-muted dark:text-muted mt-1">{{ $transaction['reference'] }}</p>
-                </div>
-                <div class="flex gap-2 flex-wrap">
-                    <button class="btn btn-secondary flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                        Print Receipt
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
+        <x-page-header
+            :title="__('Transaction Record: ') . $transaction['id']"
+            :description="$transaction['reference'] . ' • ' . __('Type:') . ' ' . __($transaction['type']) . ' • ' . __('Status:') . ' ' . __($transaction['status'])"
+            icon="cash"
+            :badge="$transaction['status']">
+            <x-slot:actions>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <a href="{{ route('dashboard.finance.transactions') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        {{ __('Back to Transactions') }}
+                    </a>
+                    <button class="btn btn-secondary text-xs flex items-center gap-1.5" onclick="window.print()">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        {{ __('Print Receipt') }}
                     </button>
                     @if($transaction['status'] === 'completed')
-                        <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Issue Refund') }}</button>
+                        <button class="btn btn-secondary text-xs text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Issue Refund') }}</button>
                     @endif
                 </div>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-page-header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">

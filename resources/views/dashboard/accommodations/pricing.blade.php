@@ -10,7 +10,13 @@
         <span class="text-muted dark:text-white font-medium">{{ __('Pricing') }}</span>
     </x-slot>
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto page-enter space-y-6">
+        <x-page-header
+            title="Pricing & Policies"
+            description="Configure base night rates, weekend surcharges, cleaning fees, and security deposit terms."
+            icon="cash"
+            badge="Accommodations" />
+
         @if(session('success'))
             <div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-sm font-medium border border-emerald-200">
                 {{ session('success') }}
