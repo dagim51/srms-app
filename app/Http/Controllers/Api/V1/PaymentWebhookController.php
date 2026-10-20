@@ -56,10 +56,15 @@ class PaymentWebhookController extends Controller
         }
 
         // Idempotency / Replay protection: if payment already completed, return OK immediately
-        $existing = Payment::where(function ($q) use ($outTradeNo) {
+        $isUuid = \Illuminate\Support\Str::isUuid($outTradeNo);
+
+        $existing = Payment::where(function ($q) use ($outTradeNo, $isUuid) {
             $q->where('transaction_reference', $outTradeNo)
-              ->orWhere('id', $outTradeNo)
               ->orWhere('metadata->gateway_order_ref', $outTradeNo);
+
+            if ($isUuid) {
+                $q->orWhere('id', $outTradeNo);
+            }
         })->first();
 
         if ($existing && $existing->status === 'completed' && in_array($tradeStatus, ['SUCCESS', 'TRADE_SUCCESS', 'completed', 'paid'])) {

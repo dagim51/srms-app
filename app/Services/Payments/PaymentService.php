@@ -114,14 +114,19 @@ class PaymentService
     public function handleSuccess(string $transactionRef, array $metadata = []): Payment
     {
         return DB::transaction(function () use ($transactionRef, $metadata) {
-            $payment = Payment::where(function ($query) use ($transactionRef, $metadata) {
+            $isUuid = Str::isUuid($transactionRef);
+
+            $payment = Payment::where(function ($query) use ($transactionRef, $metadata, $isUuid) {
                 $query->where('transaction_reference', $transactionRef)
-                    ->orWhere('id', $transactionRef)
-                    ->orWhere('metadata->gateway_order_ref', $transactionRef)
-                    ->orWhere(function ($q) use ($transactionRef, $metadata) {
-                        $q->where('payable_id', $transactionRef)
-                          ->where('payable_type', $metadata['payable_type'] ?? 'App\Models\AccommodationBooking');
-                    });
+                    ->orWhere('metadata->gateway_order_ref', $transactionRef);
+
+                if ($isUuid) {
+                    $query->orWhere('id', $transactionRef)
+                        ->orWhere(function ($q) use ($transactionRef, $metadata) {
+                            $q->where('payable_id', $transactionRef)
+                              ->where('payable_type', $metadata['payable_type'] ?? 'App\Models\AccommodationBooking');
+                        });
+                }
             })->firstOrFail();
 
             if ($payment->status === 'completed') {
