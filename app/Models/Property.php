@@ -11,6 +11,10 @@ class Property extends Model
     use HasUuids, SoftDeletes;
     protected $guarded = [];
 
+    protected $casts = [
+        'bathrooms' => 'float',
+    ];
+
     public function listings()
     {
         return $this->hasMany(Listing::class);

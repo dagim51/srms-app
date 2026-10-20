@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ledger_entries', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('description');
-            $table->uuid('reference_id')->nullable(); // Polymorphic if needed
+            $table->string('reference_id', 100)->nullable()->index(); // Polymorphic/transaction ref or UUID
             $table->date('entry_date');
             $table->timestamps();
         });

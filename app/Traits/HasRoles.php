@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\Permission;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 trait HasRoles
 {
@@ -35,18 +36,28 @@ trait HasRoles
         $roleId = $role instanceof Role ? $role->id : Role::where('name', $role)->value('id');
 
         if ($roleId) {
-            $this->roles()->wherePivot('organization_id', $organizationId)->detach($roleId);
+            DB::table('user_roles')
+                ->where('user_id', $this->id)
+                ->where('role_id', $roleId)
+                ->when(
+                    $organizationId !== null,
+                    fn($q) => $q->where('organization_id', $organizationId),
+                    fn($q) => $q->whereNull('organization_id')
+                )
+                ->delete();
         }
     }
 
     public function syncRoles(array $roles, $organizationId = null): void
     {
-        $existingRoleIds = $this->roles()
-            ->when($organizationId !== null, fn($q) => $q->wherePivot('organization_id', $organizationId))
-            ->when($organizationId === null, fn($q) => $q->wherePivotNull('organization_id'))
-            ->pluck('roles.id');
-
-        $this->roles()->detach($existingRoleIds);
+        DB::table('user_roles')
+            ->where('user_id', $this->id)
+            ->when(
+                $organizationId !== null,
+                fn($q) => $q->where('organization_id', $organizationId),
+                fn($q) => $q->whereNull('organization_id')
+            )
+            ->delete();
 
         foreach ($roles as $role) {
             $this->assignRole($role, $organizationId);
@@ -174,18 +185,28 @@ trait HasRoles
             : Permission::where('code', $permission)->value('id');
 
         if ($permissionId) {
-            $this->permissions()->wherePivot('organization_id', $organizationId)->detach($permissionId);
+            DB::table('user_permissions')
+                ->where('user_id', $this->id)
+                ->where('permission_id', $permissionId)
+                ->when(
+                    $organizationId !== null,
+                    fn($q) => $q->where('organization_id', $organizationId),
+                    fn($q) => $q->whereNull('organization_id')
+                )
+                ->delete();
         }
     }
 
     public function syncPermissions(array $permissions, $organizationId = null): void
     {
-        $existingPermIds = $this->permissions()
-            ->when($organizationId !== null, fn($q) => $q->wherePivot('organization_id', $organizationId))
-            ->when($organizationId === null, fn($q) => $q->wherePivotNull('organization_id'))
-            ->pluck('permissions.id');
-
-        $this->permissions()->detach($existingPermIds);
+        DB::table('user_permissions')
+            ->where('user_id', $this->id)
+            ->when(
+                $organizationId !== null,
+                fn($q) => $q->where('organization_id', $organizationId),
+                fn($q) => $q->whereNull('organization_id')
+            )
+            ->delete();
 
         foreach ($permissions as $permission) {
             $this->givePermissionTo($permission, $organizationId);

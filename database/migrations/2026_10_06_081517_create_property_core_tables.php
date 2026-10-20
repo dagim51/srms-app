@@ -48,7 +48,7 @@ return new class extends Migration
             $table->decimal('land_area', 10, 2)->nullable();
             $table->decimal('building_area', 10, 2)->nullable();
             $table->integer('bedrooms')->nullable();
-            $table->integer('bathrooms')->nullable();
+            $table->decimal('bathrooms', 4, 1)->nullable();
             $table->integer('floors')->nullable();
             $table->string('condition')->nullable();
             $table->integer('construction_year')->nullable();
