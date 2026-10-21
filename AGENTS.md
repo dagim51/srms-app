@@ -32,15 +32,7 @@ After installation, ask the user to restart their terminal. If the agent needs t
 
 ## Agent Setup
 
-> **Note**: Per the FIX_IMPLEMENTATION_PLAN (WS-10, decision D-4), installation of `laravel/boost` has been **deferred**. The instruction below is retained for reference but should **not** be executed without explicit product-owner approval.
-
-```sh
-# DEFERRED - Do not run without explicit approval
-# composer require laravel/boost --dev
-# php artisan boost:install
-```
-
-If Boost is adopted in the future, it will replace these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
+No additional agent packages are required. The project uses standard Laravel 11.x with custom services and traits.
 
 ## Current Project Context
 

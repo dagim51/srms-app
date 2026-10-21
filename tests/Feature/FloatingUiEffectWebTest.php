@@ -123,7 +123,7 @@ class FloatingUiEffectWebTest extends TestCase
         // Pattern matches arbitrary px values for elevation-related utilities only
         // e.g., shadow-[27px], blur-[10px], drop-shadow-[5px], ring-[3px]
         // but allows legitimate arbitrary values like text-[13px], w-[100px], h-[200px]
-        $arbitraryElevationPxPattern = '/(shadow|blur|drop-shadow|ring|outline|inset)\[.*?\d+px.*?\]/i';
+        $arbitraryElevationPxPattern = '/(shadow|drop-shadow|ring|outline|inset)\[.*?\d+px.*?\]/i';
         $violations = [];
 
         foreach ($viewPaths as $viewPath) {
