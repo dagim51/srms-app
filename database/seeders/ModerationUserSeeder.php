@@ -2,50 +2,53 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Role;
 use App\Models\Listing;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ModerationUserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Users are now created by DemoUserSeeder
+        // This seeder just sets up moderation states on existing listings
+
+        $admin = User::where('email', 'admin@srms.et')->first();
+        $seller = User::where('email', 'seller@srms.et')->first();
         $adminRole = Role::firstOrCreate(['name' => 'Administrator']);
         $sellerRole = Role::firstOrCreate(['name' => 'Seller']);
 
-        // 1. Create or get Admin
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@srms.et'],
-            [
-                'name' => 'Sara Haile (Lead Moderator)',
-                'password' => Hash::make('password123'),
-            ]
-        );
-        $admin->assignRole('Administrator');
+        // Ensure roles are assigned (idempotent)
+        if ($admin) {
+            $admin->assignRole('Administrator');
+        }
+        if ($seller) {
+            $seller->assignRole('Seller');
+        }
 
-        // 2. Create or get Seller
-        $seller = User::firstOrCreate(
-            ['email' => 'seller@srms.et'],
-            [
-                'name' => 'Dawit Mengistu (Property Owner)',
-                'password' => Hash::make('password123'),
-            ]
-        );
-        $seller->assignRole('Seller');
-
-        // 3. Make sure we have at least 2 listings in pending_review and 1 rejected for testing moderation queue
+        // Get all listings
         $listings = Listing::with('property')->get();
-        if ($listings->count() >= 3) {
+
+        if ($listings->count() >= 3 && $seller && $admin) {
             // First listing: published
-            $listings[0]->update(['status' => 'published', 'published_at' => now()]);
+            $listings[0]->update([
+                'status' => 'published',
+                'published_at' => now(),
+                'owner_actor_id' => $seller->id,
+            ]);
 
             // Second listing: pending_review (with submission request)
-            $listings[1]->update(['status' => 'pending_review', 'owner_actor_id' => $seller->id]);
+            $listings[1]->update([
+                'status' => 'pending_review',
+                'owner_actor_id' => $seller->id,
+            ]);
 
             // Third listing: rejected with moderation reason
-            $listings[2]->update(['status' => 'rejected', 'owner_actor_id' => $seller->id]);
+            $listings[2]->update([
+                'status' => 'rejected',
+                'owner_actor_id' => $seller->id,
+            ]);
             if ($listings[2]->moderations()->count() === 0) {
                 $listings[2]->moderations()->create([
                     'moderator_id' => $admin->id,
@@ -56,8 +59,13 @@ class ModerationUserSeeder extends Seeder
 
             if ($listings->count() >= 4) {
                 // Fourth listing: pending_review
-                $listings[3]->update(['status' => 'pending_review', 'owner_actor_id' => $seller->id]);
+                $listings[3]->update([
+                    'status' => 'pending_review',
+                    'owner_actor_id' => $seller->id,
+                ]);
             }
         }
+
+        $this->command?->info('Moderation states applied to listings.');
     }
 }

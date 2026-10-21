@@ -2,20 +2,26 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Property;
 use App\Models\Listing;
+use App\Models\Property;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class PublicDiscoverySeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Short Stay: Executive Penthouse in Bole Atlas
+        // Get the seller user (created by DemoUserSeeder)
+        $seller = User::where('email', 'seller@srms.et')->first();
+        $host = User::where('email', 'host@srms.et')->first();
+        $developer = User::where('email', 'developer@srms.et')->first();
+
+        // 1. Short Stay: Executive Penthouse in Bole Atlas (owned by Host)
         $prop1 = Property::updateOrCreate(
             ['property_code' => 'PROP-STAY-001'],
             [
                 'title' => 'Executive Penthouse with Skyline Views in Bole',
-                'description' => "Panoramic penthouse overlooking Bole. Features ultra-fast fiber WiFi, daily housekeeping, 24/7 power backup generator, and dedicated airport transfer service.",
+                'description' => 'Panoramic penthouse overlooking Bole. Features ultra-fast fiber WiFi, daily housekeeping, 24/7 power backup generator, and dedicated airport transfer service.',
                 'building_area' => 180,
                 'bedrooms' => 2,
                 'bathrooms' => 2,
@@ -24,6 +30,7 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'available',
                 'latitude' => 8.9950,
                 'longitude' => 38.7890,
+                'owner_user_id' => $host?->id ?? $seller?->id,
             ]
         );
 
@@ -48,15 +55,16 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'published_at' => now(),
+                'owner_actor_id' => $host?->id ?? $seller?->id,
             ]
         );
 
-        // 2. Land: Prime Commercial Plot in Ayat / Legetafo
+        // 2. Land: Prime Commercial Plot in Ayat / Legetafo (owned by Seller)
         $prop2 = Property::updateOrCreate(
             ['property_code' => 'PROP-LAND-002'],
             [
                 'title' => 'Prime 1,000 m² Commercial Development Plot',
-                'description' => "Corner commercial plot with dual asphalt access, clear ownership title certificate (Liyu Mesriya), and immediate construction clearance. Ideal for mixed-use retail and residential apartments.",
+                'description' => 'Corner commercial plot with dual asphalt access, clear ownership title certificate (Liyu Mesriya), and immediate construction clearance. Ideal for mixed-use retail and residential apartments.',
                 'land_area' => 1000,
                 'building_area' => 0,
                 'bedrooms' => 0,
@@ -64,6 +72,7 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'available',
                 'latitude' => 9.0420,
                 'longitude' => 38.8650,
+                'owner_user_id' => $seller?->id,
             ]
         );
 
@@ -88,10 +97,11 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'published_at' => now(),
+                'owner_actor_id' => $seller?->id,
             ]
         );
 
-        // 3. New Development: The Skyrise Residences off-plan in Bole Medhanialem
+        // 3. New Development: The Skyrise Residences off-plan in Bole Medhanialem (owned by Developer)
         $prop3 = Property::updateOrCreate(
             ['property_code' => 'PROP-DEV-003'],
             [
@@ -105,6 +115,7 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'available',
                 'latitude' => 9.0080,
                 'longitude' => 38.7910,
+                'owner_user_id' => $developer?->id ?? $seller?->id,
             ]
         );
 
@@ -129,6 +140,7 @@ class PublicDiscoverySeeder extends Seeder
                 'status' => 'published',
                 'visibility' => 'public',
                 'published_at' => now(),
+                'owner_actor_id' => $developer?->id ?? $seller?->id,
             ]
         );
     }

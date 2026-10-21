@@ -14,20 +14,25 @@ class DatabaseSeeder extends Seeder
      *
      * Order matters: dependencies must be seeded first.
      * 1. AuthorizationSeeder - Roles/Permissions (no dependencies)
-     * 2. LocationSeeder - Country/Region/City hierarchy (no dependencies)
-     * 3. AmenityAndFeatureSeeder - Amenities/Features (no dependencies)
-     * 4. PublicDiscoverySeeder - Properties + Listings (needs Location, Amenities)
-     * 5. PropertyMediaSeeder - Additional media (needs Properties)
-     * 6. PropertyGisSeeder - GIS properties + listings (needs Location)
-     * 7. SearchEngineCatalogSeeder - Categories, Types, Verification (needs Properties, Amenities)
-     * 8. ModerationUserSeeder - Admin/Seller users + moderation states (needs Roles, Listings)
+     * 2. DemoUserSeeder - All demo users for all domains (needs Roles)
+     * 3. LocationSeeder - Country/Region/City hierarchy (no dependencies)
+     * 4. AmenityAndFeatureSeeder - Amenities/Features (no dependencies)
+     * 5. PublicDiscoverySeeder - Properties + Listings (needs Location, Amenities, Users)
+     * 6. PropertyMediaSeeder - Additional media (needs Properties)
+     * 7. PropertyGisSeeder - GIS properties + listings (needs Location)
+     * 8. SearchEngineCatalogSeeder - Categories, Types, Verification (needs Properties, Amenities)
+     * 9. ModerationUserSeeder - Moderation states on existing listings (needs Roles, Listings, Users)
      *
-     * DemoDataSeeder (optional, via --class=DemoDataSeeder): richer demo data
+     * Advanced Verticals: Rental, Developer Sales, Operations, Finance, Trust
+     * (These run after core domain seeders and can reference seeded users)
      */
     public function run(): void
     {
         // Core authorization - must be first
         $this->call(AuthorizationSeeder::class);
+
+        // Demo users for ALL domains - must run before domain seeders
+        $this->call(DemoUserSeeder::class);
 
         // Location hierarchy - needed by properties
         $this->call(LocationSeeder::class);
@@ -47,7 +52,7 @@ class DatabaseSeeder extends Seeder
         // Search engine catalog (categories, types, verification, amenities linking)
         $this->call(SearchEngineCatalogSeeder::class);
 
-        // Moderation users + listing states (published, pending, rejected)
+        // Moderation states on existing listings
         $this->call(ModerationUserSeeder::class);
 
         // Advanced Verticals: Rental, Developer Sales, Operations, Finance, Trust

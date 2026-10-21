@@ -2,55 +2,24 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\MaintenanceTicket;
 use App\Models\CleaningTask;
-use Illuminate\Support\Facades\Hash;
+use App\Models\MaintenanceTicket;
+use App\Models\Property;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class OperationsSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Ensure technician & cleaner users exist
-        $tech = User::firstOrCreate(
-            ['email' => 'tech@srms.et'],
-            [
-                'name' => 'Amanuel Tadesse (Senior Technician)',
-                'phone' => '+251 911 345678',
-                'password' => Hash::make('password123'),
-            ]
-        );
+        // Get operations users (created by DemoUserSeeder)
+        $tech = User::where('email', 'tech@srms.et')->first();
+        $electrician = User::where('email', 'electrician@srms.et')->first();
+        $cleaner = User::where('email', 'cleaning@srms.et')->first();
+        $reporter = User::where('email', 'resident@srms.et')->first();
 
-        $electrician = User::firstOrCreate(
-            ['email' => 'electrician@srms.et'],
-            [
-                'name' => 'Dawit Mengistu (Master Electrician)',
-                'phone' => '+251 912 456789',
-                'password' => Hash::make('password123'),
-            ]
-        );
-
-        $cleaner = User::firstOrCreate(
-            ['email' => 'cleaning@srms.et'],
-            [
-                'name' => 'Selamawit Tadesse (Housekeeper Lead)',
-                'phone' => '+251 913 567890',
-                'password' => Hash::make('password123'),
-            ]
-        );
-
-        $reporter = User::where('email', 'abebe.kebede@example.com')->first();
-        if (!$reporter) {
-            $reporter = User::firstOrCreate(
-                ['email' => 'resident@srms.et'],
-                [
-                    'name' => 'Abebe Kebede (Resident)',
-                    'phone' => '+251 919 888777',
-                    'password' => Hash::make('password123'),
-                ]
-            );
+        if (! $tech || ! $electrician || ! $cleaner || ! $reporter) {
+            return;
         }
 
         $properties = Property::all();

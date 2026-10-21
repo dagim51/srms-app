@@ -2,19 +2,30 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Organization;
-use App\Models\DevelopmentProject;
 use App\Models\DevelopmentBuilding;
+use App\Models\DevelopmentProject;
 use App\Models\DevelopmentUnit;
+use App\Models\Organization;
+use App\Models\OrganizationMember;
 use App\Models\PaymentPlan;
 use App\Models\PaymentPlanInstallment;
 use App\Models\Property;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DeveloperSalesSeeder extends Seeder
 {
     public function run(): void
     {
+        // Get developer and org users (created by DemoUserSeeder)
+        $developer = User::where('email', 'developer@srms.et')->first();
+        $salesUser = User::where('email', 'sales@skylinedevelopers.et')->first();
+        $projectCoord = User::where('email', 'projects@skylinedevelopers.et')->first();
+
+        if (! $developer || ! $salesUser || ! $projectCoord) {
+            return;
+        }
+
         // 1. Ensure an organization exists for Developer
         $org = Organization::firstOrCreate(
             ['slug' => 'skyline-developers'],
@@ -26,7 +37,22 @@ class DeveloperSalesSeeder extends Seeder
                     'email' => 'sales@skylinedevelopers.et',
                     'phone' => '+251 911 888999',
                 ],
+                'created_by' => $developer->id,
             ]
+        );
+
+        // Add org members
+        OrganizationMember::firstOrCreate(
+            ['organization_id' => $org->id, 'user_id' => $developer->id],
+            ['status' => 'active', 'created_by' => $developer->id]
+        );
+        OrganizationMember::firstOrCreate(
+            ['organization_id' => $org->id, 'user_id' => $salesUser->id],
+            ['status' => 'active', 'created_by' => $developer->id]
+        );
+        OrganizationMember::firstOrCreate(
+            ['organization_id' => $org->id, 'user_id' => $projectCoord->id],
+            ['status' => 'active', 'created_by' => $developer->id]
         );
 
         // 2. Create Master Development Project

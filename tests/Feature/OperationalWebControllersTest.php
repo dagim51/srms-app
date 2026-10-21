@@ -2,19 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Database\Seeders\AmenityAndFeatureSeeder;
+use Database\Seeders\AuthorizationSeeder;
+use Database\Seeders\DemoUserSeeder;
+use Database\Seeders\DeveloperSalesSeeder;
+use Database\Seeders\FinancialLedgerSeeder;
+use Database\Seeders\LocationSeeder;
+use Database\Seeders\ModerationUserSeeder;
+use Database\Seeders\OperationsSeeder;
+use Database\Seeders\PublicDiscoverySeeder;
+use Database\Seeders\RentalSeeder;
+use Database\Seeders\TrustSafetySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use Database\Seeders\AuthorizationSeeder;
-use Database\Seeders\LocationSeeder;
-use Database\Seeders\AmenityAndFeatureSeeder;
-use Database\Seeders\PublicDiscoverySeeder;
-use Database\Seeders\ModerationUserSeeder;
-use Database\Seeders\RentalSeeder;
-use Database\Seeders\DeveloperSalesSeeder;
-use Database\Seeders\OperationsSeeder;
-use Database\Seeders\FinancialLedgerSeeder;
-use Database\Seeders\TrustSafetySeeder;
 
 class OperationalWebControllersTest extends TestCase
 {
@@ -27,6 +28,7 @@ class OperationalWebControllersTest extends TestCase
         parent::setUp();
 
         $this->seed(AuthorizationSeeder::class);
+        $this->seed(DemoUserSeeder::class);
         $this->seed(LocationSeeder::class);
         $this->seed(AmenityAndFeatureSeeder::class);
         $this->seed(PublicDiscoverySeeder::class);

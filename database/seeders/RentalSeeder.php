@@ -2,53 +2,42 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\TenantProfile;
 use App\Models\Lease;
+use App\Models\Property;
 use App\Models\RentSchedule;
-use Illuminate\Support\Facades\Hash;
+use App\Models\TenantProfile;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class RentalSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Ensure tenant users exist
+        // Tenant data with lease status and balance (users created by DemoUserSeeder)
         $tenantsData = [
             [
-                'name' => 'Abebe Kebede',
                 'email' => 'abebe.kebede@example.com',
-                'phone' => '+251 911 234567',
                 'status' => 'active',
                 'balance' => 0,
             ],
             [
-                'name' => 'Sara Tadesse',
                 'email' => 'sara.tadesse@example.com',
-                'phone' => '+251 912 345678',
                 'status' => 'active',
                 'balance' => 25000,
             ],
             [
-                'name' => 'Yonas Alemu',
                 'email' => 'yonas.alemu@example.com',
-                'phone' => '+251 913 456789',
                 'status' => 'notice',
                 'balance' => 0,
             ],
             [
-                'name' => 'Meron Bekele',
                 'email' => 'meron.bekele@example.com',
-                'phone' => '+251 914 567890',
                 'status' => 'active',
                 'balance' => 0,
             ],
             [
-                'name' => 'Dawit Assefa',
                 'email' => 'dawit.assefa@example.com',
-                'phone' => '+251 915 678901',
                 'status' => 'pending',
                 'balance' => 0,
             ],
@@ -60,14 +49,10 @@ class RentalSeeder extends Seeder
         }
 
         foreach ($tenantsData as $idx => $tData) {
-            $user = User::firstOrCreate(
-                ['email' => $tData['email']],
-                [
-                    'name' => $tData['name'],
-                    'phone' => $tData['phone'],
-                    'password' => Hash::make('password123'),
-                ]
-            );
+            $user = User::where('email', $tData['email'])->first();
+            if (! $user) {
+                continue;
+            }
 
             $tenantProfile = TenantProfile::firstOrCreate(
                 ['user_id' => $user->id],

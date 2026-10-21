@@ -2,29 +2,29 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Listing;
+use App\Models\AuditLog;
 use App\Models\Dispute;
 use App\Models\DisputeEvidence;
+use App\Models\Listing;
 use App\Models\ListingFlag;
+use App\Models\User;
 use App\Models\UserFlag;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class TrustSafetySeeder extends Seeder
 {
     public function run(): void
     {
-        $users = User::all();
+        // Get users from DemoUserSeeder
+        $complainant = User::where('email', 'abebe.kebede@example.com')->first(); // tenant
+        $respondent = User::where('email', 'seller@srms.et')->first(); // seller
+        $moderator = User::where('email', 'admin@srms.et')->first(); // admin
         $listings = Listing::all();
 
-        if ($users->count() < 2 || $listings->isEmpty()) {
+        if (! $complainant || ! $respondent || ! $moderator || $listings->isEmpty()) {
             return;
         }
-
-        $complainant = $users[0];
-        $respondent = $users[1];
-        $moderator = $users->firstWhere('email', 'admin@srms.et') ?? $complainant;
 
         // 1. Create Disputes
         $dispute = Dispute::firstOrCreate(
@@ -106,7 +106,7 @@ class TrustSafetySeeder extends Seeder
         );
 
         // 4. Seed Governance Audit Logs
-        \App\Models\AuditLog::firstOrCreate(
+        AuditLog::firstOrCreate(
             ['event' => 'user.suspended', 'notes' => 'Suspended User USR-904 for abusive behavior'],
             [
                 'actor_id' => $moderator->id,
@@ -119,7 +119,7 @@ class TrustSafetySeeder extends Seeder
             ]
         );
 
-        \App\Models\AuditLog::firstOrCreate(
+        AuditLog::firstOrCreate(
             ['event' => 'system.invoices', 'notes' => 'Generated monthly rent invoices for active tenancies'],
             [
                 'actor_id' => null,

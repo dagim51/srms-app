@@ -2,21 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Models\Invoice;
 use App\Models\LedgerAccount;
 use App\Models\LedgerEntry;
 use App\Models\LedgerEntryLine;
-use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class FinancialLedgerSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::first();
-        if (!$user) {
+        $user = User::where('email', 'finance@srms.et')->first();
+        if (! $user) {
             return;
         }
 
@@ -48,7 +48,7 @@ class FinancialLedgerSeeder extends Seeder
                 'lines' => [
                     ['code' => '1010', 'type' => 'debit', 'amount' => 3600000],
                     ['code' => '1200', 'type' => 'credit', 'amount' => 3600000],
-                ]
+                ],
             ],
             [
                 'ref' => 'TRX-9002',
@@ -56,7 +56,7 @@ class FinancialLedgerSeeder extends Seeder
                 'lines' => [
                     ['code' => '1020', 'type' => 'debit', 'amount' => 35000],
                     ['code' => '4010', 'type' => 'credit', 'amount' => 35000],
-                ]
+                ],
             ],
             [
                 'ref' => 'TRX-9003',
@@ -64,7 +64,7 @@ class FinancialLedgerSeeder extends Seeder
                 'lines' => [
                     ['code' => '2050', 'type' => 'debit', 'amount' => 100000],
                     ['code' => '1010', 'type' => 'credit', 'amount' => 100000],
-                ]
+                ],
             ],
         ];
 
@@ -161,7 +161,7 @@ class FinancialLedgerSeeder extends Seeder
                     'currency' => $p['currency'],
                     'payment_method' => $p['method'],
                     'status' => $p['status'],
-                    'metadata' => ['gateway_ref' => 'CBE-' . rand(100000, 999999)],
+                    'metadata' => ['gateway_ref' => 'CBE-'.rand(100000, 999999)],
                 ]
             );
         }
