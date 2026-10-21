@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Property extends Model
 {
     use HasUuids, SoftDeletes;
+
     protected $guarded = [];
 
     protected $casts = [
         'bathrooms' => 'float',
+        'property_point' => 'geometry:point',
+        'property_boundary' => 'geometry:polygon',
     ];
 
     public function listings()
@@ -55,6 +59,55 @@ class Property extends Model
     public function getCoverImageAttribute(): ?string
     {
         $media = $this->media()->first();
+
         return $media ? $media->url : null;
+    }
+
+    /**
+     * Scope to filter properties within a radius using PostGIS (ST_DWithin) when available,
+     * falling back to Haversine in PHP for SQLite.
+     */
+    public function scopeWithinRadius($query, float $latitude, float $longitude, float $radiusKm)
+    {
+        $connection = DB::connection()->getDriverName();
+
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            // Use PostGIS ST_DWithin for efficient spatial query
+            // ST_MakePoint uses (longitude, latitude) order
+            // ST_DWithin expects geography for meter-based distance
+            $point = "ST_SetSRID(ST_MakePoint($longitude, $latitude), 4326)::geography";
+            $distanceMeters = $radiusKm * 1000;
+
+            return $query->whereNotNull('property_point')
+                ->whereRaw("ST_DWithin(property_point::geography, $point, ?)", [$distanceMeters]);
+        }
+
+        // Fallback: Haversine in PHP (used by SQLite)
+        // Bounding box for initial filter
+        $latRange = $radiusKm / 111.32;
+        $lonRange = $radiusKm / (111.32 * cos(deg2rad($latitude)));
+
+        return $query->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereBetween('latitude', [$latitude - $latRange, $latitude + $latRange])
+            ->whereBetween('longitude', [$longitude - $lonRange, $longitude + $lonRange]);
+    }
+
+    /**
+     * Add distance attribute to properties using PostGIS (ST_Distance) when available,
+     * falling back to Haversine in PHP.
+     */
+    public function scopeWithDistance($query, float $latitude, float $longitude)
+    {
+        $connection = DB::connection()->getDriverName();
+
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            $point = "ST_SetSRID(ST_MakePoint($longitude, $latitude), 4326)::geography";
+
+            return $query->selectRaw("*, ST_Distance(property_point::geography, $point) as distance_meters");
+        }
+
+        // SQLite: distance calculated in PHP after query
+        return $query;
     }
 }

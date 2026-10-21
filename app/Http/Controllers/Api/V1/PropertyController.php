@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PropertyResource;
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PropertyController extends Controller
@@ -21,23 +22,25 @@ class PropertyController extends Controller
             'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
-        $validated['property_code'] = 'PRP-' . strtoupper(Str::random(8));
+        $validated['property_code'] = 'PRP-'.strtoupper(Str::random(8));
         $validated['owner_user_id'] = $request->user()->id;
         $validated['status'] = 'draft';
 
         $property = Property::create($validated);
+
         return response()->json(['data' => new PropertyResource($property)], 201);
     }
 
     public function show(Property $property)
     {
         $property->load(['location', 'category', 'type', 'media', 'amenities', 'features', 'listings', 'owner', 'organization']);
+
         return response()->json(['data' => new PropertyResource($property)]);
     }
 
     public function update(Request $request, Property $property)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $property);
+        Gate::authorize('update', $property);
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
@@ -48,19 +51,20 @@ class PropertyController extends Controller
         ]);
 
         $property->update($validated);
+
         return response()->json(['data' => new PropertyResource($property)]);
     }
 
     public function attachAmenity(Request $request, Property $property)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $property);
+        Gate::authorize('update', $property);
         $validated = $request->validate([
             'amenity_id' => 'required|exists:amenities,id',
-            'value' => 'nullable|string'
+            'value' => 'nullable|string',
         ]);
 
         $property->amenities()->syncWithoutDetaching([
-            $validated['amenity_id'] => ['value' => $validated['value'] ?? null]
+            $validated['amenity_id'] => ['value' => $validated['value'] ?? null],
         ]);
 
         return response()->json(['message' => 'Amenity attached']);
@@ -68,21 +72,22 @@ class PropertyController extends Controller
 
     public function detachAmenity(Request $request, Property $property, string $amenityId)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $property);
+        Gate::authorize('update', $property);
         $property->amenities()->detach($amenityId);
+
         return response()->json(['message' => 'Amenity detached']);
     }
 
     public function attachFeature(Request $request, Property $property)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $property);
+        Gate::authorize('update', $property);
         $validated = $request->validate([
             'feature_id' => 'required|exists:property_features,id',
-            'value' => 'nullable|string'
+            'value' => 'nullable|string',
         ]);
 
         $property->features()->syncWithoutDetaching([
-            $validated['feature_id'] => ['value' => $validated['value'] ?? null]
+            $validated['feature_id'] => ['value' => $validated['value'] ?? null],
         ]);
 
         return response()->json(['message' => 'Feature attached']);
@@ -131,35 +136,33 @@ class PropertyController extends Controller
         $lon = $request->input('longitude');
         $radius = $request->input('radius');
 
-        // Bounding box calculation (Approximate, safe for SQLite testing without math extensions)
-        // 1 degree of latitude is roughly 111.32 km
-        $latRange = $radius / 111.32;
-        $lonRange = $radius / (111.32 * cos(deg2rad($lat)));
-
         $properties = Property::with(['media', 'listings'])
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereBetween('latitude', [$lat - $latRange, $lat + $latRange])
-            ->whereBetween('longitude', [$lon - $lonRange, $lon + $lonRange])
+            ->withinRadius($lat, $lon, $radius)
+            ->withDistance($lat, $lon)
             ->get()
-            ->filter(function ($property) use ($lat, $lon, $radius) {
-                // Precise Haversine in PHP to filter out corners of the bounding box
-                $earthRadius = 6371;
-                $latDelta = deg2rad($property->latitude - $lat);
-                $lonDelta = deg2rad($property->longitude - $lon);
-                $a = sin($latDelta / 2) * sin($latDelta / 2) +
-                     cos(deg2rad($lat)) * cos(deg2rad($property->latitude)) *
-                     sin($lonDelta / 2) * sin($lonDelta / 2);
-                $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-                $distance = $earthRadius * $c;
-                
-                $property->distance = round($distance, 2);
+            ->map(function ($property) use ($lat, $lon) {
+                // Use PostGIS distance_meters if available, otherwise Haversine calculated in PHP
+                if (isset($property->distance_meters)) {
+                    $property->distance = round($property->distance_meters / 1000, 2);
+                } else {
+                    // Haversine fallback (for SQLite or properties without geometry column)
+                    $earthRadius = 6371;
+                    $latDelta = deg2rad($property->latitude - $lat);
+                    $lonDelta = deg2rad($property->longitude - $lon);
+                    $a = sin($latDelta / 2) * sin($latDelta / 2) +
+                         cos(deg2rad($lat)) * cos(deg2rad($property->latitude)) *
+                         sin($lonDelta / 2) * sin($lonDelta / 2);
+                    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+                    $property->distance = round($earthRadius * $c, 2);
+                }
+
                 $property->cover_image = optional($property->media->first())->url;
                 $listing = $property->listings->first();
                 $property->price = $listing ? $listing->price : null;
                 $property->purpose = $listing ? $listing->purpose : 'For Sale';
                 $property->currency = $listing ? $listing->currency : 'ETB';
-                return $distance <= $radius;
+
+                return $property;
             })
             ->sortBy('distance')
             ->values();
