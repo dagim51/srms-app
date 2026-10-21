@@ -1,9 +1,50 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\V1\AccommodationAvailabilityController;
+use App\Http\Controllers\Api\V1\AccommodationBookingController;
+use App\Http\Controllers\Api\V1\AccommodationController;
+use App\Http\Controllers\Api\V1\AccommodationPricingRuleController;
+use App\Http\Controllers\Api\V1\AmenityController;
+use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\Admin\DisputeController;
+use App\Http\Controllers\Api\V1\CollectionController;
+use App\Http\Controllers\Api\V1\CommunityController;
+use App\Http\Controllers\Api\V1\ConversationController;
+use App\Http\Controllers\Api\V1\DevelopmentController;
+use App\Http\Controllers\Api\V1\DisputeController;
+use App\Http\Controllers\Api\V1\DocumentController;
+use App\Http\Controllers\Api\V1\FavoriteController;
+use App\Http\Controllers\Api\V1\FeatureController;
+use App\Http\Controllers\Api\V1\FinancialsController;
+use App\Http\Controllers\Api\V1\InquiryController;
+use App\Http\Controllers\Api\V1\LeadController;
+use App\Http\Controllers\Api\V1\ListingController;
+use App\Http\Controllers\Api\V1\ListingModerationController;
+use App\Http\Controllers\Api\V1\LocationController;
+use App\Http\Controllers\Api\V1\MarketingController;
+use App\Http\Controllers\Api\V1\MessageController;
+use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\NotificationPreferenceController;
+use App\Http\Controllers\Api\V1\OfferController;
+use App\Http\Controllers\Api\V1\OrganizationController;
+use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PaymentWebhookController;
+use App\Http\Controllers\Api\V1\ProfessionalServiceController;
+use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\PropertyManagementController;
+use App\Http\Controllers\Api\V1\PropertyMediaController;
+use App\Http\Controllers\Api\V1\PublicListingController;
+use App\Http\Controllers\Api\V1\RentalController;
+use App\Http\Controllers\Api\V1\ReservationController;
+use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\SearchAlertController;
+use App\Http\Controllers\Api\V1\SearchController;
+use App\Http\Controllers\Api\V1\ValuationController;
+use App\Http\Controllers\Api\V1\ViewingController;
+use App\Http\Controllers\Api\V1\WebhookController;
+use App\Http\Middleware\CheckPermission;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
     return response()->json([
@@ -24,7 +65,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Admin routes - require admin permission
-    Route::prefix('admin')->middleware(['api.token', \App\Http\Middleware\CheckPermission::class.':admin'])->group(function () {
+    Route::prefix('admin')->middleware(['api.token', CheckPermission::class.':admin'])->group(function () {
         // Disputes & Fraud Management
         Route::get('/disputes', [DisputeController::class, 'index']);
         Route::get('/disputes/stats', [DisputeController::class, 'stats']);
@@ -49,198 +90,205 @@ Route::prefix('v1')->group(function () {
                 return response()->json(['data' => $request->user()]);
             });
 
-        // Location Hierarchy
-        Route::get('/locations/regions', [\App\Http\Controllers\Api\V1\LocationController::class, 'regions']);
-        Route::get('/locations/zones', [\App\Http\Controllers\Api\V1\LocationController::class, 'zones']);
-        Route::get('/locations/cities', [\App\Http\Controllers\Api\V1\LocationController::class, 'cities']);
-        Route::get('/locations/sub-cities', [\App\Http\Controllers\Api\V1\LocationController::class, 'subCities']);
-        Route::get('/locations/woredas', [\App\Http\Controllers\Api\V1\LocationController::class, 'woredas']);
-        Route::get('/locations/kebeles', [\App\Http\Controllers\Api\V1\LocationController::class, 'kebeles']);
-        
-        // Administrative endpoints
-        Route::post('/locations/regions', [\App\Http\Controllers\Api\V1\LocationController::class, 'storeRegion'])
-            ->middleware(\App\Http\Middleware\CheckPermission::class.':manage_locations');
+            // Location Hierarchy
+            Route::get('/locations/regions', [LocationController::class, 'regions']);
+            Route::get('/locations/zones', [LocationController::class, 'zones']);
+            Route::get('/locations/cities', [LocationController::class, 'cities']);
+            Route::get('/locations/sub-cities', [LocationController::class, 'subCities']);
+            Route::get('/locations/woredas', [LocationController::class, 'woredas']);
+            Route::get('/locations/kebeles', [LocationController::class, 'kebeles']);
 
-        // Property Core
-        Route::get('/properties', [\App\Http\Controllers\Api\V1\PropertyController::class, 'index']);
-        Route::get('/properties/search/radius', [\App\Http\Controllers\Api\V1\PropertyController::class, 'radiusSearch']);
-        Route::post('/properties', [\App\Http\Controllers\Api\V1\PropertyController::class, 'store']);
-        Route::put('/properties/{property}', [\App\Http\Controllers\Api\V1\PropertyController::class, 'update']);
-        Route::post('/properties/{property}/amenities', [\App\Http\Controllers\Api\V1\PropertyController::class, 'attachAmenity']);
-        Route::delete('/properties/{property}/amenities/{amenityId}', [\App\Http\Controllers\Api\V1\PropertyController::class, 'detachAmenity']);
-        Route::post('/properties/{property}/features', [\App\Http\Controllers\Api\V1\PropertyController::class, 'attachFeature']);
+            // Administrative endpoints
+            Route::post('/locations/regions', [LocationController::class, 'storeRegion'])
+                ->middleware(CheckPermission::class.':manage_locations');
 
-        // Property Media
-        Route::post('/properties/{property}/media', [\App\Http\Controllers\Api\V1\PropertyMediaController::class, 'store']);
-        Route::put('/properties/{property}/media/order', [\App\Http\Controllers\Api\V1\PropertyMediaController::class, 'updateOrder']);
-        Route::delete('/properties/{property}/media/{media}', [\App\Http\Controllers\Api\V1\PropertyMediaController::class, 'destroy']);
+            // Property Core
+            Route::get('/properties', [PropertyController::class, 'index']);
+            Route::get('/properties/search/radius', [PropertyController::class, 'radiusSearch']);
+            Route::post('/properties', [PropertyController::class, 'store']);
+            Route::put('/properties/{property}', [PropertyController::class, 'update']);
+            Route::post('/properties/{property}/amenities', [PropertyController::class, 'attachAmenity']);
+            Route::delete('/properties/{property}/amenities/{amenityId}', [PropertyController::class, 'detachAmenity']);
+            Route::post('/properties/{property}/features', [PropertyController::class, 'attachFeature']);
 
-        // Listings
-        Route::post('/properties/{property}/listings', [\App\Http\Controllers\Api\V1\ListingController::class, 'store']);
-        Route::put('/listings/{listing}', [\App\Http\Controllers\Api\V1\ListingController::class, 'update']);
-        Route::post('/listings/{listing}/submit', [\App\Http\Controllers\Api\V1\ListingController::class, 'submit']);
-        Route::patch('/listings/{listing}/status', [\App\Http\Controllers\Api\V1\ListingController::class, 'updateStatus']);
+            // Property Media
+            Route::post('/properties/{property}/media', [PropertyMediaController::class, 'store']);
+            Route::put('/properties/{property}/media/order', [PropertyMediaController::class, 'updateOrder']);
+            Route::delete('/properties/{property}/media/{media}', [PropertyMediaController::class, 'destroy']);
 
-        // Moderation
-        Route::get('/moderation/listings', [\App\Http\Controllers\Api\V1\ListingModerationController::class, 'index']);
-        Route::post('/moderation/listings/{listing}/process', [\App\Http\Controllers\Api\V1\ListingModerationController::class, 'process']);
-        
-        // Favorites
-        Route::get('/favorites', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'index']);
-        Route::post('/favorites', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'store']);
-        Route::delete('/favorites/{property}', [\App\Http\Controllers\Api\V1\FavoriteController::class, 'destroy']);
-        
-        // Collections
-        Route::apiResource('collections', \App\Http\Controllers\Api\V1\CollectionController::class)->except(['update']);
-        Route::post('/collections/{collection}/properties', [\App\Http\Controllers\Api\V1\CollectionController::class, 'addProperty']);
-        Route::delete('/collections/{collection}/properties/{property}', [\App\Http\Controllers\Api\V1\CollectionController::class, 'removeProperty']);
-        Route::post('/collections/{collection}/reorder', [\App\Http\Controllers\Api\V1\CollectionController::class, 'updateOrder']);
-        
-        // Inquiries & Messaging (Phase 16)
-        Route::apiResource('inquiries', \App\Http\Controllers\Api\V1\InquiryController::class)->except(['update']);
-        Route::patch('/inquiries/{inquiry}/status', [\App\Http\Controllers\Api\V1\InquiryController::class, 'update']);
-        
-        Route::apiResource('conversations', \App\Http\Controllers\Api\V1\ConversationController::class)->only(['index', 'store', 'show', 'destroy']);
-        Route::post('/messages', [\App\Http\Controllers\Api\V1\MessageController::class, 'store']);
-        Route::delete('/messages/{message}', [\App\Http\Controllers\Api\V1\MessageController::class, 'destroy']);
-        
-        // Property Viewing (Phase 17)
-        Route::apiResource('viewings', \App\Http\Controllers\Api\V1\ViewingController::class);
-        
-        // Notifications (Phase 18)
-        Route::get('/notifications', [\App\Http\Controllers\Api\V1\NotificationController::class, 'index']);
-        Route::post('/notifications/mark-read', [\App\Http\Controllers\Api\V1\NotificationController::class, 'markAsRead']);
-        Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\V1\NotificationController::class, 'destroy']);
-        
-        Route::get('/notification-preferences', [\App\Http\Controllers\Api\V1\NotificationPreferenceController::class, 'show']);
-        Route::put('/notification-preferences', [\App\Http\Controllers\Api\V1\NotificationPreferenceController::class, 'update']);
-        
-        // Reviews & Ratings (Phase 19/24)
-        Route::get('/reviews', [\App\Http\Controllers\Api\V1\ReviewController::class, 'index']);
-        Route::post('/reviews', [\App\Http\Controllers\Api\V1\ReviewController::class, 'store']);
-        Route::post('/reviews/{review}/report', [\App\Http\Controllers\Api\V1\ReviewController::class, 'report']);
-        Route::delete('/reviews/{review}', [\App\Http\Controllers\Api\V1\ReviewController::class, 'destroy']);
-        
-        // Offers & Negotiation (Phase 18)
-        Route::get('/offers', [\App\Http\Controllers\Api\V1\OfferController::class, 'index']);
-        Route::post('/offers', [\App\Http\Controllers\Api\V1\OfferController::class, 'store']);
-        Route::patch('/offers/{offer}', [\App\Http\Controllers\Api\V1\OfferController::class, 'update']);
-        
-        // Marketplace Reservations (Phase 19)
-        Route::get('/reservations', [\App\Http\Controllers\Api\V1\ReservationController::class, 'index']);
-        Route::post('/reservations', [\App\Http\Controllers\Api\V1\ReservationController::class, 'store']);
-        Route::patch('/reservations/{reservation}', [\App\Http\Controllers\Api\V1\ReservationController::class, 'update']);
-        
-        // Accommodation & Host Model (Phase 20)
-        Route::apiResource('accommodations', \App\Http\Controllers\Api\V1\AccommodationController::class);
-        
-        // Availability & Calendar (Phase 21)
-        Route::get('/accommodation-availabilities', [\App\Http\Controllers\Api\V1\AccommodationAvailabilityController::class, 'index']);
-        Route::post('/accommodation-availabilities', [\App\Http\Controllers\Api\V1\AccommodationAvailabilityController::class, 'store']);
-        Route::delete('/accommodation-availabilities/{accommodationAvailability}', [\App\Http\Controllers\Api\V1\AccommodationAvailabilityController::class, 'destroy']);
-        
-        // Pricing & Yield Management (Phase 22)
-        Route::get('/accommodation-pricing-rules', [\App\Http\Controllers\Api\V1\AccommodationPricingRuleController::class, 'index']);
-        Route::post('/accommodation-pricing-rules', [\App\Http\Controllers\Api\V1\AccommodationPricingRuleController::class, 'store']);
-        Route::delete('/accommodation-pricing-rules/{accommodationPricingRule}', [\App\Http\Controllers\Api\V1\AccommodationPricingRuleController::class, 'destroy']);
-        
-        // Booking Engine (Phase 23)
-        Route::get('/accommodation-bookings', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'index']);
-        Route::post('/accommodation-bookings', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'store'])->middleware('idempotency');
-        Route::patch('/accommodation-bookings/{accommodationBooking}', [\App\Http\Controllers\Api\V1\AccommodationBookingController::class, 'update']);
-        
-        // Payments & Transactions (Phase 24)
-        Route::get('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'index']);
-        Route::post('/payments', [\App\Http\Controllers\Api\V1\PaymentController::class, 'store'])->name('payments')->middleware('idempotency');
-        Route::patch('/payments/{payment}', [\App\Http\Controllers\Api\V1\PaymentController::class, 'update']);
-        
-        // Companies & Organizations (Phase 26)
-        Route::get('/organizations', [\App\Http\Controllers\Api\V1\OrganizationController::class, 'index']);
-        Route::post('/organizations', [\App\Http\Controllers\Api\V1\OrganizationController::class, 'store']);
-        Route::post('/organizations/{organization}/members', [\App\Http\Controllers\Api\V1\OrganizationController::class, 'addMember']);
-        
-        // CRM (Phase 27)
-        Route::get('/leads', [\App\Http\Controllers\Api\V1\LeadController::class, 'index']);
-        Route::post('/leads', [\App\Http\Controllers\Api\V1\LeadController::class, 'store']);
-        Route::patch('/leads/{lead}', [\App\Http\Controllers\Api\V1\LeadController::class, 'update']);
-        Route::post('/leads/{lead}/activities', [\App\Http\Controllers\Api\V1\LeadController::class, 'addActivity']);
-        
-        // Development (Phase 28)
-        Route::get('/development/projects', [\App\Http\Controllers\Api\V1\DevelopmentController::class, 'index']);
-        Route::post('/development/projects', [\App\Http\Controllers\Api\V1\DevelopmentController::class, 'storeProject']);
-        Route::post('/development/projects/{project}/buildings', [\App\Http\Controllers\Api\V1\DevelopmentController::class, 'storeBuilding']);
-        Route::post('/development/buildings/{building}/units', [\App\Http\Controllers\Api\V1\DevelopmentController::class, 'storeUnit']);
-        Route::post('/development/projects/{project}/payment-plans', [\App\Http\Controllers\Api\V1\DevelopmentController::class, 'storePaymentPlan']);
-        
-        // Rental (Phase 29)
-        Route::post('/rental/profile', [\App\Http\Controllers\Api\V1\RentalController::class, 'storeTenantProfile']);
-        Route::post('/rental/applications', [\App\Http\Controllers\Api\V1\RentalController::class, 'storeApplication']);
-        Route::post('/rental/applications/{application}/approve', [\App\Http\Controllers\Api\V1\RentalController::class, 'approveApplication']);
-        
-        // Property Management (Phase 30)
-        Route::post('/pm/tickets', [\App\Http\Controllers\Api\V1\PropertyManagementController::class, 'storeTicket']);
-        Route::patch('/pm/tickets/{ticket}/status', [\App\Http\Controllers\Api\V1\PropertyManagementController::class, 'updateTicketStatus']);
-        Route::post('/pm/cleaning-tasks', [\App\Http\Controllers\Api\V1\PropertyManagementController::class, 'storeCleaningTask']);
-        Route::patch('/pm/cleaning-tasks/{task}/status', [\App\Http\Controllers\Api\V1\PropertyManagementController::class, 'updateCleaningStatus']);
-        
-        // Community (Phase 31)
-        Route::post('/communities', [\App\Http\Controllers\Api\V1\CommunityController::class, 'storeCommunity']);
-        Route::post('/communities/{community}/facilities', [\App\Http\Controllers\Api\V1\CommunityController::class, 'storeFacility']);
-        Route::post('/facilities/{facility}/bookings', [\App\Http\Controllers\Api\V1\CommunityController::class, 'storeBooking']);
-        
-        // Documents & Contracts (Phase 32)
-        Route::post('/documents/templates', [\App\Http\Controllers\Api\V1\DocumentController::class, 'storeTemplate']);
-        Route::post('/documents/contracts', [\App\Http\Controllers\Api\V1\DocumentController::class, 'generateContract']);
-        Route::post('/documents/contracts/{contract}/sign', [\App\Http\Controllers\Api\V1\DocumentController::class, 'signContract']);
-        
-        // Financials & Ledger (Phase 33)
-        Route::post('/financials/accounts', [\App\Http\Controllers\Api\V1\FinancialsController::class, 'storeAccount']);
-        Route::post('/financials/ledger-entries', [\App\Http\Controllers\Api\V1\FinancialsController::class, 'recordDoubleEntry']);
-        Route::post('/financials/invoices', [\App\Http\Controllers\Api\V1\FinancialsController::class, 'storeInvoice']);
-        
-        // Reports & Analytics (Phase 34)
-        Route::get('/analytics/dashboard', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'dashboard']);
-        Route::post('/analytics/templates', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'createTemplate']);
-        Route::post('/analytics/reports', [\App\Http\Controllers\Api\V1\AnalyticsController::class, 'generateReport']);
-        
-        // Marketing & Leads (Phase 35)
-        Route::post('/marketing/campaigns', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeCampaign']);
-        Route::post('/marketing/leads', [\App\Http\Controllers\Api\V1\MarketingController::class, 'storeLead']);
-        Route::post('/marketing/leads/{lead}/convert', [\App\Http\Controllers\Api\V1\MarketingController::class, 'convertLead']);
-        
-        // Valuation & Investment (Phase 41)
-        Route::post('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'calculate']);
-        Route::get('/properties/{property}/valuation', [\App\Http\Controllers\Api\V1\ValuationController::class, 'index']);
-        
-        // Professional Services (Phase 42)
-        Route::post('/services/profiles', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeProfile']);
-        Route::post('/services/profiles/{profile}/listings', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeListing']);
-        Route::post('/services/listings/{listing}/requests', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'storeRequest']);
-        Route::patch('/services/requests/{serviceRequest}/status', [\App\Http\Controllers\Api\V1\ProfessionalServiceController::class, 'updateRequestStatus']);
-        
-        // Search Alerts & Recommendations (Phase 37)
-            Route::post('/search/alerts', [\App\Http\Controllers\Api\V1\SearchAlertController::class, 'store']);
+            // Listings
+            Route::post('/properties/{property}/listings', [ListingController::class, 'store']);
+            Route::put('/listings/{listing}', [ListingController::class, 'update']);
+            Route::post('/listings/{listing}/submit', [ListingController::class, 'submit']);
+            Route::patch('/listings/{listing}/status', [ListingController::class, 'updateStatus']);
+
+            // Moderation
+            Route::get('/moderation/listings', [ListingModerationController::class, 'index']);
+            Route::post('/moderation/listings/{listing}/process', [ListingModerationController::class, 'process']);
+
+            // Favorites
+            Route::get('/favorites', [FavoriteController::class, 'index']);
+            Route::post('/favorites', [FavoriteController::class, 'store']);
+            Route::delete('/favorites/{property}', [FavoriteController::class, 'destroy']);
+
+            // Collections
+            Route::apiResource('collections', CollectionController::class)->except(['update']);
+            Route::post('/collections/{collection}/properties', [CollectionController::class, 'addProperty']);
+            Route::delete('/collections/{collection}/properties/{property}', [CollectionController::class, 'removeProperty']);
+            Route::post('/collections/{collection}/reorder', [CollectionController::class, 'updateOrder']);
+
+            // Inquiries & Messaging (Phase 16)
+            Route::apiResource('inquiries', InquiryController::class)->except(['update']);
+            Route::patch('/inquiries/{inquiry}/status', [InquiryController::class, 'update']);
+
+            Route::apiResource('conversations', ConversationController::class)->only(['index', 'store', 'show', 'destroy']);
+            Route::post('/messages', [MessageController::class, 'store']);
+            Route::delete('/messages/{message}', [MessageController::class, 'destroy']);
+
+            // Property Viewing (Phase 17)
+            Route::apiResource('viewings', ViewingController::class);
+
+            // Notifications (Phase 18)
+            Route::get('/notifications', [NotificationController::class, 'index']);
+            Route::post('/notifications/mark-read', [NotificationController::class, 'markAsRead']);
+            Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+
+            Route::get('/notification-preferences', [NotificationPreferenceController::class, 'show']);
+            Route::put('/notification-preferences', [NotificationPreferenceController::class, 'update']);
+
+            // Reviews & Ratings (Phase 19/24)
+            Route::get('/reviews', [ReviewController::class, 'index']);
+            Route::post('/reviews', [ReviewController::class, 'store']);
+            Route::post('/reviews/{review}/report', [ReviewController::class, 'report']);
+            Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
+
+            // Offers & Negotiation (Phase 18)
+            Route::get('/offers', [OfferController::class, 'index']);
+            Route::post('/offers', [OfferController::class, 'store']);
+            Route::patch('/offers/{offer}', [OfferController::class, 'update']);
+
+            // Marketplace Reservations (Phase 19)
+            Route::get('/reservations', [ReservationController::class, 'index']);
+            Route::post('/reservations', [ReservationController::class, 'store']);
+            Route::patch('/reservations/{reservation}', [ReservationController::class, 'update']);
+
+            // Accommodation & Host Model (Phase 20)
+            Route::apiResource('accommodations', AccommodationController::class);
+
+            // Availability & Calendar (Phase 21)
+            Route::get('/accommodation-availabilities', [AccommodationAvailabilityController::class, 'index']);
+            Route::post('/accommodation-availabilities', [AccommodationAvailabilityController::class, 'store']);
+            Route::delete('/accommodation-availabilities/{accommodationAvailability}', [AccommodationAvailabilityController::class, 'destroy']);
+
+            // Pricing & Yield Management (Phase 22)
+            Route::get('/accommodation-pricing-rules', [AccommodationPricingRuleController::class, 'index']);
+            Route::post('/accommodation-pricing-rules', [AccommodationPricingRuleController::class, 'store']);
+            Route::delete('/accommodation-pricing-rules/{accommodationPricingRule}', [AccommodationPricingRuleController::class, 'destroy']);
+
+            // Booking Engine (Phase 23)
+            Route::get('/accommodation-bookings', [AccommodationBookingController::class, 'index']);
+            Route::post('/accommodation-bookings', [AccommodationBookingController::class, 'store'])->middleware('idempotency');
+            Route::patch('/accommodation-bookings/{accommodationBooking}', [AccommodationBookingController::class, 'update']);
+
+            // Payments & Transactions (Phase 24)
+            Route::get('/payments', [PaymentController::class, 'index']);
+            Route::post('/payments', [PaymentController::class, 'store'])->name('payments')->middleware('idempotency');
+            Route::patch('/payments/{payment}', [PaymentController::class, 'update']);
+
+            // Companies & Organizations (Phase 26)
+            Route::get('/organizations', [OrganizationController::class, 'index']);
+            Route::post('/organizations', [OrganizationController::class, 'store']);
+            Route::post('/organizations/{organization}/members', [OrganizationController::class, 'addMember']);
+
+            // CRM (Phase 27)
+            Route::get('/leads', [LeadController::class, 'index']);
+            Route::post('/leads', [LeadController::class, 'store']);
+            Route::patch('/leads/{lead}', [LeadController::class, 'update']);
+            Route::post('/leads/{lead}/activities', [LeadController::class, 'addActivity']);
+
+            // Development (Phase 28)
+            Route::get('/development/projects', [DevelopmentController::class, 'index']);
+            Route::post('/development/projects', [DevelopmentController::class, 'storeProject']);
+            Route::post('/development/projects/{project}/buildings', [DevelopmentController::class, 'storeBuilding']);
+            Route::post('/development/buildings/{building}/units', [DevelopmentController::class, 'storeUnit']);
+            Route::post('/development/projects/{project}/payment-plans', [DevelopmentController::class, 'storePaymentPlan']);
+
+            // Rental (Phase 29)
+            Route::post('/rental/profile', [RentalController::class, 'storeTenantProfile']);
+            Route::post('/rental/applications', [RentalController::class, 'storeApplication']);
+            Route::post('/rental/applications/{application}/approve', [RentalController::class, 'approveApplication']);
+
+            // Property Management (Phase 30)
+            Route::post('/pm/tickets', [PropertyManagementController::class, 'storeTicket']);
+            Route::patch('/pm/tickets/{ticket}/status', [PropertyManagementController::class, 'updateTicketStatus']);
+            Route::post('/pm/cleaning-tasks', [PropertyManagementController::class, 'storeCleaningTask']);
+            Route::patch('/pm/cleaning-tasks/{task}/status', [PropertyManagementController::class, 'updateCleaningStatus']);
+
+            // Community (Phase 31)
+            Route::post('/communities', [CommunityController::class, 'storeCommunity']);
+            Route::post('/communities/{community}/facilities', [CommunityController::class, 'storeFacility']);
+            Route::post('/facilities/{facility}/bookings', [CommunityController::class, 'storeBooking']);
+
+            // Documents & Contracts (Phase 32)
+            Route::post('/documents/templates', [DocumentController::class, 'storeTemplate']);
+            Route::post('/documents/contracts', [DocumentController::class, 'generateContract']);
+            Route::post('/documents/contracts/{contract}/sign', [DocumentController::class, 'signContract']);
+
+            // Financials & Ledger (Phase 33)
+            Route::post('/financials/accounts', [FinancialsController::class, 'storeAccount']);
+            Route::post('/financials/ledger-entries', [FinancialsController::class, 'recordDoubleEntry']);
+            Route::post('/financials/invoices', [FinancialsController::class, 'storeInvoice']);
+
+            // Reports & Analytics (Phase 34)
+            Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
+            Route::post('/analytics/templates', [AnalyticsController::class, 'createTemplate']);
+            Route::post('/analytics/reports', [AnalyticsController::class, 'generateReport']);
+
+            // Marketing & Leads (Phase 35)
+            Route::post('/marketing/campaigns', [MarketingController::class, 'storeCampaign']);
+            Route::post('/marketing/leads', [MarketingController::class, 'storeLead']);
+            Route::post('/marketing/leads/{lead}/convert', [MarketingController::class, 'convertLead']);
+
+            // Valuation & Investment (Phase 41)
+            Route::post('/properties/{property}/valuation', [ValuationController::class, 'calculate']);
+            Route::get('/properties/{property}/valuation', [ValuationController::class, 'index']);
+
+            // Professional Services (Phase 42)
+            Route::post('/services/profiles', [ProfessionalServiceController::class, 'storeProfile']);
+            Route::post('/services/profiles/{profile}/listings', [ProfessionalServiceController::class, 'storeListing']);
+            Route::post('/services/listings/{listing}/requests', [ProfessionalServiceController::class, 'storeRequest']);
+            Route::patch('/services/requests/{serviceRequest}/status', [ProfessionalServiceController::class, 'updateRequestStatus']);
+
+            // Search Alerts & Recommendations (Phase 37)
+            Route::post('/search/alerts', [SearchAlertController::class, 'store']);
+
+            // Disputes & Fraud Reporting (Phase 34 - User-facing)
+            Route::apiResource('disputes', DisputeController::class)->only(['index', 'store', 'show']);
+            Route::post('/disputes/{dispute}/evidence', [DisputeController::class, 'addEvidence']);
+            Route::post('/flags/listings', [DisputeController::class, 'flagListing']);
+            Route::post('/flags/users', [DisputeController::class, 'flagUser']);
+            Route::get('/my-flags/listings', [DisputeController::class, 'myListingFlags']);
+            Route::get('/my-flags/users', [DisputeController::class, 'myUserFlags']);
         });
     });
 });
 
 // Public Routes
-Route::post('/webhooks/{provider}', [\App\Http\Controllers\Api\V1\WebhookController::class, 'handle']);
-Route::post('/webhooks/payments/telebirr', [\App\Http\Controllers\Api\V1\PaymentWebhookController::class, 'telebirr'])
+Route::post('/webhooks/{provider}', [WebhookController::class, 'handle']);
+Route::post('/webhooks/payments/telebirr', [PaymentWebhookController::class, 'telebirr'])
     ->middleware('throttle:webhooks');
 
-
 Route::prefix('v1')->group(function () {
-    Route::get('/public/listings', [\App\Http\Controllers\Api\V1\PublicListingController::class, 'index']);
-    Route::get('/public/listings/{listing}', [\App\Http\Controllers\Api\V1\PublicListingController::class, 'show']);
-    
-    Route::get('/search', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
+    Route::get('/public/listings', [PublicListingController::class, 'index']);
+    Route::get('/public/listings/{listing}', [PublicListingController::class, 'show']);
+
+    Route::get('/search', [SearchController::class, 'search']);
 
     // Property Catalogs (Phase 08)
-    Route::get('/amenities', [\App\Http\Controllers\Api\V1\AmenityController::class, 'index']);
-    Route::get('/amenities/categories', [\App\Http\Controllers\Api\V1\AmenityController::class, 'categories']);
-    Route::get('/features', [\App\Http\Controllers\Api\V1\FeatureController::class, 'index']);
+    Route::get('/amenities', [AmenityController::class, 'index']);
+    Route::get('/amenities/categories', [AmenityController::class, 'categories']);
+    Route::get('/features', [FeatureController::class, 'index']);
 
     // GIS Foundation (Phase 10)
-    Route::get('/properties/search/radius', [\App\Http\Controllers\Api\V1\PropertyController::class, 'radiusSearch']);
+    Route::get('/properties/search/radius', [PropertyController::class, 'radiusSearch']);
 });
