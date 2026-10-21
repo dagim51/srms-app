@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
-    <x-slot name="page-title">User: {{ $user['id'] }}</x-slot>
+    <x-slot name="page-title">User: {{ is_array($user) ? $user['id'] : $user->id }}</x-slot>
 
     <div class="max-w-7xl mx-auto page-enter space-y-6">
         <x-page-header
-            :title="$user['name']"
-            :description="$user['email'] . ' • ' . $user['id'] . ' • ' . __('Role:') . ' ' . $user['role']"
+            :title="is_array($user) ? $user['name'] : $user->name"
+            :description="is_array($user) ? $user['email'] . ' • ' . $user['id'] : $user->email . ' • ' . $user->id . ' • ' . __('Role:') . ' ' . (is_array($user) ? $user['role'] : $user->role)"
             icon="users"
-            :badge="$user['role']">
+            :badge="is_array($user) ? $user['role'] : $user->role">
             <x-slot:actions>
                 <div class="flex items-center gap-2">
                     <a href="{{ route('dashboard.admin.users') }}" class="btn btn-secondary text-xs flex items-center gap-1.5">
@@ -14,7 +14,7 @@
                         {{ __('Back to Users') }}
                     </a>
                     <button class="btn btn-secondary text-xs">{{ __('Reset Password') }}</button>
-                    @if($user['status'] === 'active')
+                    @if((is_array($user) ? $user['status'] : $user->status) === 'active')
                         <button class="btn btn-secondary text-xs text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20">{{ __('Suspend User') }}</button>
                     @else
                         <button class="btn btn-secondary text-xs text-success-600 border-success-200 hover:bg-success-50 dark:hover:bg-success-900/20">{{ __('Reactivate') }}</button>
@@ -30,23 +30,23 @@
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-6 pt-2">
                         <div>
                             <p class="card-kv-label">{{ __('Email') }}</p>
-                            <p class="card-kv-value mt-1">{{ $user['email'] }}</p>
+                            <p class="card-kv-value mt-1">{{ is_array($user) ? $user['email'] : $user->email }}</p>
                         </div>
                         <div>
                             <p class="card-kv-label">{{ __('Phone') }}</p>
-                            <p class="card-kv-value mt-1">{{ $user['phone'] }}</p>
+                            <p class="card-kv-value mt-1">{{ is_array($user) ? $user['phone'] : $user->phone }}</p>
                         </div>
                         <div>
                             <p class="card-kv-label">{{ __('Joined') }}</p>
-                            <p class="card-kv-value mt-1">{{ $user['joined'] }}</p>
+                            <p class="card-kv-value mt-1">{{ is_array($user) ? $user['joined'] : $user->joined }}</p>
                         </div>
                         <div>
                             <p class="card-kv-label">{{ __('KYC Status') }}</p>
-                            <p class="font-medium text-success-600 dark:text-success-400 mt-1">{{ ucfirst($user['kyc_status']) }}</p>
+                            <p class="font-medium text-success-600 dark:text-success-400 mt-1">{{ ucfirst(is_array($user) ? $user['kyc_status'] : $user->kyc_status) }}</p>
                         </div>
                         <div class="col-span-2">
                             <p class="card-kv-label">{{ __('Last Login') }}</p>
-                            <p class="font-mono text-sm text-muted dark:text-dark-subtle mt-1">{{ $user['last_login'] }}</p>
+                            <p class="font-mono text-sm text-muted dark:text-dark-subtle mt-1">{{ is_array($user) ? $user['last_login'] : $user->last_login }}</p>
                         </div>
                     </div>
                 </div>
@@ -87,5 +87,28 @@
             </div>
         </div>
 
+        <div class="space-y-8">
+            <div class="card p-6">
+                <h3 class="card-title text-lg mb-4">{{ __('Audit Trail') }}</h3>
+                <div class="card-nested space-y-3">
+                    @if(is_array($user) ? isset($user['audit_logs']) : isset($user->audit_logs))
+                        @foreach(is_array($user) ? $user['audit_logs'] : $user->audit_logs as $log)
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-surface dark:bg-surface/50">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+                                    <div>
+                                        <p class="font-medium text-sm">{{ $log['action'] ?? $log->action }}</p>
+                                        <p class="text-xs text-muted">{{ $log['date'] ?? $log->date }}</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-muted">{{ $log['ip'] ?? $log->ip }}</span>
+                            </div>
+                        @endforeach
+                    @else
+                        <p class="text-muted text-center py-4">{{ __('No audit logs available for this user.') }}</p>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 </x-layouts.dashboard>

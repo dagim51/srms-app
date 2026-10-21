@@ -3,7 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
+use App\Models\Organization;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AdminWebController extends Controller
 {
@@ -13,7 +20,7 @@ class AdminWebController extends Controller
             'total_users' => 12500,
             'active_properties' => 840,
             'monthly_revenue' => '24.5M ETB',
-            'system_health' => '99.9%'
+            'system_health' => '99.9%',
         ];
 
         $recentSignups = [
@@ -27,8 +34,9 @@ class AdminWebController extends Controller
 
     public function users()
     {
-        $dbUsers = \App\Models\User::latest()->take(20)->get()->map(function ($u) {
+        $dbUsers = User::latest()->take(20)->get()->map(function ($u) {
             $roleName = $u->roles()->first()?->name ?? 'User';
+
             return [
                 'id' => $u->id,
                 'name' => $u->name,
@@ -49,10 +57,10 @@ class AdminWebController extends Controller
 
         // Merge without duplicating emails
         $existingEmails = collect($dbUsers)->pluck('email')->all();
-        $filteredMock = collect($mockUsers)->reject(fn($u) => in_array($u['email'], $existingEmails))->all();
+        $filteredMock = collect($mockUsers)->reject(fn ($u) => in_array($u['email'], $existingEmails))->all();
         $users = array_merge($dbUsers, $filteredMock);
 
-        $roles = \App\Models\Role::pluck('name')->toArray();
+        $roles = Role::pluck('name')->toArray();
         if (empty($roles)) {
             $roles = ['Administrator', 'Property Manager', 'Agent', 'Developer', 'Host', 'Seller', 'User'];
         }
@@ -62,18 +70,18 @@ class AdminWebController extends Controller
 
     public function userCreate()
     {
-        $roles = \App\Models\Role::all();
+        $roles = Role::all();
         if ($roles->isEmpty()) {
             $roles = collect([
-                (object)['id' => '1', 'name' => 'Administrator'],
-                (object)['id' => '2', 'name' => 'Property Manager'],
-                (object)['id' => '3', 'name' => 'Agent'],
-                (object)['id' => '4', 'name' => 'Developer'],
-                (object)['id' => '5', 'name' => 'Tenant'],
+                (object) ['id' => '1', 'name' => 'Administrator'],
+                (object) ['id' => '2', 'name' => 'Property Manager'],
+                (object) ['id' => '3', 'name' => 'Agent'],
+                (object) ['id' => '4', 'name' => 'Developer'],
+                (object) ['id' => '5', 'name' => 'Tenant'],
             ]);
         }
 
-        $organizations = \App\Models\Organization::take(10)->get();
+        $organizations = Organization::take(10)->get();
 
         return view('frontend.admin.users_create', compact('roles', 'organizations'));
     }
@@ -91,21 +99,21 @@ class AdminWebController extends Controller
         ]);
 
         try {
-            $user = \App\Models\User::create([
+            $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+                'password' => Hash::make($validated['password']),
                 'locale' => 'en',
             ]);
 
             // Assign role using HasRoles trait
-            if (!empty($validated['role'])) {
+            if (! empty($validated['role'])) {
                 $user->assignRole($validated['role'], $validated['organization_id'] ?? null);
             }
 
             return redirect()->route('dashboard.admin.users')->with('success', "User '{$user->name}' was successfully created with role '{$validated['role']}'.");
         } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Could not create user: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Could not create user: '.$e->getMessage());
         }
     }
 
@@ -116,7 +124,7 @@ class AdminWebController extends Controller
             'organization_id' => 'nullable|string',
         ]);
 
-        $user = \App\Models\User::findOrFail($id);
+        $user = User::findOrFail($id);
         $user->syncRoles([$validated['role']], $validated['organization_id'] ?? null);
 
         return redirect()->back()->with('success', "User '{$user->name}' role successfully updated to '{$validated['role']}'.");
@@ -124,10 +132,10 @@ class AdminWebController extends Controller
 
     public function userShow($id)
     {
-        $user = \App\Models\User::find($id);
+        $user = User::find($id);
 
-        if (!$user) {
-            $user = (object)[
+        if (! $user) {
+            $user = (object) [
                 'id' => $id,
                 'name' => 'Abebe Kebede',
                 'email' => 'abebe@example.com',
@@ -139,7 +147,7 @@ class AdminWebController extends Controller
                 'last_login' => '2026-10-08 14:30 PM (197.156.92.12)',
             ];
         } else {
-            $user = (object)[
+            $user = (object) [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -159,7 +167,7 @@ class AdminWebController extends Controller
     {
         $this->ensureDefaultPermissionsExist();
 
-        $roles = \App\Models\Role::all();
+        $roles = Role::all();
         $selectedRoleId = $request->query('role_id', $roles->first()?->id);
         $selectedRole = $roles->firstWhere('id', $selectedRoleId) ?? $roles->first();
 
@@ -249,7 +257,7 @@ class AdminWebController extends Controller
         }
 
         // All users for the User Inspector tab
-        $allUsers = \App\Models\User::take(25)->get()->map(function ($u) {
+        $allUsers = User::take(25)->get()->map(function ($u) {
             return [
                 'id' => $u->id,
                 'name' => $u->name,
@@ -266,14 +274,14 @@ class AdminWebController extends Controller
         $roleId = $request->input('role_id');
         $grantedCodes = $request->input('permissions', []);
 
-        $role = \App\Models\Role::find($roleId);
-        if (!$role) {
+        $role = Role::find($roleId);
+        if (! $role) {
             return redirect()->back()->with('error', 'Selected role not found.');
         }
 
         // Sync role permissions in database
-        $permissionIds = \App\Models\Permission::whereIn('code', $grantedCodes)->pluck('id');
-        
+        $permissionIds = Permission::whereIn('code', $grantedCodes)->pluck('id');
+
         \DB::table('role_permissions')->where('role_id', $role->id)->delete();
         foreach ($permissionIds as $pId) {
             \DB::table('role_permissions')->insert([
@@ -316,9 +324,9 @@ class AdminWebController extends Controller
         ];
 
         foreach ($allCodes as $code => $desc) {
-            \App\Models\Permission::firstOrCreate(
+            Permission::firstOrCreate(
                 ['code' => $code],
-                ['id' => (string)\Illuminate\Support\Str::uuid(), 'description' => $desc]
+                ['id' => (string) Str::uuid(), 'description' => $desc]
             );
         }
     }
@@ -333,7 +341,7 @@ class AdminWebController extends Controller
                     'finance.ledger.view', 'finance.invoices.create', 'finance.escrow.release', 'finance.payouts.manage',
                     'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage',
                     'kyc.verify', 'disputes.arbitrate', 'fraud.flag',
-                    'users.manage', 'roles.assign', 'settings.update', 'audit.view'
+                    'users.manage', 'roles.assign', 'settings.update', 'audit.view',
                 ];
             case 'Property Manager':
                 return [
@@ -341,7 +349,7 @@ class AdminWebController extends Controller
                     'listings.submit', 'listings.expire',
                     'finance.invoices.create',
                     'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage',
-                    'kyc.verify'
+                    'kyc.verify',
                 ];
             case 'Agent':
             case 'Seller':
@@ -364,13 +372,13 @@ class AdminWebController extends Controller
 
     public function audit(Request $request)
     {
-        $query = \App\Models\AuditLog::with('actor')->latest();
+        $query = AuditLog::with('actor')->latest();
 
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('event', 'like', "%{$search}%")
-                  ->orWhere('notes', 'like', "%{$search}%")
-                  ->orWhere('ip_address', 'like', "%{$search}%");
+                    ->orWhere('notes', 'like', "%{$search}%")
+                    ->orWhere('ip_address', 'like', "%{$search}%");
             });
         }
 
@@ -378,14 +386,14 @@ class AdminWebController extends Controller
             $actorName = $l->actor ? "{$l->actor->name}" : 'System';
             $action = ucfirst($l->event);
             if ($l->auditable_type) {
-                $action .= ' ' . class_basename($l->auditable_type);
+                $action .= ' '.class_basename($l->auditable_type);
             }
             if ($l->notes) {
                 $action .= " - {$l->notes}";
             }
 
             return [
-                'id' => 'AUD-' . strtoupper(substr(str_replace('-', '', $l->id), 0, 6)),
+                'id' => 'AUD-'.strtoupper(substr(str_replace('-', '', $l->id), 0, 6)),
                 'user' => $actorName,
                 'action' => $action,
                 'ip' => $l->ip_address ?? '127.0.0.1',
@@ -400,7 +408,7 @@ class AdminWebController extends Controller
             ['id' => 'AUD-104', 'user' => 'Sara Tadesse (USR-902)', 'action' => 'Deleted Listing LST-405', 'ip' => '197.156.12.34', 'date' => '2026-10-07 09:15:22'],
         ];
 
-        $logs = !empty($dbLogs) ? $dbLogs : $mockLogs;
+        $logs = ! empty($dbLogs) ? $dbLogs : $mockLogs;
 
         return view('frontend.admin.audit', compact('logs'));
     }
