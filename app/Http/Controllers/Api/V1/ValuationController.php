@@ -1,57 +1,114 @@
 <?php
+
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Property;
 use App\Models\PropertyValuation;
+use App\Services\Valuation\ValuationService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ValuationController extends Controller
 {
+    public function __construct(
+        protected ValuationService $service
+    ) {}
+
+    /**
+     * Calculate comprehensive property valuation
+     */
     public function calculate(Request $request, Property $property)
     {
-        $validated = $request->validate([
-            'purchase_price' => 'required|numeric|min:0',
-            'monthly_rent' => 'required|numeric|min:0',
-            'operating_expenses_yearly' => 'required|numeric|min:0',
-            'down_payment' => 'nullable|numeric|min:0',
+        // Authorization: owner or agent can request valuation
+        Gate::authorize('view', $property);
+
+        $inputs = $request->only([
+            'purchase_price',
+            'monthly_rent',
+            'operating_expenses_yearly',
+            'down_payment',
         ]);
 
-        $purchasePrice = $validated['purchase_price'];
-        $monthlyRent = $validated['monthly_rent'];
-        $annualRent = $monthlyRent * 12;
-        $operatingExpenses = $validated['operating_expenses_yearly'];
-        $downPayment = $validated['down_payment'] ?? $purchasePrice; // Assume full cash if no down payment given
+        $valuation = $this->service->calculate($property, $inputs);
 
-        // Net Operating Income
-        $noi = $annualRent - $operatingExpenses;
-        
-        // Cap Rate = NOI / Purchase Price
-        $capRate = $purchasePrice > 0 ? ($noi / $purchasePrice) : 0;
-
-        // Cash on Cash Return = Pre-Tax Cash Flow / Total Cash Invested (down payment)
-        // Ignoring debt service for simplified calculation, so cash flow = NOI
-        $cashOnCash = $downPayment > 0 ? ($noi / $downPayment) : 0;
-
-        // Save valuation
-        $valuation = PropertyValuation::create([
+        // Save valuation record
+        $record = PropertyValuation::create([
             'property_id' => $property->id,
             'user_id' => $request->user()->id ?? null,
-            'estimated_value' => $purchasePrice, // Using purchase price as estimate base
-            'projected_annual_rent' => $annualRent,
-            'cap_rate' => $capRate,
-            'cash_on_cash_return' => $cashOnCash,
-            'inputs' => $validated,
+            'estimated_value' => $valuation['ensemble_value'],
+            'confidence_score' => $valuation['confidence'],
+            'methodology' => 'ensemble',
+            'comparables_used' => $valuation['comparables_used'],
+            'inputs' => $inputs,
+            'details' => $valuation,
             'is_authoritative' => false,
         ]);
 
-        return response()->json(['data' => $valuation], 201);
-    }
-    
-    public function index(Property $property)
-    {
         return response()->json([
-            'data' => $property->valuations()->orderBy('created_at', 'desc')->get()
+            'data' => array_merge($valuation, ['id' => $record->id]),
+        ], 201);
+    }
+
+    /**
+     * Get market trends for an area
+     */
+    public function marketTrends(Request $request)
+    {
+        $validated = $request->validate([
+            'city' => 'required|string',
+            'subcity' => 'nullable|string',
+        ]);
+
+        $trends = $this->service->getMarketTrends($validated['city'], $validated['subcity'] ?? null);
+
+        return response()->json([
+            'data' => $trends,
+        ]);
+    }
+
+    /**
+     * Get valuation history for a property
+     */
+    public function history(Property $property)
+    {
+        Gate::authorize('view', $property);
+
+        $valuations = $property->valuations()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $valuations,
+        ]);
+    }
+
+    /**
+     * Quick estimate (lightweight)
+     */
+    public function estimate(Request $request)
+    {
+        $validated = $request->validate([
+            'city' => 'required|string',
+            'property_type' => 'required|string',
+            'bedrooms' => 'required|integer|min:0|max:10',
+            'bathrooms' => 'required|numeric|min:0|max:10',
+            'building_area' => 'required|numeric|min:10|max:10000',
+            'condition' => 'nullable|string|in:excellent,good,fair,poor',
+        ]);
+
+        // Create a temporary property object for hedonic calculation
+        $tempProperty = new Property($validated);
+
+        $hedonic = $this->service->calculateHedonic($tempProperty);
+
+        return response()->json([
+            'data' => [
+                'estimated_value' => $hedonic['value'],
+                'confidence' => $hedonic['confidence'],
+                'method' => 'hedonic_regression',
+                'details' => $hedonic['details'],
+            ],
         ]);
     }
 }

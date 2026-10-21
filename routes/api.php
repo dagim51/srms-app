@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AccommodationAvailabilityController;
 use App\Http\Controllers\Api\V1\AccommodationBookingController;
 use App\Http\Controllers\Api\V1\AccommodationController;
 use App\Http\Controllers\Api\V1\AccommodationPricingRuleController;
+use App\Http\Controllers\Api\V1\AIAssistantController;
 use App\Http\Controllers\Api\V1\AmenityController;
 use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\V1\DocumentController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\FeatureController;
 use App\Http\Controllers\Api\V1\FinancialsController;
+use App\Http\Controllers\Api\V1\GISController;
 use App\Http\Controllers\Api\V1\InquiryController;
 use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\ListingController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\PropertyManagementController;
 use App\Http\Controllers\Api\V1\PropertyMediaController;
 use App\Http\Controllers\Api\V1\PublicListingController;
+use App\Http\Controllers\Api\V1\RecommendationController;
 use App\Http\Controllers\Api\V1\RentalController;
 use App\Http\Controllers\Api\V1\ReservationController;
 use App\Http\Controllers\Api\V1\ReviewController;
@@ -261,6 +264,37 @@ Route::prefix('v1')->group(function () {
 
             // Search Alerts & Recommendations (Phase 37)
             Route::post('/search/alerts', [SearchAlertController::class, 'store']);
+
+            // Recommendation Engine (Phase 37)
+            Route::get('/recommendations/for-user', [RecommendationController::class, 'forUser']);
+            Route::get('/recommendations/similar/{listingId}', [RecommendationController::class, 'similar']);
+            Route::get('/recommendations/trending', [RecommendationController::class, 'trending']);
+            Route::get('/recommendations/because-you-viewed', [RecommendationController::class, 'becauseYouViewed']);
+            Route::get('/recommendations/collaborative', [RecommendationController::class, 'collaborative']);
+
+            // AI Assistant (Phase 38)
+            Route::post('/ai/description', [AIAssistantController::class, 'generateDescription']);
+            Route::post('/ai/title', [AIAssistantController::class, 'generateTitle']);
+            Route::post('/ai/improve-description', [AIAssistantController::class, 'improveDescription']);
+            Route::post('/ai/marketing-copy', [AIAssistantController::class, 'marketingCopy']);
+            Route::post('/ai/chat', [AIAssistantController::class, 'chat']);
+            Route::post('/ai/extract', [AIAssistantController::class, 'extractPropertyData']);
+            Route::post('/ai/market-analysis', [AIAssistantController::class, 'analyzeMarket']);
+            Route::post('/ai/contract-clauses', [AIAssistantController::class, 'contractClauses']);
+
+            // Advanced GIS Operations (Phase 39)
+            Route::post('/gis/radius-search', [GISController::class, 'radiusSearch']);
+            Route::post('/gis/polygon-search', [GISController::class, 'polygonSearch']);
+            Route::post('/gis/nearest', [GISController::class, 'nearest']);
+            Route::post('/gis/heatmap', [GISController::class, 'heatmap']);
+            Route::post('/gis/clusters', [GISController::class, 'clusters']);
+            Route::post('/gis/commute', [GISController::class, 'commute']);
+            Route::post('/gis/amenities', [GISController::class, 'amenities']);
+            Route::post('/properties/{property}/boundary', [GISController::class, 'setBoundary']);
+            Route::post('/gis/intersecting', [GISController::class, 'intersecting']);
+            Route::post('/gis/area-statistics', [GISController::class, 'areaStatistics']);
+            Route::post('/gis/isochrone', [GISController::class, 'isochrone']);
+            Route::post('/gis/commute-between', [GISController::class, 'commuteBetween']);
 
             // Disputes & Fraud Reporting (Phase 34 - User-facing)
             Route::apiResource('disputes', DisputeController::class)->only(['index', 'store', 'show']);

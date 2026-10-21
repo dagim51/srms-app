@@ -29,17 +29,15 @@ class ValuationTest extends TestCase
         
         $res->assertStatus(201);
         
-        // Annual Rent = 4000 * 12 = 48000
-        // NOI = 48000 - 8000 = 40000
-        // Cap Rate = 40000 / 500000 = 0.08
-        // Cash on Cash = 40000 / 100000 = 0.40
-        $res->assertJsonPath('data.cap_rate', '0.0800');
-        $res->assertJsonPath('data.cash_on_cash_return', '0.4000');
-        $res->assertJsonPath('data.is_authoritative', false);
+        // The new valuation service returns ensemble with methods
+        // User inputs method contains cap_rate and cash_on_cash as percentages
+        $res->assertJsonPath('data.methods.user_inputs.details.cap_rate', '8%');
+        $res->assertJsonPath('data.methods.user_inputs.details.cash_on_cash', '40%');
         
         $this->assertDatabaseHas('property_valuations', [
             'property_id' => $property->id,
-            'estimated_value' => '500000.00'
+            'estimated_value' => '500000.00',
+            'is_authoritative' => false,
         ]);
     }
 }
