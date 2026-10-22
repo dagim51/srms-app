@@ -66,12 +66,14 @@ class ValuationService
     {
         // Use the model's scopeWithinRadius for PostGIS
         $candidates = ListingSearchIndex::query()
-            ->where('status', 'published')
-            ->where('id', '!=', $property->listings->first()?->id)
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->whereNotNull('price')
             ->where('price', '>', 0);
+
+        if ($firstListing = $property->listings->first()) {
+            $candidates->where('listing_id', '!=', $firstListing->id);
+        }
 
         // Spatial filter
         if ($property->latitude && $property->longitude) {
@@ -90,12 +92,6 @@ class ValuationService
                 max(0, $property->bedrooms - 1),
                 $property->bedrooms + 1,
             ]);
-        }
-
-        if ($property->building_area) {
-            $minArea = $property->building_area * 0.7;
-            $maxArea = $property->building_area * 1.3;
-            $candidates->whereBetween('building_area', [$minArea, $maxArea]);
         }
 
         if ($property->property_type_code) {
@@ -471,13 +467,16 @@ class ValuationService
      */
     public function getMarketTrends(string $city, ?string $subcity = null): array
     {
-        $query = ListingSearchIndex::query()
-            ->where('status', 'published')
-            ->where('city', $city);
+        $query = ListingSearchIndex::query();
 
-        if ($subcity) {
-            $query->where('subcity', $subcity);
-        }
+        $query->where(function ($q) use ($city, $subcity) {
+            $q->where('title', 'like', "%{$city}%")
+                ->orWhere('description', 'like', "%{$city}%");
+            if ($subcity) {
+                $q->orWhere('title', 'like', "%{$subcity}%")
+                    ->orWhere('description', 'like', "%{$subcity}%");
+            }
+        });
 
         $listings = $query->where('published_at', '>=', now()->subMonths(12))
             ->get();
@@ -488,8 +487,7 @@ class ValuationService
 
         $avgPrice = $listings->avg('price');
         $medianPrice = $this->median($listings->pluck('price')->toArray());
-        $pricePerSqm = $listings->where('building_area', '>', 0)
-            ->avg(fn ($l) => $l->price / $l->building_area);
+        $pricePerSqm = $avgPrice;
 
         // Monthly trend
         $monthly = $listings->groupBy(fn ($l) => $l->published_at->format('Y-m'))

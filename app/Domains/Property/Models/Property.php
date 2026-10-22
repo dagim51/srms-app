@@ -120,8 +120,17 @@ class Property extends Model
             $point = "ST_SetSRID(ST_MakePoint($longitude, $latitude), 4326)::geography";
             $distanceMeters = $radiusKm * 1000;
 
-            return $query->whereNotNull('property_point')
-                ->whereRaw("ST_DWithin(property_point::geography, $point, ?)", [$distanceMeters]);
+            return $query->where(function ($q) use ($point, $distanceMeters) {
+                $q->where(function ($sub) use ($point, $distanceMeters) {
+                    $sub->whereNotNull('property_point')
+                        ->whereRaw("ST_DWithin(property_point::geography, $point, ?)", [$distanceMeters]);
+                })->orWhere(function ($sub) use ($point, $distanceMeters) {
+                    $sub->whereNull('property_point')
+                        ->whereNotNull('latitude')
+                        ->whereNotNull('longitude')
+                        ->whereRaw("ST_DWithin(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography, $point, ?)", [$distanceMeters]);
+                });
+            });
         }
 
         $latRange = $radiusKm / 111.32;
@@ -144,7 +153,7 @@ class Property extends Model
         if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
             $point = "ST_SetSRID(ST_MakePoint($longitude, $latitude), 4326)::geography";
 
-            return $query->selectRaw("*, ST_Distance(property_point::geography, $point) as distance_meters");
+            return $query->selectRaw("*, ST_Distance(COALESCE(property_point::geography, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography), $point) as distance_meters");
         }
 
         return $query;
