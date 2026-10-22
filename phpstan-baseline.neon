@@ -7,12 +7,6 @@ parameters:
 			path: app/Actions/CloseInquiry.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Actions/PublishListing.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Inquiry\:\:\$responded_at\.$#'
 			identifier: property.notFound
 			count: 1
@@ -23,12 +17,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Actions/RespondToInquiry.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Actions/UnpublishListing.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\RentSchedule\:\:\$lease\.$#'
@@ -271,36 +259,6 @@ parameters:
 			path: app/Domains/Engagement/Http/Controllers/Api/V1/MessageController.php
 
 		-
-			message: '#^Relation ''buyer'' is not found in App\\Domains\\Engagement\\Models\\Offer model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/OfferController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Engagement\\Models\\Offer model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/OfferController.php
-
-		-
-			message: '#^Relation ''agent'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/ViewingController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/ViewingController.php
-
-		-
-			message: '#^Relation ''requester'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/ViewingController.php
-
-		-
 			message: '#^Relation ''messages'' is not found in App\\Domains\\Engagement\\Models\\Conversation model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
@@ -319,58 +277,10 @@ parameters:
 			path: app/Domains/Engagement/Http/Controllers/Web/MessageWebController.php
 
 		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Web/MessageWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Offer\:\:\$listing\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$owner_actor_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domains/Engagement/Http/Controllers/Web/OfferWebController.php
-
-		-
-			message: '#^Relation ''buyer'' is not found in App\\Domains\\Engagement\\Models\\Offer model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Web/OfferWebController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Engagement\\Models\\Offer model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Web/OfferWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Web/OfferWebController.php
-
-		-
-			message: '#^Relation ''agent'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Web/ViewingWebController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Web/ViewingWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Web/ViewingWebController.php
-
-		-
-			message: '#^Relation ''requester'' is not found in App\\Domains\\Engagement\\Models\\Viewing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Engagement/Http/Controllers/Web/ViewingWebController.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Identity\\Http\\Resources\\UserResource\:\:\$avatar\.$#'
@@ -451,31 +361,19 @@ parameters:
 			path: app/Domains/Identity/Http/Resources/UserResource.php
 
 		-
+			message: '#^Relation ''permissions'' is not found in App\\Domains\\Identity\\Models\\Role model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Domains/Identity/Models/User.php
+
+		-
 			message: '#^Relation ''roles'' is not found in App\\Domains\\Identity\\Models\\Permission model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Domains/Identity/Models/User.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingController.php
-
-		-
-			message: '#^Relation ''moderations'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingController.php
-
-		-
 			message: '#^Relation ''ownerActor'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingController.php
@@ -491,24 +389,6 @@ parameters:
 			identifier: match.unhandled
 			count: 1
 			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingModerationController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Api/V1/ListingModerationController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Api/V1/PublicListingController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Listing/Http/Controllers/Api/V1/PublicListingController.php
 
 		-
 			message: '#^Relation ''properties'' is not found in App\\Domains\\Listing\\Models\\Collection model\.$#'
@@ -529,122 +409,38 @@ parameters:
 			path: app/Domains/Listing/Http/Controllers/Web/FavoriteWebController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''amenities'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''category'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''features'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''media'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''moderations'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 4
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Relation ''type'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
-
-		-
 			message: '#^Match expression does not handle remaining value\: mixed$#'
 			identifier: match.unhandled
 			count: 1
 			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
 
 		-
-			message: '#^Relation ''moderations'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 3
-			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
-
-		-
-			message: '#^Relation ''roles'' is not found in App\\Domains\\Identity\\Models\\User model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$moderations\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bedrooms\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingSubmissionWebController.php
+			path: app/Domains/Listing/Models/Listing.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$building_area\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingSubmissionWebController.php
+			path: app/Domains/Listing/Models/Listing.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$land_area\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Domains/Listing/Http/Controllers/Web/ListingSubmissionWebController.php
+			path: app/Domains/Listing/Models/Listing.php
 
 		-
-			message: '#^Relation ''moderations'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Listing/Http/Controllers/Web/ListingSubmissionWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 3
-			path: app/Domains/Listing/Http/Controllers/Web/ListingSubmissionWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$media\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Domains/Listing/Models/Listing.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: app/Domains/Listing/Models/Listing.php
 
@@ -775,18 +571,6 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$listings\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$media\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$price\.$#'
 			identifier: property.notFound
 			count: 1
@@ -799,39 +583,27 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Relation ''amenities'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Relation ''category'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
+			identifier: property.notFound
 			count: 1
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Relation ''features'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$price\.$#'
+			identifier: property.notFound
+			count: 1
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Relation ''listings'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$purpose\.$#'
+			identifier: property.notFound
+			count: 1
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
 			message: '#^Relation ''location'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Relation ''media'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
@@ -847,10 +619,10 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Relation ''type'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Parameter \#1 \$media of job class App\\Jobs\\ProcessPropertyMedia constructor expects App\\Domains\\Property\\Models\\PropertyMedia in App\\Jobs\\ProcessPropertyMedia\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
 			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
+			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyMediaController.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Amenity\:\:\$status\.$#'
@@ -865,9 +637,9 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Web/FeatureCatalogController.php
 
 		-
-			message: '#^Relation ''media'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
+			message: '#^Parameter \#1 \$media of job class App\\Jobs\\ProcessPropertyMedia constructor expects App\\Domains\\Property\\Models\\PropertyMedia in App\\Jobs\\ProcessPropertyMedia\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
 			path: app/Domains/Property/Http/Controllers/Web/PropertyMediaWebController.php
 
 		-
@@ -883,32 +655,8 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
 
 		-
-			message: '#^Relation ''amenities'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
-
-		-
-			message: '#^Relation ''category'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
-
-		-
-			message: '#^Relation ''features'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
-
-		-
-			message: '#^Relation ''media'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
-
-		-
-			message: '#^Relation ''type'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Parameter \#1 \$media of job class App\\Jobs\\ProcessPropertyMedia constructor expects App\\Domains\\Property\\Models\\PropertyMedia in App\\Jobs\\ProcessPropertyMedia\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
 
@@ -919,10 +667,10 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Web/PropertyWebController.php
 
 		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 8
-			path: app/Domains/Property/Http/Controllers/Web/PublicPropertyWebController.php
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Property/Models/Property.php
 
 		-
 			message: '#^Relation ''assignee'' is not found in App\\Domains\\PropertyManagement\\Models\\MaintenanceTicket model\.$#'
@@ -1057,21 +805,9 @@ parameters:
 			path: app/Domains/Shared/Policies/DomainPolicy.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Stay\\Models\\Reservation\:\:\$listing\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$owner_actor_id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Domains/Stay/Http/Controllers/Api/V1/ReservationController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Stay\\Models\\Reservation model\.$#'
-			identifier: larastan.relationExistence
-			count: 4
-			path: app/Domains/Stay/Http/Controllers/Api/V1/ReservationController.php
-
-		-
-			message: '#^Relation ''user'' is not found in App\\Domains\\Stay\\Models\\Reservation model\.$#'
-			identifier: larastan.relationExistence
-			count: 3
 			path: app/Domains/Stay/Http/Controllers/Api/V1/ReservationController.php
 
 		-
@@ -1079,18 +815,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Domains/Stay/Http/Controllers/Web/AccommodationWebController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Stay\\Models\\Reservation model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: app/Domains/Stay/Http/Controllers/Web/ReservationWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Stay/Http/Controllers/Web/ReservationWebController.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
@@ -1453,32 +1177,14 @@ parameters:
 			path: app/Http/Controllers/Web/OperationsWebController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$storage_key\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Controllers/Web/SearchWebController.php
 
 		-
-			message: '#^Relation ''amenities'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Web/SearchWebController.php
-
-		-
-			message: '#^Relation ''category'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Http/Controllers/Web/SearchWebController.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 10
-			path: app/Http/Controllers/Web/SearchWebController.php
-
-		-
-			message: '#^Relation ''type'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Domains\\Listing\\Models\\Listing\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Web/SearchWebController.php
 
@@ -5263,24 +4969,6 @@ parameters:
 			path: app/Http/Resources/ViewingResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Listing\\Models\\Listing\>\:\:\$property\.$#'
-			identifier: property.notFound
-			count: 7
-			path: app/Jobs/IndexListingJob.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Listing\\Models\\Listing\>\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/IndexListingJob.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Jobs/IndexListingJob.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$accommodation\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5339,12 +5027,6 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Listeners/LeaseActivatedListener.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Listeners/PaymentCompletedListener.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Transaction\\Models\\Payment\:\:\$payable\.$#'
@@ -5455,37 +5137,13 @@ parameters:
 			path: app/Services/Dashboard/DashboardAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Offer\:\:\$listing\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$property\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Services/Dashboard/DashboardAnalyticsService.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$property\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Dashboard/DashboardAnalyticsService.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Services/Dashboard/DashboardAnalyticsService.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\Engagement\\Models\\Offer model\.$#'
-			identifier: larastan.relationExistence
 			count: 1
 			path: app/Services/Dashboard/DashboardAnalyticsService.php
 
 		-
 			message: '#^Relation ''property'' is not found in App\\Domains\\Engagement\\Models\\Inquiry model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Services/Dashboard/DashboardAnalyticsService.php
-
-		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Listing\\Models\\Listing model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Services/Dashboard/DashboardAnalyticsService.php
@@ -5533,12 +5191,6 @@ parameters:
 			path: app/Services/Inquiries/InquiryService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Services/Listings/ListingPublisher.php
-
-		-
 			message: '#^Parameter \#1 \$listing of method App\\Services\\Listings\\ListingPublisher\:\:publish\(\) expects App\\Domains\\Listing\\Models\\Listing, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5551,7 +5203,7 @@ parameters:
 			path: app/Services/Listings/ListingPublisher.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Offer\:\:\$listing\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$owner_actor_id\.$#'
 			identifier: property.notFound
 			count: 3
 			path: app/Services/Offers/NegotiationService.php
@@ -5653,21 +5305,9 @@ parameters:
 			path: app/Services/Rentals/LeaseService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\ListingSearchIndex\:\:\$building_area\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Services/Valuation/ValuationService.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$city\.$#'
 			identifier: property.notFound
 			count: 3
-			path: app/Services/Valuation/ValuationService.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$listings\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Services/Valuation/ValuationService.php
 
 		-
@@ -5678,6 +5318,18 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$purpose\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Valuation/ValuationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Valuation/ValuationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$price\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Services/Valuation/ValuationService.php
@@ -6175,12 +5827,6 @@ parameters:
 			path: tests/Feature/AutomationJobTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\Listing\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Feature/DomainServices/ModerationAndDisputeDomainServicesTest.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$schedules\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6193,13 +5839,37 @@ parameters:
 			path: tests/Feature/FinancialSettlementTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Location\\Models\\Region\:\:\$country\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
-			path: tests/Feature/LocationHierarchyTest.php
+			count: 4
+			path: tests/Feature/ListingModerationTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Location\\Models\\Region\:\:\$name_am\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/ListingModerationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Feature/ListingTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$published_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/ListingTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/ListingTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name_en\.$#'
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/LocationHierarchyTest.php
@@ -6211,28 +5881,52 @@ parameters:
 			path: tests/Feature/PropertyAndCatalogsPagesTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$amenities\.$#'
+			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\PropertyFeature\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/PropertyAndCatalogsPagesTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$features\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$height\.$#'
 			identifier: property.notFound
 			count: 1
 			path: tests/Feature/PropertyAndCatalogsPagesTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$media\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$kind\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/PropertyAndCatalogsPagesTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$storage_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/PropertyAndCatalogsPagesTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$width\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/PropertyAndCatalogsPagesTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$value\.$#'
 			identifier: property.notFound
 			count: 2
 			path: tests/Feature/PropertyAndCatalogsPagesTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\PropertyFeature\:\:\$status\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
-			path: tests/Feature/PropertyAndCatalogsPagesTest.php
+			count: 3
+			path: tests/Feature/PropertyMediaTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$sort_order\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/PropertyMediaTest.php
 
 		-
 			message: '#^Static method Illuminate\\Http\\Testing\\File\:\:create\(\) invoked with 3 parameters, 1\-2 required\.$#'
@@ -6241,10 +5935,16 @@ parameters:
 			path: tests/Feature/PropertyMediaTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$listings\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$purpose\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 2
 			path: tests/Feature/PropertyTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/PublicDiscoveryTest.php
 
 		-
 			message: '#^Call to method update\(\) on an unknown class App\\Policies\\PropertyPolicy\.$#'
@@ -6257,6 +5957,12 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: tests/Feature/RoleBasedAccessControlTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 4
+			path: tests/Feature/SearchEngineTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'

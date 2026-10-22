@@ -9,9 +9,21 @@ use App\Models\Woreda;
 use App\Models\Zone;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @property string $id
+ * @property string|null $address
+ * @property-read SubCity|null $subCity
+ * @property-read Zone|null $zone
+ * @property-read Woreda|null $woreda
+ * @property-read Region|null $region
+ */
 class Property extends Model
 {
     use HasUuids, SoftDeletes;
@@ -24,22 +36,22 @@ class Property extends Model
         'property_boundary' => 'geometry:polygon',
     ];
 
-    public function region()
+    public function region(): BelongsTo
     {
         return $this->belongsTo(Region::class);
     }
 
-    public function zone()
+    public function zone(): BelongsTo
     {
         return $this->belongsTo(Zone::class);
     }
 
-    public function subCity()
+    public function subCity(): BelongsTo
     {
         return $this->belongsTo(SubCity::class);
     }
 
-    public function woreda()
+    public function woreda(): BelongsTo
     {
         return $this->belongsTo(Woreda::class);
     }
@@ -64,39 +76,39 @@ class Property extends Model
         return $this->address ?? __('Location not set');
     }
 
-    public function listings()
+    public function listings(): HasMany
     {
         return $this->hasMany(Listing::class);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(PropertyCategory::class);
     }
 
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(PropertyType::class);
     }
 
-    public function amenities()
+    public function amenities(): BelongsToMany
     {
         return $this->belongsToMany(Amenity::class, 'property_amenities')
             ->withPivot('value');
     }
 
-    public function features()
+    public function features(): BelongsToMany
     {
         return $this->belongsToMany(PropertyFeature::class, 'property_feature_links', 'property_id', 'feature_id')
             ->withPivot('value');
     }
 
-    public function media()
+    public function media(): HasMany
     {
         return $this->hasMany(PropertyMedia::class)->orderBy('sort_order');
     }
 
-    public function primaryMedia()
+    public function primaryMedia(): HasOne
     {
         return $this->hasOne(PropertyMedia::class)->where('kind', 'image')->orderBy('sort_order');
     }

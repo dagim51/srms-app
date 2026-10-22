@@ -4,19 +4,26 @@ namespace App\Traits;
 
 use App\Models\Permission;
 use App\Models\Role;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 trait HasRoles
 {
-    public function roles()
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')
             ->withPivot('organization_id');
     }
 
-    public function permissions()
+    /**
+     * @return BelongsToMany<Permission, $this>
+     */
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'user_permissions')
             ->withPivot('organization_id');

@@ -2,12 +2,12 @@
 
 namespace App\Domains\Administration\Http\Controllers\Web;
 
+use App\Domains\Identity\Models\Role;
+use App\Domains\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Organization;
 use App\Models\Permission;
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -49,7 +49,7 @@ class AdminWebController extends Controller
             });
         }
 
-        $dbUsers = $query->latest()->get()->map(function ($u) {
+        $dbUsers = $query->latest()->get()->map(function (User $u) {
             $roleName = $u->roles()->first()?->name ?? 'User';
 
             return [
@@ -285,7 +285,7 @@ class AdminWebController extends Controller
         }
 
         // All users for the User Inspector tab
-        $allUsers = User::take(25)->get()->map(function ($u) {
+        $allUsers = User::take(25)->get()->map(function (User $u) {
             return [
                 'id' => $u->id,
                 'name' => $u->name,

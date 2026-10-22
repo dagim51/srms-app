@@ -6,6 +6,7 @@ use App\Models\Listing;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Viewing extends Model
@@ -25,17 +26,17 @@ class Viewing extends Model
         'scheduled_at' => 'datetime',
     ];
 
-    public function listing()
+    public function listing(): BelongsTo
     {
         return $this->belongsTo(Listing::class);
     }
 
-    public function requester()
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
 
-    public function agent()
+    public function agent(): BelongsTo
     {
         return $this->belongsTo(User::class, 'agent_id');
     }

@@ -289,7 +289,6 @@ class LocationWebController extends Controller
             'subcity' => 'subcities',
             'zone' => 'zones',
             'woreda' => 'woredas',
-            default => 'subcities',
         };
 
         return redirect()->route('dashboard.locations.index', ['tab' => $tab])
@@ -315,7 +314,6 @@ class LocationWebController extends Controller
             'subcity' => 'subcities',
             'zone' => 'zones',
             'woreda' => 'woredas',
-            default => 'subcities',
         };
 
         return redirect()->route('dashboard.locations.index', ['tab' => $tab])
@@ -338,7 +336,7 @@ class LocationWebController extends Controller
             ->with('city:id,region_id')
             ->orderBy('name_en')
             ->get()
-            ->map(function ($sc) {
+            ->map(function (SubCity $sc) {
                 return [
                     'id' => $sc->id,
                     'type' => 'sub_city',
@@ -354,7 +352,7 @@ class LocationWebController extends Controller
             ->select('id', 'region_id', 'name_en', 'name_am', 'name_om')
             ->orderBy('name_en')
             ->get()
-            ->map(function ($z) {
+            ->map(function (Zone $z) {
                 return [
                     'id' => $z->id,
                     'type' => 'zone',

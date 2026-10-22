@@ -7,20 +7,29 @@ use App\Jobs\RemoveListingIndexJob;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string $owner_actor_id
+ * @property string $title
+ * @property string $status
+ * @property-read Property|null $property
+ */
 class Listing extends Model
 {
     use HasUuids, SoftDeletes;
 
     protected $guarded = [];
 
-    public function property()
+    public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class);
     }
 
-    public function moderations()
+    public function moderations(): HasMany
     {
         return $this->hasMany(ListingModeration::class);
     }

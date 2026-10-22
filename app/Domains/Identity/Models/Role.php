@@ -5,6 +5,12 @@ namespace App\Domains\Identity\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property string $guard_name
+ * @property string $status
+ */
 class Role extends Model
 {
     use HasUuids;
