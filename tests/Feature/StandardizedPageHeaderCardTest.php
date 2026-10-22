@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class StandardizedPageHeaderCardTest extends TestCase
@@ -16,8 +18,8 @@ class StandardizedPageHeaderCardTest extends TestCase
     {
         parent::setUp();
         $this->user = User::factory()->create();
-        $role = \App\Models\Role::firstOrCreate(['name' => 'Administrator']);
-        \Illuminate\Support\Facades\DB::table('user_roles')->insert(['role_id' => $role->id, 'user_id' => $this->user->id]);
+        $role = Role::firstOrCreate(['name' => 'Administrator']);
+        DB::table('user_roles')->insert(['role_id' => $role->id, 'user_id' => $this->user->id]);
     }
 
     public function test_all_main_dashboard_pages_render_standardized_page_header_card()
@@ -66,8 +68,8 @@ class StandardizedPageHeaderCardTest extends TestCase
             $response = $this->actingAs($this->user)->get($endpoint);
 
             $this->assertEquals(
-                200, 
-                $response->getStatusCode(), 
+                200,
+                $response->getStatusCode(),
                 "Endpoint {$endpoint} returned unexpected status code {$response->getStatusCode()}"
             );
 

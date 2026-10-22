@@ -2,18 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Listing\Models\ListingSearchIndex;
 
-class ListingSearchIndex extends Model
-{
-    protected $primaryKey = 'listing_id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    
-    protected $guarded = [];
-
-    protected $casts = [
-        'amenities' => 'array',
-        'published_at' => 'datetime'
-    ];
-}
+class_alias(ListingSearchIndex::class, 'App\Models\ListingSearchIndex');

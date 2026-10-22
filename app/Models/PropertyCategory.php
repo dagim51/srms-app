@@ -2,17 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Property\Models\PropertyCategory;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class PropertyCategory extends Model
-{
-    use HasUuids;
-    protected $guarded = [];
-
-    public function types()
-    {
-        return $this->hasMany(PropertyType::class, 'category_id');
-    }
-}
+class_alias(PropertyCategory::class, 'App\Models\PropertyCategory');

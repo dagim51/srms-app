@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -49,7 +50,7 @@ class PropertyResource extends JsonResource
             'listings' => $this->whenLoaded('listings', fn () => ListingResource::collection($this->listings)),
             'owner_user_id' => $this->owner_user_id,
             'owner' => $this->whenLoaded('ownerUser', fn () => new UserResource($this->ownerUser)),
-            'owner_user' => $this->when($this->owner_user_id, fn () => new UserResource(\App\Models\User::find($this->owner_user_id))),
+            'owner_user' => $this->when($this->owner_user_id, fn () => new UserResource(User::find($this->owner_user_id))),
             'organization' => $this->whenLoaded('organization', fn () => new OrganizationResource($this->organization)),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

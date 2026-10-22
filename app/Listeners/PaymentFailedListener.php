@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\Payments\PaymentFailed;
+use App\Models\AccommodationAvailability;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -14,7 +15,7 @@ class PaymentFailedListener implements ShouldQueue
     {
         $payment = $event->payment->load('payable');
 
-        if (!$payment->payable) {
+        if (! $payment->payable) {
             return;
         }
 
@@ -33,9 +34,9 @@ class PaymentFailedListener implements ShouldQueue
         }
 
         // Remove any availability blocks created for this booking
-        \App\Models\AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
+        AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
             ->where('type', 'booked')
-            ->where('reason', 'like', '%' . $booking->id . '%')
+            ->where('reason', 'like', '%'.$booking->id.'%')
             ->delete();
     }
 }

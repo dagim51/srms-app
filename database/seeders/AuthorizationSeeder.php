@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class AuthorizationSeeder extends Seeder
@@ -19,12 +20,12 @@ class AuthorizationSeeder extends Seeder
             'Agent',
             'Developer',
             'Property Manager',
-            'Administrator'
+            'Administrator',
         ];
 
         $roleModels = [];
         foreach ($roles as $roleName) {
-            $roleModels[$roleName] = \App\Models\Role::firstOrCreate(['name' => $roleName]);
+            $roleModels[$roleName] = Role::firstOrCreate(['name' => $roleName]);
         }
 
         $allPermissions = [
@@ -58,7 +59,7 @@ class AuthorizationSeeder extends Seeder
 
         $permissionModels = [];
         foreach ($allPermissions as $code => $description) {
-            $permissionModels[$code] = \App\Models\Permission::firstOrCreate(
+            $permissionModels[$code] = Permission::firstOrCreate(
                 ['code' => $code],
                 ['description' => $description]
             );
@@ -71,33 +72,33 @@ class AuthorizationSeeder extends Seeder
                 'properties.view', 'properties.create', 'properties.edit',
                 'listings.submit', 'listings.expire',
                 'finance.invoices.create', 'leases.create', 'leases.sign',
-                'leases.terminate', 'maintenance.manage', 'kyc.verify'
+                'leases.terminate', 'maintenance.manage', 'kyc.verify',
             ],
             'Agent' => [
                 'properties.view', 'properties.create', 'properties.edit',
-                'listings.submit', 'leases.create'
+                'listings.submit', 'leases.create',
             ],
             'Developer' => [
                 'properties.view', 'properties.create', 'properties.edit',
                 'listings.submit', 'listings.feature', 'finance.invoices.create',
-                'leases.create', 'leases.sign'
+                'leases.create', 'leases.sign',
             ],
             'Host' => [
                 'properties.view', 'properties.create', 'properties.edit',
-                'listings.submit'
+                'listings.submit',
             ],
             'Seller' => [
                 'properties.view', 'properties.create', 'properties.edit',
-                'listings.submit'
+                'listings.submit',
             ],
             'User' => [
-                'properties.view'
+                'properties.view',
             ],
         ];
 
         foreach ($rolePermissions as $roleName => $codes) {
             if (isset($roleModels[$roleName])) {
-                $pIds = collect($codes)->map(fn($c) => $permissionModels[$c]->id)->all();
+                $pIds = collect($codes)->map(fn ($c) => $permissionModels[$c]->id)->all();
                 $roleModels[$roleName]->permissions()->syncWithoutDetaching($pIds);
             }
         }

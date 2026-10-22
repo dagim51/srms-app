@@ -50,9 +50,9 @@ class EthiopianCalendar
     {
         $jdn = gregoriantojd($month, $day, $year);
         $r = ($jdn - self::JD_EPOCH_OFFSET) % 1461;
-        $n = ($r % 365) + 365 * (int)floor($r / 1460);
-        $ethYear = 4 * (int)floor(($jdn - self::JD_EPOCH_OFFSET) / 1461) + (int)floor($r / 365) - (int)floor($r / 1460);
-        $ethMonth = (int)floor($n / 30) + 1;
+        $n = ($r % 365) + 365 * (int) floor($r / 1460);
+        $ethYear = 4 * (int) floor(($jdn - self::JD_EPOCH_OFFSET) / 1461) + (int) floor($r / 365) - (int) floor($r / 1460);
+        $ethMonth = (int) floor($n / 30) + 1;
         $ethDay = ($n % 30) + 1;
 
         return [
@@ -69,24 +69,22 @@ class EthiopianCalendar
      */
     public static function toGregorian(int $year, int $month, int $day): array
     {
-        $jdn = self::JD_EPOCH_OFFSET + 365 * $year + (int)floor($year / 4) + 30 * ($month - 1) + $day - 1;
+        $jdn = self::JD_EPOCH_OFFSET + 365 * $year + (int) floor($year / 4) + 30 * ($month - 1) + $day - 1;
         $greg = jdtogregorian($jdn);
         [$m, $d, $y] = explode('/', $greg);
 
         return [
-            'year' => (int)$y,
-            'month' => (int)$m,
-            'day' => (int)$d,
+            'year' => (int) $y,
+            'month' => (int) $m,
+            'day' => (int) $d,
         ];
     }
 
     /**
      * Format a date into localized string, optionally showing dual Gregorian + Ethiopian dates.
      *
-     * @param DateTimeInterface|string|null $date
-     * @param string|null $locale 'am' or 'en' (defaults to current app locale)
-     * @param bool $dual Whether to display both calendars
-     * @return string
+     * @param  string|null  $locale  'am' or 'en' (defaults to current app locale)
+     * @param  bool  $dual  Whether to display both calendars
      */
     public static function format(DateTimeInterface|string|null $date, ?string $locale = null, bool $dual = false): string
     {
@@ -97,7 +95,7 @@ class EthiopianCalendar
         $carbon = $date instanceof DateTimeInterface ? Carbon::instance($date) : Carbon::parse($date);
         $locale = $locale ?? app()->getLocale();
 
-        $eth = self::fromGregorian((int)$carbon->format('Y'), (int)$carbon->format('m'), (int)$carbon->format('d'));
+        $eth = self::fromGregorian((int) $carbon->format('Y'), (int) $carbon->format('m'), (int) $carbon->format('d'));
         $amharicMonth = self::AMHARIC_MONTHS[$eth['month']] ?? '';
         $englishMonth = self::ENGLISH_ETHIOPIC_MONTHS[$eth['month']] ?? '';
 
@@ -109,6 +107,7 @@ class EthiopianCalendar
             if ($dual) {
                 return "{$ethAmharicFormatted} ({$gregFormatted} እ.ኤ.አ.)";
             }
+
             return $ethAmharicFormatted;
         }
 
@@ -116,6 +115,7 @@ class EthiopianCalendar
         if ($dual) {
             return "{$gregFormatted} ({$ethEnglishFormatted})";
         }
+
         return $gregFormatted;
     }
 }

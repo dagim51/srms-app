@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('accommodation_pricing_rules', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            
+
             $table->foreignUuid('accommodation_id')->constrained('accommodations')->cascadeOnDelete();
-            
+
             $table->string('type', 50); // seasonal, weekend, special
-            
+
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            
+
             $table->string('price_modifier_type', 20)->default('fixed'); // fixed, percentage
             $table->decimal('price_modifier_value', 12, 2);
-            
+
             $table->integer('priority')->default(0);
-            
+
             $table->timestamps();
-            
+
             $table->index(['accommodation_id', 'start_date', 'end_date'], 'acc_price_dates_idx');
         });
     }

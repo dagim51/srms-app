@@ -14,7 +14,7 @@ abstract class BasePolicy
         if (isset($model->organization_id) && $model->organization_id) {
             return $user->hasRole('Administrator', $model->organization_id) || $user->id === $model->user_id;
         }
-        
+
         return $user->id === $model->user_id || $user->hasRole('Administrator');
     }
 

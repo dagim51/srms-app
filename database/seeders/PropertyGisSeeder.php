@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Property;
-use App\Models\PropertyMedia;
 use App\Models\Listing;
+use App\Models\Property;
+use Illuminate\Database\Seeder;
 
 class PropertyGisSeeder extends Seeder
 {

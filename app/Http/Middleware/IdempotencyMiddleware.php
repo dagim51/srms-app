@@ -17,12 +17,12 @@ class IdempotencyMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         // Only enforce on mutating requests
-        if (!in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
+        if (! in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
             return $next($request);
         }
 
         $idempotencyKey = $request->header('X-Idempotency-Key') ?? $request->input('idempotency_key');
-        if (!$idempotencyKey) {
+        if (! $idempotencyKey) {
             return $next($request);
         }
 
@@ -36,7 +36,7 @@ class IdempotencyMiddleware
                     'error' => [
                         'code' => 'CONCURRENT_REQUEST',
                         'message' => 'A request with this idempotency key is currently processing.',
-                    ]
+                    ],
                 ], 409);
             }
 

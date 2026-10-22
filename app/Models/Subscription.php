@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Subscription\Models\Subscription;
 
-class Subscription extends Model
-{
-    //
-}
+class_alias(Subscription::class, 'App\Models\Subscription');

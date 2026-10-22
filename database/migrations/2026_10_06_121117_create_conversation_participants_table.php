@@ -15,11 +15,11 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('conversation_id')->constrained('conversations')->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->timestamp('last_read_at')->nullable();
-            
+
             $table->timestamps();
-            
+
             $table->unique(['conversation_id', 'user_id']);
         });
     }

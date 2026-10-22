@@ -21,9 +21,10 @@ class IndexListingJob implements ShouldQueue
     public function handle(): void
     {
         $listing = Listing::with(['property.category', 'property.type', 'property.amenities'])->find($this->listingId);
-        
-        if (!$listing || $listing->status !== 'published') {
+
+        if (! $listing || $listing->status !== 'published') {
             ListingSearchIndex::where('listing_id', $this->listingId)->delete();
+
             return;
         }
 

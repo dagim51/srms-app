@@ -68,7 +68,7 @@ return new class extends Migration
             $table->foreignUuid('organization_id')->nullable()->constrained()->cascadeOnDelete();
             $table->index(['user_id', 'permission_id', 'organization_id']);
         });
-        
+
         // Update organization_members to optionally reference branch/team
         Schema::table('organization_members', function (Blueprint $table) {
             $table->foreignUuid('branch_id')->nullable()->constrained()->nullOnDelete();
@@ -86,7 +86,7 @@ return new class extends Migration
             $table->dropForeign(['team_id']);
             $table->dropColumn(['branch_id', 'team_id']);
         });
-        
+
         Schema::dropIfExists('user_permissions');
         Schema::dropIfExists('user_roles');
         Schema::dropIfExists('role_permissions');

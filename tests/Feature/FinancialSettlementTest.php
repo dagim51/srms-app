@@ -13,7 +13,6 @@ use App\Models\PropertyType;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Payments\PaymentService;
-use App\Services\Payments\TelebirrGateway;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,7 +34,7 @@ class FinancialSettlementTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'APT'], ['name_en' => 'Apartment']);
         $property = Property::create([
             'title' => 'Bole Suite',
-            'property_code' => 'BOL-' . uniqid(),
+            'property_code' => 'BOL-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);
@@ -77,7 +76,7 @@ class FinancialSettlementTest extends TestCase
         // Complete the payment
         $completedPayment = $paymentService->handleSuccess($orderRef, [
             'gateway' => 'telebirr',
-            'transaction_id' => 'TLB-' . uniqid(),
+            'transaction_id' => 'TLB-'.uniqid(),
         ]);
 
         $this->assertEquals('completed', $completedPayment->status);
@@ -116,7 +115,7 @@ class FinancialSettlementTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'APT'], ['name_en' => 'Apartment']);
         $property = Property::create([
             'title' => 'Sample',
-            'property_code' => 'SMP-' . uniqid(),
+            'property_code' => 'SMP-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);
@@ -164,7 +163,7 @@ class FinancialSettlementTest extends TestCase
     public function test_telebirr_webhook_processes_settlement_and_balances_ledger()
     {
         $user = User::factory()->create();
-        $orderRef = 'SRMS-ORD-' . uniqid();
+        $orderRef = 'SRMS-ORD-'.uniqid();
 
         $payment = Payment::create([
             'user_id' => $user->id,
@@ -206,7 +205,7 @@ class FinancialSettlementTest extends TestCase
     public function test_payment_refund_records_balanced_reversal_double_entry()
     {
         $user = User::factory()->create();
-        $orderRef = 'SRMS-REF-' . uniqid();
+        $orderRef = 'SRMS-REF-'.uniqid();
 
         $payment = Payment::create([
             'user_id' => $user->id,

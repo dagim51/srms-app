@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Organization;
 
 class MarketingTest extends TestCase
 {
@@ -16,14 +16,14 @@ class MarketingTest extends TestCase
         $user = User::factory()->create();
         $org = Organization::create([
             'name' => 'Test Org',
-            'slug' => 'test-org'
+            'slug' => 'test-org',
         ]);
 
         // 1. Create Campaign
         $campRes = $this->actingAs($user)->postJson('/api/v1/marketing/campaigns', [
             'name' => 'Summer Promo',
             'channel' => 'social',
-            'start_date' => '2026-06-01'
+            'start_date' => '2026-06-01',
         ]);
         $campRes->assertStatus(201);
         $campId = $campRes->json('data.id');
@@ -33,7 +33,7 @@ class MarketingTest extends TestCase
             'marketing_campaign_id' => $campId,
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
-            'source' => 'Facebook Ad'
+            'source' => 'Facebook Ad',
         ]);
         $leadRes->assertStatus(201);
         $leadId = $leadRes->json('data.id');
@@ -44,7 +44,7 @@ class MarketingTest extends TestCase
 
         $this->assertDatabaseHas('leads', [
             'id' => $leadId,
-            'status' => 'won'
+            'status' => 'won',
         ]);
     }
 }

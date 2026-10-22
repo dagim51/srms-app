@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Property;
-use App\Models\PropertyMedia;
-use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
 
 class PropertyMediaSeeder extends Seeder
 {

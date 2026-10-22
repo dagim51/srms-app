@@ -9,17 +9,17 @@ trait Auditable
     public static function bootAuditable(): void
     {
         static::created(function ($model) {
-            AuditLog::log('created', $model, $model->getAttributes(), [], "Record created");
+            AuditLog::log('created', $model, $model->getAttributes(), [], 'Record created');
         });
 
         static::updated(function ($model) {
             $changes = $model->getChanges();
             $original = array_intersect_key($model->getOriginal(), $changes);
-            AuditLog::log('updated', $model, $changes, $original, "Record updated");
+            AuditLog::log('updated', $model, $changes, $original, 'Record updated');
         });
 
         static::deleted(function ($model) {
-            AuditLog::log('deleted', $model, [], $model->getOriginal(), "Record deleted");
+            AuditLog::log('deleted', $model, [], $model->getOriginal(), 'Record deleted');
         });
     }
 

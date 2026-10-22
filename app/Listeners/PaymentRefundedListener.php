@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\Payments\PaymentRefunded;
+use App\Models\AccommodationAvailability;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -15,7 +16,7 @@ class PaymentRefundedListener implements ShouldQueue
         $refund = $event->refundPayment->load('payable');
         $original = $event->originalPayment->load('payable');
 
-        if (!$original->payable) {
+        if (! $original->payable) {
             return;
         }
 
@@ -34,9 +35,9 @@ class PaymentRefundedListener implements ShouldQueue
         }
 
         // Remove availability blocks
-        \App\Models\AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
+        AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
             ->where('type', 'booked')
-            ->where('reason', 'like', '%' . $booking->id . '%')
+            ->where('reason', 'like', '%'.$booking->id.'%')
             ->delete();
     }
 }

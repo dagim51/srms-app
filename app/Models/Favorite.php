@@ -2,18 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Listing\Models\Favorite;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class Favorite extends Model
-{
-    use HasUuids;
-
-    protected $guarded = [];
-
-    public function property()
-    {
-        return $this->belongsTo(Property::class);
-    }
-}
+class_alias(Favorite::class, 'App\Models\Favorite');

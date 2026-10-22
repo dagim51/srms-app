@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ApiToken;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Models\ApiToken;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class VerifyApiToken
 {
@@ -28,6 +28,7 @@ class VerifyApiToken
             if ($apiToken && $apiToken->user) {
                 Auth::login($apiToken->user);
                 $apiToken->update(['last_used_at' => now()]);
+
                 return $next($request);
             }
 

@@ -41,7 +41,7 @@ class GenerateRentInvoicesCommand extends Command
 
         foreach ($schedules as $schedule) {
             $user = $schedule->lease?->tenantProfile?->user;
-            if (!$user) {
+            if (! $user) {
                 continue;
             }
 
@@ -51,7 +51,7 @@ class GenerateRentInvoicesCommand extends Command
                 ->where('notes', 'like', "%Schedule #{$schedule->id}%")
                 ->exists();
 
-            if (!$existingInvoice) {
+            if (! $existingInvoice) {
                 Invoice::create([
                     'user_id' => $user->id,
                     'amount' => $schedule->amount,

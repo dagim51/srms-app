@@ -2,13 +2,16 @@
 
 namespace App\Services\Bookings;
 
-use App\Actions\ConfirmBooking;
 use App\Actions\CancelBooking;
-use App\Events\Bookings\BookingCreated;
-use App\Events\Bookings\BookingConfirmed;
+use App\Actions\ConfirmBooking;
 use App\Events\Bookings\BookingCancelled;
+use App\Events\Bookings\BookingConfirmed;
+use App\Events\Bookings\BookingCreated;
 use App\Models\Accommodation;
+use App\Models\AccommodationAvailability;
 use App\Models\AccommodationBooking;
+use App\Models\AccommodationPricingRule;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -49,12 +52,12 @@ class BookingManager
             ]);
 
             // Record the booking as an availability block
-            \App\Models\AccommodationAvailability::create([
+            AccommodationAvailability::create([
                 'accommodation_id' => $accommodation->id,
                 'start_date' => $data['check_in_date'],
                 'end_date' => $data['check_out_date'],
                 'type' => 'booked',
-                'reason' => 'Booking ID: ' . $booking->id,
+                'reason' => 'Booking ID: '.$booking->id,
             ]);
 
             // Fire domain event
@@ -74,7 +77,7 @@ class BookingManager
                 throw new \InvalidArgumentException('Only pending bookings can be confirmed');
             }
 
-            $action = new ConfirmBooking();
+            $action = new ConfirmBooking;
             $confirmedBooking = $action->execute($booking);
 
             event(new BookingConfirmed($confirmedBooking, $confirmedBy));
@@ -89,11 +92,11 @@ class BookingManager
     public function cancel(AccommodationBooking $booking, ?string $cancelledBy = null, string $reason = 'guest_cancelled'): AccommodationBooking
     {
         return DB::transaction(function () use ($booking, $cancelledBy, $reason) {
-            if (!in_array($booking->status, ['pending', 'confirmed'])) {
+            if (! in_array($booking->status, ['pending', 'confirmed'])) {
                 throw new \InvalidArgumentException('Only pending or confirmed bookings can be cancelled');
             }
 
-            $action = new CancelBooking();
+            $action = new CancelBooking;
             $cancelledBooking = $action->execute($booking);
 
             event(new BookingCancelled($cancelledBooking, $cancelledBy, $reason));
@@ -108,7 +111,7 @@ class BookingManager
     protected function validateAvailability(Accommodation $accommodation, string $checkIn, string $checkOut): void
     {
         // Check availability blocks
-        $conflict = \App\Models\AccommodationAvailability::where('accommodation_id', $accommodation->id)
+        $conflict = AccommodationAvailability::where('accommodation_id', $accommodation->id)
             ->where('start_date', '<', $checkOut)
             ->where('end_date', '>', $checkIn)
             ->exists();
@@ -135,17 +138,17 @@ class BookingManager
     public function calculatePrice(Accommodation $accommodation, string $checkIn, string $checkOut): float
     {
         $basePrice = $accommodation->listing->price ?? $accommodation->property->price ?? 100;
-        $days = \Carbon\Carbon::parse($checkIn)->diffInDays(\Carbon\Carbon::parse($checkOut));
+        $days = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
         $totalPrice = $basePrice * $days;
 
-        $rules = \App\Models\AccommodationPricingRule::where('accommodation_id', $accommodation->id)
+        $rules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->where(function ($q2) use ($checkIn, $checkOut) {
                     $q2->whereNull('start_date')
-                       ->orWhere(function ($q3) use ($checkIn, $checkOut) {
-                           $q3->where('start_date', '<', $checkOut)
-                              ->where('end_date', '>', $checkIn);
-                       });
+                        ->orWhere(function ($q3) use ($checkIn, $checkOut) {
+                            $q3->where('start_date', '<', $checkOut)
+                                ->where('end_date', '>', $checkIn);
+                        });
                 });
             })
             ->orderByDesc('priority')
@@ -169,8 +172,8 @@ class BookingManager
      */
     public function calculateDetailedPrice(Accommodation $accommodation, string $checkIn, string $checkOut, array $options = []): array
     {
-        $start = \Carbon\Carbon::parse($checkIn);
-        $end = \Carbon\Carbon::parse($checkOut);
+        $start = Carbon::parse($checkIn);
+        $end = Carbon::parse($checkOut);
         $nights = max(1, (int) $start->diffInDays($end));
 
         $baseNightlyRate = (float) ($accommodation->listing->price ?? $accommodation->property->price ?? 100);
@@ -183,7 +186,7 @@ class BookingManager
 
         while ($current->lt($end)) {
             // Friday (5) and Saturday (6) considered weekend nights
-            $isWeekend = in_array($current->dayOfWeek, [\Carbon\Carbon::FRIDAY, \Carbon\Carbon::SATURDAY]);
+            $isWeekend = in_array($current->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY]);
             if ($isWeekend) {
                 $weekendNights++;
             }
@@ -201,14 +204,14 @@ class BookingManager
         $weekendSurcharge = round($weekendNights * $baseNightlyRate * $weekendMultiplier, 2);
 
         // Fetch applicable accommodation pricing rules
-        $rules = \App\Models\AccommodationPricingRule::where('accommodation_id', $accommodation->id)
+        $rules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->where(function ($q2) use ($checkIn, $checkOut) {
                     $q2->whereNull('start_date')
-                       ->orWhere(function ($q3) use ($checkIn, $checkOut) {
-                           $q3->where('start_date', '<', $checkOut)
-                              ->where('end_date', '>', $checkIn);
-                       });
+                        ->orWhere(function ($q3) use ($checkIn, $checkOut) {
+                            $q3->where('start_date', '<', $checkOut)
+                                ->where('end_date', '>', $checkIn);
+                        });
                 });
             })
             ->orderByDesc('priority')

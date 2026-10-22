@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\IndexListingJob;
+use App\Models\Listing;
+use App\Models\ListingSearchIndex;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -13,14 +16,14 @@ class ReindexListingsCommand extends Command
     public function handle()
     {
         $this->info('Starting full re-index of published listings...');
-        
-        \App\Models\ListingSearchIndex::truncate();
 
-        $listings = \App\Models\Listing::where('status', 'published')->get();
+        ListingSearchIndex::truncate();
+
+        $listings = Listing::where('status', 'published')->get();
         $count = $listings->count();
 
         foreach ($listings as $listing) {
-            \App\Jobs\IndexListingJob::dispatch($listing->id);
+            IndexListingJob::dispatch($listing->id);
         }
 
         $this->info("Queued {$count} listings for indexing.");

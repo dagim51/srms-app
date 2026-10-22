@@ -2,19 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Domains\Organization\Http\Resources\OrganizationMemberResource;
 
-class OrganizationMemberResource extends JsonResource
-{
-    public function toArray(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'user' => new UserResource($this->whenLoaded('user')),
-            'role' => $this->role,
-            'status' => $this->status,
-            'joined_at' => $this->created_at?->toISOString(),
-        ];
-    }
-}
+class_alias(OrganizationMemberResource::class, 'App\Http\Resources\OrganizationMemberResource');

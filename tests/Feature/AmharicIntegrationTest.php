@@ -3,10 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Listing;
-use App\Models\Organization;
 use App\Models\Property;
-use App\Models\PropertyCategory;
-use App\Models\PropertyType;
 use App\Models\User;
 use App\Support\EthiopianCalendar;
 use App\Support\EthiopicTextNormalizer;

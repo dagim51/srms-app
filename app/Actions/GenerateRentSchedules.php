@@ -15,7 +15,7 @@ class GenerateRentSchedules extends Action
     public function execute(Lease $lease): Collection
     {
         return $this->transactional(function () use ($lease) {
-            $schedules = new Collection();
+            $schedules = new Collection;
             $start = Carbon::parse($lease->start_date);
             $end = Carbon::parse($lease->end_date);
 

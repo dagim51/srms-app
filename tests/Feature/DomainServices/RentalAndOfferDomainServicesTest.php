@@ -27,6 +27,7 @@ class RentalAndOfferDomainServicesTest extends TestCase
     use RefreshDatabase;
 
     protected LeaseService $leaseService;
+
     protected NegotiationService $negotiationService;
 
     protected function setUp(): void

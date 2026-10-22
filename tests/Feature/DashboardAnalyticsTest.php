@@ -5,10 +5,8 @@ namespace Tests\Feature;
 use App\Models\Inquiry;
 use App\Models\Listing;
 use App\Models\Offer;
-use App\Models\Payment;
 use App\Models\Property;
 use App\Models\User;
-use App\Models\Viewing;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -55,7 +53,7 @@ class DashboardAnalyticsTest extends TestCase
         $response->assertSee('dashboardTrendChart');
         $response->assertSee('dashboardPurposeChart');
         $response->assertSee('dashboardOutcomeChart');
-        
+
         // Ensure no page-header-card id
         $response->assertDontSee('id="page-header-card"', false);
     }

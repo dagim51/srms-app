@@ -22,11 +22,12 @@
         </x-page-header>
 
         {{-- Top KPI Stat Cards --}}
+        {{-- Top KPI Stat Cards --}}
         @php
-            $totalViewings = $viewings->count();
-            $confirmedViewings = $viewings->where('status', 'confirmed')->count();
-            $requestedViewings = $viewings->where('status', 'requested')->count();
-            $completedViewings = $viewings->where('status', 'completed')->count();
+            $totalViewings = \App\Models\Viewing::where(fn($q) => $q->where('requester_id', auth()->id())->orWhere('agent_id', auth()->id()))->count();
+            $confirmedViewings = \App\Models\Viewing::where(fn($q) => $q->where('requester_id', auth()->id())->orWhere('agent_id', auth()->id()))->where('status', 'confirmed')->count();
+            $requestedViewings = \App\Models\Viewing::where(fn($q) => $q->where('requester_id', auth()->id())->orWhere('agent_id', auth()->id()))->where('status', 'requested')->count();
+            $completedViewings = \App\Models\Viewing::where(fn($q) => $q->where('requester_id', auth()->id())->orWhere('agent_id', auth()->id()))->where('status', 'completed')->count();
         @endphp
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div class="cinematic-fade-up cinematic-stagger-1">
@@ -81,14 +82,82 @@
             </div>
         @endif
 
+        {{-- Actions & Filter Toolbar --}}
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Appointments & Guided Viewings') }}</h2>
+                    <p class="text-xs text-muted dark:text-muted">{{ __('In-person property tours, verified agent schedules, and buyer requests') }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('properties.index') }}" class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        {{ __('Explore & Book Viewing') }}
+                    </a>
+                </div>
+            </div>
+
+            {{-- Filter Form --}}
+            <form method="GET" action="{{ route('dashboard.viewings.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
+                <div class="md:col-span-6 relative">
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           placeholder="{{ __('Search by property title, address, agent, or requester...') }}"
+                           class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.viewings.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="md:col-span-4">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs">
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="requested" {{ request('status') === 'requested' ? 'selected' : '' }}>{{ __('Requested') }}</option>
+                        <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>{{ __('Confirmed') }}</option>
+                        <option value="rescheduled" {{ request('status') === 'rescheduled' ? 'selected' : '' }}>{{ __('Rescheduled') }}</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn btn-secondary btn-sm text-xs py-2 px-3 w-full justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        <span>{{ __('Filter') }}</span>
+                    </button>
+
+                    @if(request()->hasAny(['search', 'status']))
+                        <a href="{{ route('dashboard.viewings.index') }}" class="p-2 text-muted hover:text-orange-600 dark:hover:text-orange-400" title="{{ __('Reset Filters') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         @if($viewings->isEmpty())
-            <x-empty-state
-                icon="calendar"
-                title="{{ __('No upcoming viewings') }}"
-                description="{{ __('When you request to view a property or someone requests to view yours, they will appear here.') }}"
-                action="{{ route('properties.index') }}"
-                actionText="{{ __('Explore Properties') }}"
-            />
+            @if(request('search') || request('status'))
+                <div class="card p-12 text-center cinematic-fade-up">
+                    <svg class="w-12 h-12 text-muted dark:text-muted mb-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    <h4 class="font-display font-semibold text-muted dark:text-white text-lg mb-2">{{ __('No matching appointments') }}</h4>
+                    <p class="text-muted dark:text-muted text-sm mb-6 max-w-sm mx-auto">{{ __('No property viewings match your search and filter criteria.') }}</p>
+                    <a href="{{ route('dashboard.viewings.index') }}" class="btn btn-secondary btn-sm">
+                        {{ __('Clear All Filters') }}
+                    </a>
+                </div>
+            @else
+                <x-empty-state
+                    icon="calendar"
+                    title="{{ __('No upcoming viewings') }}"
+                    description="{{ __('When you request to view a property or someone requests to view yours, they will appear here.') }}"
+                    action="{{ route('properties.index') }}"
+                    actionText="{{ __('Explore Properties') }}"
+                />
+            @endif
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cinematic-fade-up cinematic-stagger-2">
                 @foreach($viewings as $viewing)
@@ -146,6 +215,12 @@
                     </a>
                 @endforeach
             </div>
+
+            @if($viewings->hasPages())
+                <div class="mt-6">
+                    {{ $viewings->links() }}
+                </div>
+            @endif
         @endif
     </div>
 </x-layouts.dashboard>

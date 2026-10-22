@@ -110,7 +110,16 @@
                     <p class="text-xs text-muted dark:text-muted">{{ __('Cadastral location, physical street address, and interactive GPS pin.') }}</p>
                 </div>
 
-                <div class="mb-5">
+                <x-location-picker 
+                    name="location_id" 
+                    :value="old('location_id', $property->location_id)" 
+                    :regionId="old('region_id', $property->region_id)" 
+                    :zoneId="old('zone_id', $property->zone_id)" 
+                    :subCityId="old('sub_city_id', $property->sub_city_id)" 
+                    :woredaId="old('woreda_id', $property->woreda_id)" 
+                />
+
+                <div class="mt-5 mb-5">
                     <x-label for="address">{{ __('Street Address') }}</x-label>
                     <x-input type="text" id="address" name="address" value="{{ old('address', $property->address) }}" class="w-full" />
                 </div>
@@ -120,7 +129,7 @@
                         <x-label>{{ __('GPS Coordinates & Map Pin') }}</x-label>
                         <p class="text-xs text-muted dark:text-muted">{{ __('Click anywhere on the map or drag the pin to set the exact property coordinates.') }}</p>
                     </div>
-                    <x-coordinate-picker nameLat="latitude" nameLng="longitude" :initialLat="$property->latitude" :initialLng="$property->longitude" />
+                    <x-coordinate-picker nameLat="latitude" nameLng="longitude" :latitude="$property->latitude" :longitude="$property->longitude" />
                 </div>
             </x-card>
 

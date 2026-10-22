@@ -1,20 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Domains\Analytics\Models\ReportTemplate;
 
-class ReportTemplate extends Model
-{
-    use HasUuids;
-
-    protected $fillable = [
-        'name',
-        'type',
-        'configuration'
-    ];
-
-    protected $casts = [
-        'configuration' => 'array'
-    ];
-}
+class_alias(ReportTemplate::class, 'App\Models\ReportTemplate');

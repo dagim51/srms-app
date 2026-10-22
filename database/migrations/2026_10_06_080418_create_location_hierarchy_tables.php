@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $commonFields = function(Blueprint $table) {
+        $commonFields = function (Blueprint $table) {
             $table->string('name_en');
             $table->string('name_am')->nullable();
             $table->string('name_om')->nullable();

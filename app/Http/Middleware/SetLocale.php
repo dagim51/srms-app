@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -15,12 +16,12 @@ class SetLocale
      *
      * @var array<string>
      */
-    protected array $supportedLocales = ['en', 'am'];
+    protected array $supportedLocales = ['en', 'am', 'om'];
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -28,8 +29,8 @@ class SetLocale
 
         // Apply locale to Laravel and Carbon
         App::setLocale($locale);
-        if (class_exists(\Carbon\Carbon::class)) {
-            \Carbon\Carbon::setLocale($locale);
+        if (class_exists(Carbon::class)) {
+            Carbon::setLocale($locale);
         }
 
         // Store in session if available
@@ -49,7 +50,7 @@ class SetLocale
                 }
             }
 
-            if (!$hasCookie) {
+            if (! $hasCookie) {
                 $currentCookie = $request->cookie('srms_locale') ?? $request->cookie('locale');
                 if ($currentCookie !== $locale) {
                     $response->withCookie(cookie()->forever('srms_locale', $locale));
@@ -85,7 +86,7 @@ class SetLocale
         }
 
         // 3. Authenticated user saved preference
-        if ($request->user() && !empty($request->user()->locale)) {
+        if ($request->user() && ! empty($request->user()->locale)) {
             $userLocale = $request->user()->locale;
             if (in_array($userLocale, $this->supportedLocales, true)) {
                 return $userLocale;

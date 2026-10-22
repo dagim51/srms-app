@@ -16,10 +16,11 @@
 
         {{-- Top KPI Stat Cards --}}
         @php
-            $totalOffers = $offers->count();
-            $pendingOffers = $offers->where('status', 'pending')->count();
-            $acceptedOffers = $offers->where('status', 'accepted')->count();
-            $counteredOffers = $offers->where('status', 'countered')->count();
+            $baseOffers = \App\Models\Offer::where(fn($q) => $q->where('buyer_id', auth()->id())->orWhereHas('listing', fn($lq) => $lq->where('owner_actor_id', auth()->id())))->whereNull('parent_offer_id');
+            $totalOffers = (clone $baseOffers)->count();
+            $pendingOffers = (clone $baseOffers)->where('status', 'pending')->count();
+            $acceptedOffers = (clone $baseOffers)->where('status', 'accepted')->count();
+            $counteredOffers = (clone $baseOffers)->where('status', 'countered')->count();
         @endphp
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div class="cinematic-fade-up cinematic-stagger-1">
@@ -74,14 +75,81 @@
             </div>
         @endif
 
+        {{-- Actions & Filter Toolbar --}}
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Bids & Acquisition Offers') }}</h2>
+                    <p class="text-xs text-muted dark:text-muted">{{ __('Purchase negotiations, escrow proposals, and counter-offers') }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('properties.index') }}" class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        {{ __('Make New Offer') }}
+                    </a>
+                </div>
+            </div>
+
+            {{-- Filter Form --}}
+            <form method="GET" action="{{ route('dashboard.offers.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
+                <div class="md:col-span-6 relative">
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           placeholder="{{ __('Search offers by property title, address, or buyer...') }}"
+                           class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.offers.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="md:col-span-4">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs">
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                        <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>{{ __('Accepted') }}</option>
+                        <option value="countered" {{ request('status') === 'countered' ? 'selected' : '' }}>{{ __('Countered') }}</option>
+                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn btn-secondary btn-sm text-xs py-2 px-3 w-full justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        <span>{{ __('Filter') }}</span>
+                    </button>
+
+                    @if(request()->hasAny(['search', 'status']))
+                        <a href="{{ route('dashboard.offers.index') }}" class="p-2 text-muted hover:text-orange-600 dark:hover:text-orange-400" title="{{ __('Reset Filters') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         @if($offers->isEmpty())
-            <x-empty-state
-                icon="document"
-                title="{{ __('No active offers') }}"
-                description="{{ __('You haven\'t made or received any offers yet. Explore the marketplace to find your dream property.') }}"
-                action="{{ route('properties.index') }}"
-                actionText="{{ __('Explore Properties') }}"
-            />
+            @if(request('search') || request('status'))
+                <div class="card p-12 text-center cinematic-fade-up">
+                    <svg class="w-12 h-12 text-muted dark:text-muted mb-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    <h4 class="font-display font-semibold text-muted dark:text-white text-lg mb-2">{{ __('No matching offers') }}</h4>
+                    <p class="text-muted dark:text-muted text-sm mb-6 max-w-sm mx-auto">{{ __('No bids or offers match your current search and filter criteria.') }}</p>
+                    <a href="{{ route('dashboard.offers.index') }}" class="btn btn-secondary btn-sm">
+                        {{ __('Clear All Filters') }}
+                    </a>
+                </div>
+            @else
+                <x-empty-state
+                    icon="document"
+                    title="{{ __('No active offers') }}"
+                    description="{{ __('You haven\'t made or received any offers yet. Explore the marketplace to find your dream property.') }}"
+                    action="{{ route('properties.index') }}"
+                    actionText="{{ __('Explore Properties') }}"
+                />
+            @endif
         @else
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 cinematic-fade-up cinematic-stagger-2">
                 @foreach($offers as $offer)
@@ -161,6 +229,12 @@
                     </a>
                 @endforeach
             </div>
+
+            @if($offers->hasPages())
+                <div class="mt-6">
+                    {{ $offers->links() }}
+                </div>
+            @endif
         @endif
     </div>
 </x-layouts.dashboard>

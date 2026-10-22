@@ -2,8 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Amenity;
+use App\Models\ApiToken;
+use App\Models\Property;
+use App\Models\PropertyCategory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PropertyCharacteristicsTest extends TestCase
@@ -12,35 +17,35 @@ class PropertyCharacteristicsTest extends TestCase
 
     public function test_amenities_can_be_attached_and_detached()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $property = \App\Models\Property::create([
+        $property = Property::create([
             'title' => 'Test Property',
             'property_code' => 'TEST-001',
             'owner_user_id' => $owner->id,
             'status' => 'draft',
         ]);
 
-        $amenity = \App\Models\Amenity::create([
+        $amenity = Amenity::create([
             'category' => 'indoor',
             'code' => 'WIFI',
             'name_en' => 'WiFi',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Attach
         $response = $this->withToken($token)->postJson("/api/v1/properties/{$property->id}/amenities", [
             'amenity_id' => $amenity->id,
-            'value' => 'High Speed'
+            'value' => 'High Speed',
         ]);
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('property_amenities', [
             'property_id' => $property->id,
             'amenity_id' => $amenity->id,
-            'value' => 'High Speed'
+            'value' => 'High Speed',
         ]);
 
         // Detach
@@ -49,49 +54,49 @@ class PropertyCharacteristicsTest extends TestCase
 
         $this->assertDatabaseMissing('property_amenities', [
             'property_id' => $property->id,
-            'amenity_id' => $amenity->id
+            'amenity_id' => $amenity->id,
         ]);
-        
+
         // Property still exists
         $this->assertDatabaseHas('properties', ['id' => $property->id]);
     }
 
     public function test_property_filtering_by_characteristics()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $category = \App\Models\PropertyCategory::create([
+        $category = PropertyCategory::create([
             'code' => 'RES',
             'name_en' => 'Residential',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
-        $amenity = \App\Models\Amenity::create([
+        $amenity = Amenity::create([
             'category' => 'outdoor',
             'code' => 'POOL',
             'name_en' => 'Swimming Pool',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
-        $property1 = \App\Models\Property::create([
+        $property1 = Property::create([
             'title' => 'House with Pool',
             'property_code' => 'PROP-1',
             'owner_user_id' => $owner->id,
             'category_id' => $category->id,
             'bedrooms' => 3,
-            'status' => 'verified'
+            'status' => 'verified',
         ]);
         $property1->amenities()->attach($amenity->id);
 
-        $property2 = \App\Models\Property::create([
+        $property2 = Property::create([
             'title' => 'Apartment',
             'property_code' => 'PROP-2',
             'owner_user_id' => $owner->id,
             'category_id' => $category->id,
             'bedrooms' => 2,
-            'status' => 'verified'
+            'status' => 'verified',
         ]);
 
         // Filter by category
@@ -100,7 +105,7 @@ class PropertyCharacteristicsTest extends TestCase
         $this->assertCount(2, $response->json('data'));
 
         // Filter by bedrooms
-        $response = $this->withToken($token)->getJson("/api/v1/properties?bedrooms=3");
+        $response = $this->withToken($token)->getJson('/api/v1/properties?bedrooms=3');
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('House with Pool', $response->json('data.0.title'));

@@ -2,18 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Identity\Models\Permission;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class Permission extends Model
-{
-    use HasUuids;
-
-    protected $fillable = ['code', 'description'];
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'role_permissions');
-    }
-}
+class_alias(Permission::class, 'App\Models\Permission');

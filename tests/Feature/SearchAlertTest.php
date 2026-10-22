@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
 
 class SearchAlertTest extends TestCase
 {
@@ -19,18 +19,18 @@ class SearchAlertTest extends TestCase
             'criteria' => [
                 'location' => 'Bole',
                 'type' => 'villa',
-                'price_max' => 50000
+                'price_max' => 50000,
             ],
-            'frequency' => 'daily'
+            'frequency' => 'daily',
         ]);
-        
+
         $res->assertStatus(201);
         $res->assertJsonPath('data.name', 'Bole Villas');
-        
+
         $this->assertDatabaseHas('search_alerts', [
             'user_id' => $user->id,
             'name' => 'Bole Villas',
-            'frequency' => 'daily'
+            'frequency' => 'daily',
         ]);
     }
 }

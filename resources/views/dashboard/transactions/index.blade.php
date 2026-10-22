@@ -75,9 +75,9 @@
         </div>
 
         {{-- Filter Console & Search Form --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
             {{-- Deal Stage Status Tabs --}}
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 p-1 bg-slate-100/90 dark:bg-slate-950/70 rounded-2xl border border-slate-200/70 dark:border-slate-800/70 text-xs">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-warm dark:border-[#273244] text-xs">
                 @php
                     $statusTabs = [
                         'all' => __('All Deals'),
@@ -89,30 +89,33 @@
                 @endphp
                 @foreach($statusTabs as $tabKey => $tabLabel)
                     <a href="{{ request()->fullUrlWithQuery(['status' => $tabKey === 'all' ? null : $tabKey]) }}"
-                       class="px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all duration-200 font-bold {{ ($currentStatus === $tabKey || (!$currentStatus && $tabKey === 'all')) ? 'bg-[#C2410C] text-white shadow-md shadow-orange-500/25' : 'text-slate-600 hover:text-[#C2410C] hover:bg-orange-50/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/50 font-semibold' }}">
+                       class="px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all duration-200 font-bold {{ ($currentStatus === $tabKey || (!$currentStatus && $tabKey === 'all')) ? 'bg-[#C2410C] text-white shadow-md shadow-orange-500/25' : 'text-slate-600 hover:text-[#C2410C] hover:bg-orange-50/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800/50 font-semibold' }}">
                         {{ $tabLabel }}
                     </a>
                 @endforeach
             </div>
 
             {{-- Multi-Criteria Form --}}
-            <form action="{{ route('dashboard.transactions') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-1">
+            <form action="{{ route('dashboard.transactions') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
                 @if($currentStatus && $currentStatus !== 'all')
                     <input type="hidden" name="status" value="{{ $currentStatus }}">
                 @endif
 
                 {{-- Keyword Input --}}
-                <div class="sm:col-span-6 relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-orange-500">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
-                    </div>
+                <div class="md:col-span-6 relative">
                     <input type="text" name="q" value="{{ $search }}" placeholder="{{ __('Search by Deal ID (TRX-...), Title Deed No, Buyer, or Property...') }}"
-                           class="w-full pl-10 pr-3 py-2.5 text-xs font-bold rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 text-slate-950 dark:text-white placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all shadow-xs">
+                           class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    @if(!empty($search))
+                        <a href="{{ route('dashboard.transactions', request()->except('q')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Deal Type Selector --}}
-                <div class="sm:col-span-4">
-                    <select name="type" onchange="this.form.submit()" class="w-full px-3 py-2.5 text-xs font-bold rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 text-slate-950 dark:text-white focus:border-orange-500 outline-none transition-colors cursor-pointer shadow-xs">
+                <div class="md:col-span-4">
+                    <select name="type" onchange="this.form.submit()" class="form-select w-full text-xs">
                         <option value="all" {{ $currentType === 'all' ? 'selected' : '' }}>{{ __('All Deal Types') }}</option>
                         <option value="Purchase Escrow" {{ $currentType === 'Purchase Escrow' ? 'selected' : '' }}>{{ __('Outright Purchase Escrow') }}</option>
                         <option value="Off-Plan Milestone" {{ $currentType === 'Off-Plan Milestone' ? 'selected' : '' }}>{{ __('Off-Plan Milestone Construction') }}</option>
@@ -121,14 +124,14 @@
                 </div>
 
                 {{-- Submit & Clear --}}
-                <div class="sm:col-span-2 flex items-center gap-2">
-                    <button type="submit" class="flex-1 py-2.5 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-orange-500/20 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn btn-secondary btn-sm text-xs py-2 px-3 w-full justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                         <span>{{ __('Filter') }}</span>
                     </button>
                     @if(!empty($search) || ($currentStatus && $currentStatus !== 'all') || ($currentType && $currentType !== 'all'))
-                        <a href="{{ route('dashboard.transactions') }}" class="p-2 text-slate-400 hover:text-rose-500 transition-colors" title="{{ __('Clear Filters') }}">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <a href="{{ route('dashboard.transactions') }}" class="p-2 text-muted hover:text-orange-600 dark:hover:text-orange-400" title="{{ __('Reset Filters') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                         </a>
                     @endif
                 </div>

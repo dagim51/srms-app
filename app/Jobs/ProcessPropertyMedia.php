@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\PropertyMedia;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-
-use App\Models\PropertyMedia;
 
 class ProcessPropertyMedia implements ShouldQueue
 {
@@ -25,7 +24,7 @@ class ProcessPropertyMedia implements ShouldQueue
             $this->media->update([
                 'status' => 'processed',
                 'width' => 1920,
-                'height' => 1080
+                'height' => 1080,
             ]);
         }
     }

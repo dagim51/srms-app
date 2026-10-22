@@ -15,7 +15,7 @@ class FloatingUiEffectWebTest extends TestCase
         $cssPath = public_path('build/assets');
         $this->assertDirectoryExists($cssPath);
 
-        $cssFiles = glob($cssPath . '/app-*.css');
+        $cssFiles = glob($cssPath.'/app-*.css');
         $this->assertNotEmpty($cssFiles, 'Compiled app-*.css bundle should exist in public/build/assets');
 
         $cssContent = file_get_contents($cssFiles[0]);
@@ -76,7 +76,7 @@ class FloatingUiEffectWebTest extends TestCase
     public function test_compiled_css_contains_shadow_tokens()
     {
         $cssPath = public_path('build/assets');
-        $cssFiles = glob($cssPath . '/app-*.css');
+        $cssFiles = glob($cssPath.'/app-*.css');
         $this->assertNotEmpty($cssFiles, 'Compiled app-*.css bundle should exist in public/build/assets');
 
         $cssContent = file_get_contents($cssFiles[0]);
@@ -129,11 +129,11 @@ class FloatingUiEffectWebTest extends TestCase
         foreach ($viewPaths as $viewPath) {
             $content = file_get_contents($viewPath);
             if (preg_match($arbitraryElevationPxPattern, $content)) {
-                $relativePath = str_replace(base_path() . '/', '', $viewPath);
+                $relativePath = str_replace(base_path().'/', '', $viewPath);
                 $violations[] = $relativePath;
             }
         }
 
-        $this->assertEmpty($violations, 'Blade views should not contain arbitrary px utilities for elevation properties (shadow, blur, drop-shadow, ring). Violations in: ' . implode(', ', $violations));
+        $this->assertEmpty($violations, 'Blade views should not contain arbitrary px utilities for elevation properties (shadow, blur, drop-shadow, ring). Violations in: '.implode(', ', $violations));
     }
 }

@@ -34,16 +34,16 @@ return new class extends Migration
             $table->string('property_code')->unique(); // Unique property identifier
             $table->string('title');
             $table->text('description')->nullable();
-            
+
             $table->foreignUuid('category_id')->nullable()->constrained('property_categories');
             $table->foreignUuid('type_id')->nullable()->constrained('property_types');
-            
+
             $table->foreignUuid('owner_user_id')->nullable()->constrained('users');
             $table->foreignUuid('organization_id')->nullable()->constrained('organizations');
-            
+
             // location reference - optional link to location hierarchy
             $table->foreignUuid('location_id')->nullable()->constrained('neighborhoods');
-            
+
             // physical attributes
             $table->decimal('land_area', 10, 2)->nullable();
             $table->decimal('building_area', 10, 2)->nullable();
@@ -63,19 +63,19 @@ return new class extends Migration
         Schema::create('listings', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('property_id')->constrained('properties')->cascadeOnDelete();
-            
+
             $table->string('purpose'); // For Sale, For Rent, etc
             $table->decimal('price', 15, 2)->nullable();
             $table->string('currency', 3)->default('ETB');
-            
+
             $table->statusColumn(); // draft, published, archived, etc
             $table->string('visibility')->default('public');
-            
+
             $table->foreignUuid('owner_actor_id')->nullable()->constrained('users');
-            
+
             $table->timestamp('published_at')->nullable();
             $table->timestamp('expires_at')->nullable();
-            
+
             $table->auditColumns();
             $table->timestamps();
             $table->softDeletes();

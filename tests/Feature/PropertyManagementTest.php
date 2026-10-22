@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
 
 class PropertyManagementTest extends TestCase
 {
@@ -17,7 +17,7 @@ class PropertyManagementTest extends TestCase
         $property = Property::create([
             'property_code' => 'PROP-PM-123',
             'title' => 'Maintenance House',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // 1. Maintenance Ticket Workflow
@@ -25,35 +25,35 @@ class PropertyManagementTest extends TestCase
             'property_id' => $property->id,
             'title' => 'Leaking Faucet',
             'description' => 'Water is leaking in the kitchen',
-            'priority' => 'high'
+            'priority' => 'high',
         ]);
         $ticketRes->assertStatus(201);
         $ticketId = $ticketRes->json('data.id');
 
         $this->actingAs($user)->patchJson("/api/v1/pm/tickets/{$ticketId}/status", [
-            'status' => 'in_progress'
+            'status' => 'in_progress',
         ])->assertStatus(200);
 
         $this->assertDatabaseHas('maintenance_tickets', [
             'id' => $ticketId,
-            'status' => 'in_progress'
+            'status' => 'in_progress',
         ]);
 
         // 2. Cleaning Task Workflow
         $cleaningRes = $this->actingAs($user)->postJson('/api/v1/pm/cleaning-tasks', [
             'property_id' => $property->id,
-            'notes' => 'Deep clean before next guest'
+            'notes' => 'Deep clean before next guest',
         ]);
         $cleaningRes->assertStatus(201);
         $taskId = $cleaningRes->json('data.id');
 
         $this->actingAs($user)->patchJson("/api/v1/pm/cleaning-tasks/{$taskId}/status", [
-            'status' => 'inspection'
+            'status' => 'inspection',
         ])->assertStatus(200);
 
         $this->assertDatabaseHas('cleaning_tasks', [
             'id' => $taskId,
-            'status' => 'inspection'
+            'status' => 'inspection',
         ]);
     }
 }

@@ -2,16 +2,17 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Amenity;
+use App\Models\Property;
+use App\Models\PropertyCategory;
+use App\Models\PropertyFeature;
+use App\Models\PropertyType;
+use App\Models\User;
+use Database\Seeders\AuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\PropertyCategory;
-use App\Models\PropertyType;
-use App\Models\Amenity;
-use App\Models\PropertyFeature;
+use Tests\TestCase;
 
 class PropertyAndCatalogsPagesTest extends TestCase
 {
@@ -22,7 +23,7 @@ class PropertyAndCatalogsPagesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(\Database\Seeders\AuthorizationSeeder::class);
+        $this->seed(AuthorizationSeeder::class);
         $this->user = User::factory()->create();
         $this->user->assignRole('Administrator');
     }
@@ -247,11 +248,18 @@ class PropertyAndCatalogsPagesTest extends TestCase
             'building_area' => 120,
         ]);
 
-        // Edit page loads
+        // 1. Index page displays edit link and button for the property
+        $indexResponse = $this->actingAs($this->user)->get('/dashboard/properties');
+        $indexResponse->assertStatus(200);
+        $indexResponse->assertSee("/dashboard/properties/{$property->id}/edit");
+
+        // 2. Edit page loads cleanly with required data
         $editResponse = $this->actingAs($this->user)->get("/dashboard/properties/{$property->id}/edit");
         $editResponse->assertStatus(200);
+        $editResponse->assertViewHas(['property', 'categories', 'types', 'amenities', 'features']);
+        $editResponse->assertSee($property->title);
 
-        // Update
+        // 3. Update property
         $updateResponse = $this->actingAs($this->user)->put("/dashboard/properties/{$property->id}", [
             'title' => 'Updated Property Title',
             'status' => 'available',
@@ -259,14 +267,22 @@ class PropertyAndCatalogsPagesTest extends TestCase
             'bedrooms' => 3,
             'bathrooms' => 2,
             'building_area' => 180,
+            'latitude' => 9.0123,
+            'longitude' => 38.7845,
         ]);
         $updateResponse->assertRedirect('/dashboard/properties');
+        $updateResponse->assertSessionHas('success');
 
-        $this->assertEquals('Updated Property Title', $property->fresh()->title);
-        $this->assertEquals('Bole Subcity', $property->fresh()->address);
-        $this->assertEquals(3, $property->fresh()->bedrooms);
+        $refreshed = $property->fresh();
+        $this->assertEquals('Updated Property Title', $refreshed->title);
+        $this->assertEquals('Bole Subcity', $refreshed->address);
+        $this->assertEquals(3, $refreshed->bedrooms);
+        $this->assertEquals(2, $refreshed->bathrooms);
+        $this->assertEquals(180, $refreshed->building_area);
+        $this->assertEquals(9.0123, (float) $refreshed->latitude);
+        $this->assertEquals(38.7845, (float) $refreshed->longitude);
 
-        // Destroy
+        // 4. Destroy
         $deleteResponse = $this->actingAs($this->user)->delete("/dashboard/properties/{$property->id}");
         $deleteResponse->assertRedirect('/dashboard/properties');
         $this->assertSoftDeleted('properties', ['id' => $property->id]);

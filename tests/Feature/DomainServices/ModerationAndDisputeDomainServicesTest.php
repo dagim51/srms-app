@@ -22,6 +22,7 @@ class ModerationAndDisputeDomainServicesTest extends TestCase
     use RefreshDatabase;
 
     protected ListingPublisher $listingPublisher;
+
     protected DisputeService $disputeService;
 
     protected function setUp(): void

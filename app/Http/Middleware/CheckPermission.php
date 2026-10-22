@@ -17,7 +17,7 @@ class CheckPermission
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'error' => [
@@ -33,7 +33,7 @@ class CheckPermission
         // Get organization from header if it exists
         $organizationId = $request->header('X-Organization-ID');
 
-        if (!$user->hasAnyPermission($permission, $organizationId)) {
+        if (! $user->hasAnyPermission($permission, $organizationId)) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'error' => [

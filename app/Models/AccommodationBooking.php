@@ -2,39 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Booking\Models\AccommodationBooking as DomainAccommodationBooking;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class AccommodationBooking extends Model
-{
-    use HasUuids, SoftDeletes;
-
-    protected $fillable = [
-        'accommodation_id',
-        'user_id',
-        'check_in_date',
-        'check_out_date',
-        'guests',
-        'total_price',
-        'status',
-        'confirmed_at',
-    ];
-
-    protected $casts = [
-        'check_in_date' => 'date',
-        'check_out_date' => 'date',
-        'total_price' => 'float',
-    ];
-
-    public function accommodation()
-    {
-        return $this->belongsTo(Accommodation::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-}
+class_alias(DomainAccommodationBooking::class, 'App\Models\AccommodationBooking');

@@ -27,7 +27,7 @@ class ListingPublisher
             }
 
             // Use the PublishListing action for the core logic
-            $action = new PublishListing();
+            $action = new PublishListing;
             $publishedListing = $action->execute($listing);
 
             // Fire domain event
@@ -44,7 +44,7 @@ class ListingPublisher
     {
         return DB::transaction(function () use ($listing, $triggeredBy, $reason) {
             // Use the UnpublishListing action for the core logic
-            $action = new UnpublishListing();
+            $action = new UnpublishListing;
             $unpublishedListing = $action->execute($listing);
 
             // Fire domain event
@@ -59,7 +59,7 @@ class ListingPublisher
      */
     public function submitForReview(Listing $listing): Listing
     {
-        if (!in_array($listing->status, ['draft', 'rejected'])) {
+        if (! in_array($listing->status, ['draft', 'rejected'])) {
             throw new \InvalidArgumentException('Only draft or rejected listings can be submitted');
         }
 

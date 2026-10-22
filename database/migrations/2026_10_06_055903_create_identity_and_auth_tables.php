@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamp('last_seen_at')->nullable();
             $table->timestamp('revoked_at')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'fingerprint_hash']);
         });
 

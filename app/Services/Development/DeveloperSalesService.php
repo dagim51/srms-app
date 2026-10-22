@@ -23,7 +23,7 @@ class DeveloperSalesService
             ->where('user_id', $userId)
             ->exists();
 
-        if (!$isMember) {
+        if (! $isMember) {
             throw new AuthorizationException('Unauthorized.');
         }
     }

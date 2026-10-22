@@ -2,13 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Domains\GIS\Http\Controllers\Web\GisWebController as DomainGisWebController;
 
-class GisWebController extends Controller
-{
-    public function index()
-    {
-        return view('dashboard.properties.map');
-    }
-}
+class_alias(DomainGisWebController::class, 'App\Http\Controllers\Web\GisWebController');

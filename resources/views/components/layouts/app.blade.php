@@ -30,7 +30,8 @@
     {{-- Multilingual SEO & Alternates --}}
     <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['locale' => 'en']) }}">
     <link rel="alternate" hreflang="am" href="{{ request()->fullUrlWithQuery(['locale' => 'am']) }}">
-    <meta property="og:locale" content="{{ app()->getLocale() === 'am' ? 'am_ET' : 'en_US' }}">
+    <link rel="alternate" hreflang="om" href="{{ request()->fullUrlWithQuery(['locale' => 'om']) }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'am' ? 'am_ET' : (app()->getLocale() === 'om' ? 'om_ET' : 'en_US') }}">
 
     {{-- Immediate FOUC Prevention --}}
     <script>

@@ -13,7 +13,7 @@ class LocaleController extends Controller
      *
      * @var array<string>
      */
-    protected array $supportedLocales = ['en', 'am'];
+    protected array $supportedLocales = ['en', 'am', 'om'];
 
     /**
      * Switch application language and redirect back preserving current page and state.
@@ -22,7 +22,7 @@ class LocaleController extends Controller
     {
         $targetLocale = $locale ?? $request->input('locale', 'en');
 
-        if (!in_array($targetLocale, $this->supportedLocales, true)) {
+        if (! in_array($targetLocale, $this->supportedLocales, true)) {
             $targetLocale = 'en';
         }
 

@@ -2,7 +2,7 @@
 
 @php
     $locale = app()->getLocale();
-    $currency = $currency ?? ($locale === 'am' ? 'ብር' : 'ETB');
+    $currency = $currency ?? ($locale === 'am' ? 'ብር' : ($locale === 'om' ? 'Qarshii' : 'ETB'));
 @endphp
 
 <span {{ $attributes->merge(['class' => 'font-display font-semibold']) }}>

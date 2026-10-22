@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('message_attachments', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('message_id')->constrained('messages')->cascadeOnDelete();
-            
+
             $table->string('file_path');
             $table->string('file_type')->nullable();
             $table->string('file_name')->nullable();
-            
+
             $table->timestamps();
         });
     }

@@ -2,17 +2,16 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
+use App\Jobs\ProcessUpcomingBookingsJob;
+use App\Models\Accommodation;
 use App\Models\AccommodationBooking;
 use App\Models\Property;
-use App\Models\Accommodation;
-use App\Jobs\ProcessUpcomingBookingsJob;
+use App\Models\User;
 use App\Notifications\BookingConfirmedNotification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
-use Carbon\Carbon;
+use Tests\TestCase;
 
 class AutomationJobTest extends TestCase
 {
@@ -21,22 +20,22 @@ class AutomationJobTest extends TestCase
     public function test_booking_confirmed_notification_is_sent()
     {
         Notification::fake();
-        
+
         $user = User::factory()->create();
-        
+
         $property = Property::create([
             'title' => 'Test Booking Property',
             'property_code' => 'TEST-BOOK-NOTIFY-001',
             'owner_user_id' => $user->id,
             'status' => 'verified',
         ]);
-        
+
         $accommodation = Accommodation::create([
             'property_id' => $property->id,
             'host_id' => $user->id,
             'max_guests' => 4,
         ]);
-        
+
         $booking = AccommodationBooking::create([
             'accommodation_id' => $accommodation->id,
             'user_id' => $user->id,
@@ -46,9 +45,9 @@ class AutomationJobTest extends TestCase
             'total_price' => 200,
             'status' => 'confirmed',
         ]);
-        
+
         $user->notify(new BookingConfirmedNotification($booking));
-        
+
         Notification::assertSentTo(
             [$user], BookingConfirmedNotification::class
         );
@@ -57,29 +56,29 @@ class AutomationJobTest extends TestCase
     public function test_upcoming_bookings_automation_job_dispatches()
     {
         Queue::fake();
-        
+
         ProcessUpcomingBookingsJob::dispatch();
-        
+
         Queue::assertPushed(ProcessUpcomingBookingsJob::class);
     }
 
     public function test_upcoming_bookings_automation_job_processes()
     {
         $user = User::factory()->create();
-        
+
         $property = Property::create([
             'title' => 'Test Booking Property',
             'property_code' => 'TEST-JOB-001',
             'owner_user_id' => $user->id,
             'status' => 'verified',
         ]);
-        
+
         $accommodation = Accommodation::create([
             'property_id' => $property->id,
             'host_id' => $user->id,
             'max_guests' => 4,
         ]);
-        
+
         // This booking is exactly tomorrow
         $booking = AccommodationBooking::create([
             'accommodation_id' => $accommodation->id,
@@ -90,11 +89,11 @@ class AutomationJobTest extends TestCase
             'total_price' => 200,
             'status' => 'confirmed',
         ]);
-        
-        $job = new ProcessUpcomingBookingsJob();
+
+        $job = new ProcessUpcomingBookingsJob;
         $job->handle();
-        
-        // At this point we are just asserting it doesn't crash 
+
+        // At this point we are just asserting it doesn't crash
         // and ideally checks for side-effects (like Log outputs which we simulated)
         $this->assertTrue(true);
     }

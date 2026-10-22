@@ -2,8 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApiToken;
+use App\Models\Country;
+use App\Models\Permission;
+use App\Models\Region;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\Zone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class LocationHierarchyTest extends TestCase
@@ -12,20 +19,20 @@ class LocationHierarchyTest extends TestCase
 
     public function test_location_multilingual_and_hierarchy()
     {
-        $country = \App\Models\Country::create([
+        $country = Country::create([
             'code' => 'ET',
             'name_en' => 'Ethiopia',
             'name_am' => 'ኢትዮጵያ',
             'name_om' => 'Itoophiyaa',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
-        $region = \App\Models\Region::create([
+        $region = Region::create([
             'country_id' => $country->id,
             'name_en' => 'Addis Ababa',
             'name_am' => 'አዲስ አበባ',
             'name_om' => 'Finfinnee',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $this->assertEquals('Ethiopia', $region->country->name_en);
@@ -34,18 +41,18 @@ class LocationHierarchyTest extends TestCase
 
     public function test_location_filtering_and_api()
     {
-        $user = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $user = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $country = \App\Models\Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
-        $region1 = \App\Models\Region::create(['country_id' => $country->id, 'name_en' => 'Oromia']);
-        $region2 = \App\Models\Region::create(['country_id' => $country->id, 'name_en' => 'Amhara']);
-        
-        $zone1 = \App\Models\Zone::create(['region_id' => $region1->id, 'name_en' => 'Shewa']);
-        $zone2 = \App\Models\Zone::create(['region_id' => $region2->id, 'name_en' => 'Gojjam']);
+        $country = Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
+        $region1 = Region::create(['country_id' => $country->id, 'name_en' => 'Oromia']);
+        $region2 = Region::create(['country_id' => $country->id, 'name_en' => 'Amhara']);
 
-        $response = $this->withToken($token)->getJson('/api/v1/locations/zones?region_id=' . $region1->id);
+        $zone1 = Zone::create(['region_id' => $region1->id, 'name_en' => 'Shewa']);
+        $zone2 = Zone::create(['region_id' => $region2->id, 'name_en' => 'Gojjam']);
+
+        $response = $this->withToken($token)->getJson('/api/v1/locations/zones?region_id='.$region1->id);
         $response->assertStatus(200);
         $response->assertJsonCount(1);
         $response->assertJsonPath('0.name_en', 'Shewa');
@@ -53,16 +60,16 @@ class LocationHierarchyTest extends TestCase
 
     public function test_admin_can_create_location()
     {
-        $user = \App\Models\User::factory()->create();
-        $role = \App\Models\Role::create(['name' => 'Administrator']);
-        $permission = \App\Models\Permission::create(['code' => 'manage_locations']);
+        $user = User::factory()->create();
+        $role = Role::create(['name' => 'Administrator']);
+        $permission = Permission::create(['code' => 'manage_locations']);
         $role->permissions()->attach($permission->id);
         $user->assignRole($role);
 
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $country = \App\Models\Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
+        $country = Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
 
         $response = $this->withToken($token)->postJson('/api/v1/locations/regions', [
             'country_id' => $country->id,
@@ -75,11 +82,11 @@ class LocationHierarchyTest extends TestCase
 
     public function test_unauthorized_cannot_create_location()
     {
-        $user = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $user = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $user->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $country = \App\Models\Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
+        $country = Country::create(['code' => 'ET', 'name_en' => 'Ethiopia']);
 
         $response = $this->withToken($token)->postJson('/api/v1/locations/regions', [
             'country_id' => $country->id,

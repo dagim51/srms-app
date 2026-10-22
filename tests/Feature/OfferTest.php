@@ -2,35 +2,37 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
 use App\Models\Listing;
 use App\Models\Offer;
+use App\Models\Property;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class OfferTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $owner;
+
     protected $buyer;
+
     protected $listing;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->owner = User::factory()->create();
         $this->buyer = User::factory()->create();
-        
+
         $property = Property::create([
             'title' => 'Test Property for Offer',
             'property_code' => 'TEST-OFFER-001',
             'owner_user_id' => $this->owner->id,
             'status' => 'verified',
         ]);
-        
+
         $this->listing = Listing::create([
             'property_id' => $property->id,
             'purpose' => 'For Sale',
@@ -48,11 +50,11 @@ class OfferTest extends TestCase
             'amount' => 4500000,
             'notes' => 'Valid for 24 hours',
         ]);
-        
+
         $response->assertStatus(201)
-                 ->assertJsonPath('data.amount', 4500000)
-                 ->assertJsonPath('data.status', 'pending');
-                 
+            ->assertJsonPath('data.amount', 4500000)
+            ->assertJsonPath('data.status', 'pending');
+
         $this->assertDatabaseHas('offers', [
             'listing_id' => $this->listing->id,
             'buyer_id' => $this->buyer->id,
@@ -66,7 +68,7 @@ class OfferTest extends TestCase
             'listing_id' => $this->listing->id,
             'amount' => 4500000,
         ]);
-        
+
         $response->assertStatus(422);
     }
 
@@ -78,11 +80,11 @@ class OfferTest extends TestCase
             'amount' => 4500000,
             'status' => 'pending',
         ]);
-        
+
         $response = $this->actingAs($this->owner)->patchJson("/api/v1/offers/{$offer->id}", [
             'status' => 'accepted',
         ]);
-        
+
         $response->assertStatus(200);
         $this->assertEquals('accepted', $offer->fresh()->status);
     }
@@ -95,11 +97,11 @@ class OfferTest extends TestCase
             'amount' => 4500000,
             'status' => 'pending',
         ]);
-        
+
         $response = $this->actingAs($this->buyer)->patchJson("/api/v1/offers/{$offer->id}", [
             'status' => 'withdrawn',
         ]);
-        
+
         $response->assertStatus(200);
         $this->assertEquals('withdrawn', $offer->fresh()->status);
     }
@@ -112,11 +114,11 @@ class OfferTest extends TestCase
             'amount' => 4500000,
             'status' => 'pending',
         ]);
-        
+
         $response = $this->actingAs($this->buyer)->patchJson("/api/v1/offers/{$offer->id}", [
             'status' => 'accepted',
         ]);
-        
+
         $response->assertStatus(403);
     }
 }

@@ -1,16 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Domains\Transaction\Models\DocumentTemplate;
 
-class DocumentTemplate extends Model
-{
-    use HasUuids;
-
-    protected $fillable = [
-        'name',
-        'body_content',
-        'status'
-    ];
-}
+class_alias(DocumentTemplate::class, 'App\Models\DocumentTemplate');

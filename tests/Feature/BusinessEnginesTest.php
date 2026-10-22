@@ -8,10 +8,10 @@ use App\Models\Invoice;
 use App\Models\Lease;
 use App\Models\Listing;
 use App\Models\Offer;
-use App\Models\OfferEvent;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\RentSchedule;
+use App\Models\Role;
 use App\Models\TenantProfile;
 use App\Models\User;
 use App\Services\Bookings\BookingManager;
@@ -27,7 +27,7 @@ class BusinessEnginesTest extends TestCase
     {
         parent::setUp();
         // Seed core lookups
-        \App\Models\Role::firstOrCreate(['name' => 'client', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'client', 'guard_name' => 'web']);
     }
 
     public function test_dynamic_pricing_calculation_itemizes_properly()
@@ -36,7 +36,7 @@ class BusinessEnginesTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'APT'], ['name_en' => 'Apartment']);
         $property = Property::create([
             'title' => 'Luxury Condo',
-            'property_code' => 'LUX-' . uniqid(),
+            'property_code' => 'LUX-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);
@@ -71,7 +71,7 @@ class BusinessEnginesTest extends TestCase
             'priority' => 1,
         ]);
 
-        $bookingManager = new BookingManager();
+        $bookingManager = new BookingManager;
 
         // 3 nights encompassing Friday and Saturday
         $checkIn = '2026-10-23'; // Friday
@@ -98,7 +98,7 @@ class BusinessEnginesTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'VIL'], ['name_en' => 'Villa']);
         $property = Property::create([
             'title' => 'Cozy Villa',
-            'property_code' => 'VIL-' . uniqid(),
+            'property_code' => 'VIL-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);
@@ -151,7 +151,7 @@ class BusinessEnginesTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'STU'], ['name_en' => 'Studio']);
         $property = Property::create([
             'title' => 'Studio 4B',
-            'property_code' => 'STU-' . uniqid(),
+            'property_code' => 'STU-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);

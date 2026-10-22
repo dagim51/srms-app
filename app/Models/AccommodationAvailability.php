@@ -2,29 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Stay\Models\AccommodationAvailability as DomainAccommodationAvailability;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class AccommodationAvailability extends Model
-{
-    use HasUuids;
-
-    protected $fillable = [
-        'accommodation_id',
-        'start_date',
-        'end_date',
-        'type',
-        'reason',
-    ];
-
-    protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
-    ];
-
-    public function accommodation()
-    {
-        return $this->belongsTo(Accommodation::class);
-    }
-}
+class_alias(DomainAccommodationAvailability::class, 'App\Models\AccommodationAvailability');

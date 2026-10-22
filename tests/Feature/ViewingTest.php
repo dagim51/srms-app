@@ -2,35 +2,37 @@
 
 namespace Tests\Feature;
 
+use App\Models\Listing;
+use App\Models\Property;
+use App\Models\User;
+use App\Models\Viewing;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\Listing;
-use App\Models\Viewing;
 
 class ViewingTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $requester;
+
     protected $agent;
+
     protected $listing;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->requester = User::factory()->create();
         $this->agent = User::factory()->create();
-        
+
         $property = Property::create([
             'title' => 'Test Property for Viewing',
             'property_code' => 'TEST-VW-001',
             'owner_user_id' => $this->agent->id,
             'status' => 'verified',
         ]);
-        
+
         $this->listing = Listing::create([
             'property_id' => $property->id,
             'purpose' => 'For Sale',
@@ -49,8 +51,8 @@ class ViewingTest extends TestCase
         ]);
 
         $response->assertStatus(201)
-                 ->assertJsonPath('data.status', 'requested');
-                 
+            ->assertJsonPath('data.status', 'requested');
+
         $this->assertDatabaseHas('viewings', [
             'requester_id' => $this->requester->id,
             'listing_id' => $this->listing->id,
@@ -74,19 +76,19 @@ class ViewingTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertEquals('confirmed', $viewing->fresh()->status);
-        
+
         // Requester tries to confirm (unauthorized modification blocked)
         $response2 = $this->actingAs($this->requester)->putJson("/api/v1/viewings/{$viewing->id}", [
             'status' => 'completed',
         ]);
-        
+
         $response2->assertStatus(403);
     }
 
     public function test_scheduling_conflicts_are_handled()
     {
         $time = now()->addDays(2)->format('Y-m-d H:i:s');
-        
+
         Viewing::create([
             'listing_id' => $this->listing->id,
             'requester_id' => User::factory()->create()->id,

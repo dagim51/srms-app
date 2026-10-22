@@ -3,11 +3,11 @@
 namespace App\Services\Payments;
 
 use App\Contracts\PaymentGatewayInterface;
+use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Exception;
 
 class TelebirrGateway implements PaymentGatewayInterface
 {
@@ -26,9 +26,10 @@ class TelebirrGateway implements PaymentGatewayInterface
         // Mock mode for testing
         if (app()->environment('testing') && empty($this->config['app_id'])) {
             \Log::debug('TelebirrGateway: Using mock initialize', ['out_trade_no' => $data['out_trade_no']]);
+
             return [
                 'code' => 'SUCCESS',
-                'payment_url' => 'https://test.telebirr.com/pay/' . $data['out_trade_no'],
+                'payment_url' => 'https://test.telebirr.com/pay/'.$data['out_trade_no'],
                 'qr_code' => 'data:image/png;base64,mock',
                 'out_trade_no' => $data['out_trade_no'],
             ];
@@ -48,11 +49,11 @@ class TelebirrGateway implements PaymentGatewayInterface
         ];
 
         // Add idempotency key if provided
-        if (!empty($data['idempotency_key'])) {
+        if (! empty($data['idempotency_key'])) {
             $payload['idempotency_key'] = $data['idempotency_key'];
         }
 
-        $endpoint = $this->config['api_url'] . '/payment/initialize';
+        $endpoint = $this->config['api_url'].'/payment/initialize';
 
         try {
             $response = Http::asJson()
@@ -68,7 +69,7 @@ class TelebirrGateway implements PaymentGatewayInterface
                 'error' => $e->getMessage(),
                 'out_trade_no' => $data['out_trade_no'],
             ]);
-            throw new \RuntimeException('Payment gateway unavailable: ' . $e->getMessage());
+            throw new \RuntimeException('Payment gateway unavailable: '.$e->getMessage());
         }
     }
 
@@ -86,7 +87,7 @@ class TelebirrGateway implements PaymentGatewayInterface
             ];
         }
 
-        $endpoint = $this->config['api_url'] . '/payment/query';
+        $endpoint = $this->config['api_url'].'/payment/query';
 
         $payload = [
             'app_id' => $this->config['app_id'],
@@ -107,7 +108,7 @@ class TelebirrGateway implements PaymentGatewayInterface
                 'error' => $e->getMessage(),
                 'transaction_ref' => $transactionRef,
             ]);
-            throw new \RuntimeException('Payment gateway unavailable: ' . $e->getMessage());
+            throw new \RuntimeException('Payment gateway unavailable: '.$e->getMessage());
         }
     }
 
@@ -120,14 +121,14 @@ class TelebirrGateway implements PaymentGatewayInterface
         if (app()->environment('testing') && empty($this->config['app_id'])) {
             return [
                 'code' => 'SUCCESS',
-                'refund_id' => 'REF-' . uniqid(),
+                'refund_id' => 'REF-'.uniqid(),
                 'out_trade_no' => $transactionRef,
                 'refund_amount' => $amount,
                 'reason' => $reason,
             ];
         }
 
-        $endpoint = $this->config['api_url'] . '/payment/refund';
+        $endpoint = $this->config['api_url'].'/payment/refund';
 
         $payload = [
             'app_id' => $this->config['app_id'],
@@ -151,7 +152,7 @@ class TelebirrGateway implements PaymentGatewayInterface
                 'error' => $e->getMessage(),
                 'transaction_ref' => $transactionRef,
             ]);
-            throw new \RuntimeException('Payment gateway unavailable: ' . $e->getMessage());
+            throw new \RuntimeException('Payment gateway unavailable: '.$e->getMessage());
         }
     }
 
@@ -166,13 +167,15 @@ class TelebirrGateway implements PaymentGatewayInterface
 
         if (empty($publicKey)) {
             Log::warning('Telebirr public key not configured, skipping signature verification');
+
             return true; // Allow in sandbox if not configured
         }
 
         $publicKeyResource = openssl_pkey_get_public($publicKey);
 
-        if (!$publicKeyResource) {
+        if (! $publicKeyResource) {
             Log::error('Invalid Telebirr public key');
+
             return false;
         }
 
@@ -250,6 +253,6 @@ class TelebirrGateway implements PaymentGatewayInterface
      */
     public static function generateOrderRef(string $prefix = 'SRMS'): string
     {
-        return $prefix . '-' . now()->format('YmdHis') . '-' . Str::random(8);
+        return $prefix.'-'.now()->format('YmdHis').'-'.Str::random(8);
     }
 }

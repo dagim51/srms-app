@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\DocumentTemplate;
 
 class DocumentTest extends TestCase
 {
@@ -19,7 +18,7 @@ class DocumentTest extends TestCase
         // 1. Create Template
         $tplRes = $this->actingAs($landlord)->postJson('/api/v1/documents/templates', [
             'name' => 'Standard Lease',
-            'body_content' => '<p>This is a standard lease...</p>'
+            'body_content' => '<p>This is a standard lease...</p>',
         ]);
         $tplRes->assertStatus(201);
         $tplId = $tplRes->json('data.id');
@@ -31,7 +30,7 @@ class DocumentTest extends TestCase
             'signatories' => [
                 ['user_id' => $landlord->id, 'role' => 'Landlord'],
                 ['user_id' => $tenant->id, 'role' => 'Tenant'],
-            ]
+            ],
         ]);
         $contractRes->assertStatus(201);
         $contractId = $contractRes->json('data.id');
@@ -39,10 +38,10 @@ class DocumentTest extends TestCase
         // 3. Landlord Signs
         $signRes1 = $this->actingAs($landlord)->postJson("/api/v1/documents/contracts/{$contractId}/sign");
         $signRes1->assertStatus(200);
-        
+
         $this->assertDatabaseHas('contracts', [
             'id' => $contractId,
-            'status' => 'partial_signed'
+            'status' => 'partial_signed',
         ]);
 
         // 4. Tenant Signs
@@ -51,7 +50,7 @@ class DocumentTest extends TestCase
 
         $this->assertDatabaseHas('contracts', [
             'id' => $contractId,
-            'status' => 'fully_signed'
+            'status' => 'fully_signed',
         ]);
     }
 }

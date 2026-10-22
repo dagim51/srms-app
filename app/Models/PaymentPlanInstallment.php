@@ -1,23 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Domains\Development\Models\PaymentPlanInstallment as DomainPaymentPlanInstallment;
 
-class PaymentPlanInstallment extends Model
-{
-    use HasUuids;
-
-    protected $fillable = [
-        'payment_plan_id',
-        'name',
-        'percentage',
-        'amount',
-        'due_days_after_reservation'
-    ];
-
-    public function plan()
-    {
-        return $this->belongsTo(PaymentPlan::class, 'payment_plan_id');
-    }
-}
+class_alias(DomainPaymentPlanInstallment::class, 'App\Models\PaymentPlanInstallment');

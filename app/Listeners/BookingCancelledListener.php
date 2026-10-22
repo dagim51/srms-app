@@ -21,7 +21,7 @@ class BookingCancelledListener implements ShouldQueue
         // Remove the availability block for the cancelled booking
         AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
             ->where('type', 'booked')
-            ->where('reason', 'like', '%' . $booking->id . '%')
+            ->where('reason', 'like', '%'.$booking->id.'%')
             ->delete();
 
         // TODO: Trigger refund when WS-07 is implemented

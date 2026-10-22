@@ -2,35 +2,38 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
+use App\Models\ApiToken;
 use App\Models\Organization;
+use App\Models\Permission;
 use App\Models\Property;
 use App\Models\PropertyType;
-use App\Models\Lease;
-use App\Models\TenantProfile;
-use App\Models\ApiToken;
-use Illuminate\Support\Facades\Route;
+use App\Models\Role;
+use App\Models\User;
+use App\Policies\PropertyPolicy;
+use Database\Seeders\AuthorizationSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Tests\TestCase;
 
 class RoleBasedAccessControlTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $tenantUser;
+
     protected Organization $org1;
+
     protected Organization $org2;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\AuthorizationSeeder::class);
+        $this->seed(AuthorizationSeeder::class);
 
         $this->org1 = Organization::create([
             'id' => (string) Str::uuid(),
@@ -83,7 +86,7 @@ class RoleBasedAccessControlTest extends TestCase
             'status' => 'active',
         ]);
 
-        $policy = new \App\Policies\PropertyPolicy();
+        $policy = new PropertyPolicy;
         $this->assertTrue($policy->update($this->admin, $property));
     }
 

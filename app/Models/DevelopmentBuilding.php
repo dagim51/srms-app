@@ -1,28 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Domains\Development\Models\DevelopmentBuilding as DomainDevelopmentBuilding;
 
-class DevelopmentBuilding extends Model
-{
-    use HasUuids;
-
-    protected $fillable = [
-        'development_project_id',
-        'name',
-        'total_floors',
-        'status',
-        'progress_percentage'
-    ];
-
-    public function project()
-    {
-        return $this->belongsTo(DevelopmentProject::class, 'development_project_id');
-    }
-
-    public function units()
-    {
-        return $this->hasMany(DevelopmentUnit::class);
-    }
-}
+class_alias(DomainDevelopmentBuilding::class, 'App\Models\DevelopmentBuilding');

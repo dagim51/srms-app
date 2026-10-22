@@ -13,19 +13,19 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            
+
             $table->foreignUuid('reviewer_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->uuidMorphs('reviewable');
-            
+
             $table->tinyInteger('rating')->unsigned(); // 1 to 5
             $table->text('comment')->nullable();
-            
+
             $table->string('status', 50)->default('published'); // published, flagged, removed
-            
+
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->unique(['reviewer_id', 'reviewable_type', 'reviewable_id']);
         });
     }

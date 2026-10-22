@@ -2,8 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\ProcessPropertyMedia;
+use App\Models\ApiToken;
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\Testing\File;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PropertyMediaTest extends TestCase
@@ -12,21 +19,21 @@ class PropertyMediaTest extends TestCase
 
     public function test_supported_media_can_be_uploaded()
     {
-        \Illuminate\Support\Facades\Storage::fake('public');
-        \Illuminate\Support\Facades\Queue::fake();
+        Storage::fake('public');
+        Queue::fake();
 
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $property = \App\Models\Property::create([
+        $property = Property::create([
             'title' => 'Test Property',
             'property_code' => 'TEST-001',
             'owner_user_id' => $owner->id,
             'status' => 'draft',
         ]);
 
-        $file = \Illuminate\Http\Testing\File::image('photo.jpg');
+        $file = File::image('photo.jpg');
 
         $response = $this->withToken($token)->postJson("/api/v1/properties/{$property->id}/media", [
             'file' => $file,
@@ -34,24 +41,24 @@ class PropertyMediaTest extends TestCase
 
         $response->assertStatus(201);
         $this->assertEquals('image', $response->json('kind'));
-        
-        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($response->json('storage_key'));
-        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\ProcessPropertyMedia::class);
+
+        Storage::disk('public')->assertExists($response->json('storage_key'));
+        Queue::assertPushed(ProcessPropertyMedia::class);
     }
 
     public function test_unsupported_media_type_is_rejected()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $property = \App\Models\Property::create([
+        $property = Property::create([
             'title' => 'Test Property',
             'property_code' => 'TEST-002',
             'owner_user_id' => $owner->id,
         ]);
 
-        $file = \Illuminate\Http\Testing\File::create('document.pdf', 100, 'application/pdf');
+        $file = File::create('document.pdf', 100, 'application/pdf');
 
         $response = $this->withToken($token)->postJson("/api/v1/properties/{$property->id}/media", [
             'file' => $file,
@@ -62,11 +69,11 @@ class PropertyMediaTest extends TestCase
 
     public function test_media_ordering_is_persisted()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
-        $property = \App\Models\Property::create([
+        $property = Property::create([
             'title' => 'Test Property',
             'property_code' => 'TEST-003',
             'owner_user_id' => $owner->id,
@@ -79,7 +86,7 @@ class PropertyMediaTest extends TestCase
             'media' => [
                 ['id' => $media1->id, 'sort_order' => 1],
                 ['id' => $media2->id, 'sort_order' => 0],
-            ]
+            ],
         ]);
 
         $response->assertStatus(200);
@@ -90,17 +97,17 @@ class PropertyMediaTest extends TestCase
 
     public function test_unauthorized_user_cannot_delete_media()
     {
-        $owner = \App\Models\User::factory()->create();
-        $property = \App\Models\Property::create([
+        $owner = User::factory()->create();
+        $property = Property::create([
             'title' => 'Test Property',
             'property_code' => 'TEST-004',
             'owner_user_id' => $owner->id,
         ]);
         $media = $property->media()->create(['kind' => 'image', 'storage_key' => 'img.jpg']);
 
-        $otherUser = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $otherUser->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $otherUser = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $otherUser->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
         $response = $this->withToken($token)->deleteJson("/api/v1/properties/{$property->id}/media/{$media->id}");
         $response->assertStatus(403);

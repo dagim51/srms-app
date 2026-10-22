@@ -2,17 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Property\Models\PropertyType;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class PropertyType extends Model
-{
-    use HasUuids;
-    protected $guarded = [];
-
-    public function category()
-    {
-        return $this->belongsTo(PropertyCategory::class);
-    }
-}
+class_alias(PropertyType::class, 'App\Models\PropertyType');

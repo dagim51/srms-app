@@ -2,11 +2,11 @@
 
 namespace App\Traits;
 
-use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 trait HasRoles
 {
@@ -26,7 +26,7 @@ trait HasRoles
     {
         $roleId = $role instanceof Role ? $role->id : Role::where('name', $role)->firstOrFail()->id;
 
-        if (!$this->hasExactRole($roleId, $organizationId)) {
+        if (! $this->hasExactRole($roleId, $organizationId)) {
             $this->roles()->attach($roleId, ['organization_id' => $organizationId]);
         }
     }
@@ -41,8 +41,8 @@ trait HasRoles
                 ->where('role_id', $roleId)
                 ->when(
                     $organizationId !== null,
-                    fn($q) => $q->where('organization_id', $organizationId),
-                    fn($q) => $q->whereNull('organization_id')
+                    fn ($q) => $q->where('organization_id', $organizationId),
+                    fn ($q) => $q->whereNull('organization_id')
                 )
                 ->delete();
         }
@@ -54,8 +54,8 @@ trait HasRoles
             ->where('user_id', $this->id)
             ->when(
                 $organizationId !== null,
-                fn($q) => $q->where('organization_id', $organizationId),
-                fn($q) => $q->whereNull('organization_id')
+                fn ($q) => $q->where('organization_id', $organizationId),
+                fn ($q) => $q->whereNull('organization_id')
             )
             ->delete();
 
@@ -75,7 +75,7 @@ trait HasRoles
             ->where(function ($query) use ($roleNameOrId) {
                 if (Str::isUuid($roleNameOrId)) {
                     $query->where('roles.id', $roleNameOrId)
-                          ->orWhere('roles.name', $roleNameOrId);
+                        ->orWhere('roles.name', $roleNameOrId);
                 } else {
                     $query->where('roles.name', $roleNameOrId);
                 }
@@ -102,7 +102,7 @@ trait HasRoles
             ->where(function ($query) use ($roleNameOrId) {
                 if (Str::isUuid($roleNameOrId)) {
                     $query->where('roles.id', $roleNameOrId)
-                          ->orWhere('roles.name', $roleNameOrId);
+                        ->orWhere('roles.name', $roleNameOrId);
                 } else {
                     $query->where('roles.name', $roleNameOrId);
                 }
@@ -110,7 +110,7 @@ trait HasRoles
             ->where(function ($query) use ($organizationId) {
                 if ($organizationId !== null) {
                     $query->where('user_roles.organization_id', $organizationId)
-                          ->orWhereNull('user_roles.organization_id');
+                        ->orWhereNull('user_roles.organization_id');
                 } else {
                     $query->whereNull('user_roles.organization_id');
                 }
@@ -130,7 +130,7 @@ trait HasRoles
 
         foreach ((array) $roles as $role) {
             $role = trim($role);
-            if (!empty($role) && $this->hasRole($role, $organizationId)) {
+            if (! empty($role) && $this->hasRole($role, $organizationId)) {
                 return true;
             }
         }
@@ -149,7 +149,7 @@ trait HasRoles
 
         foreach ((array) $roles as $role) {
             $role = trim($role);
-            if (!empty($role) && !$this->hasRole($role, $organizationId)) {
+            if (! empty($role) && ! $this->hasRole($role, $organizationId)) {
                 return false;
             }
         }
@@ -173,7 +173,7 @@ trait HasRoles
                 }
             })->exists();
 
-        if (!$hasExact) {
+        if (! $hasExact) {
             $this->permissions()->attach($permissionId, ['organization_id' => $organizationId]);
         }
     }
@@ -190,8 +190,8 @@ trait HasRoles
                 ->where('permission_id', $permissionId)
                 ->when(
                     $organizationId !== null,
-                    fn($q) => $q->where('organization_id', $organizationId),
-                    fn($q) => $q->whereNull('organization_id')
+                    fn ($q) => $q->where('organization_id', $organizationId),
+                    fn ($q) => $q->whereNull('organization_id')
                 )
                 ->delete();
         }
@@ -203,8 +203,8 @@ trait HasRoles
             ->where('user_id', $this->id)
             ->when(
                 $organizationId !== null,
-                fn($q) => $q->where('organization_id', $organizationId),
-                fn($q) => $q->whereNull('organization_id')
+                fn ($q) => $q->where('organization_id', $organizationId),
+                fn ($q) => $q->whereNull('organization_id')
             )
             ->delete();
 
@@ -228,21 +228,23 @@ trait HasRoles
             ->where(function ($query) use ($organizationId) {
                 if ($organizationId !== null) {
                     $query->where('user_permissions.organization_id', $organizationId)
-                          ->orWhereNull('user_permissions.organization_id');
+                        ->orWhereNull('user_permissions.organization_id');
                 } else {
                     $query->whereNull('user_permissions.organization_id');
                 }
             })
             ->exists();
 
-        if ($hasDirect) return true;
+        if ($hasDirect) {
+            return true;
+        }
 
         // Check through assigned roles (scoped or global)
         return $this->roles()
             ->where(function ($query) use ($organizationId) {
                 if ($organizationId !== null) {
                     $query->where('user_roles.organization_id', $organizationId)
-                          ->orWhereNull('user_roles.organization_id');
+                        ->orWhereNull('user_roles.organization_id');
                 } else {
                     $query->whereNull('user_roles.organization_id');
                 }
@@ -260,7 +262,7 @@ trait HasRoles
 
         foreach ((array) $permissions as $perm) {
             $perm = trim($perm);
-            if (!empty($perm) && $this->hasPermissionTo($perm, $organizationId)) {
+            if (! empty($perm) && $this->hasPermissionTo($perm, $organizationId)) {
                 return true;
             }
         }
@@ -273,9 +275,9 @@ trait HasRoles
         return $this->roles()
             ->when($organizationId !== null, function ($query) use ($organizationId) {
                 $query->where('user_roles.organization_id', $organizationId)
-                      ->orWhereNull('user_roles.organization_id');
+                    ->orWhereNull('user_roles.organization_id');
             })
-            ->when($organizationId === null, fn($q) => $q->whereNull('user_roles.organization_id'))
+            ->when($organizationId === null, fn ($q) => $q->whereNull('user_roles.organization_id'))
             ->pluck('name');
     }
 
@@ -284,9 +286,9 @@ trait HasRoles
         $direct = $this->permissions()
             ->when($organizationId !== null, function ($query) use ($organizationId) {
                 $query->where('user_permissions.organization_id', $organizationId)
-                      ->orWhereNull('user_permissions.organization_id');
+                    ->orWhereNull('user_permissions.organization_id');
             })
-            ->when($organizationId === null, fn($q) => $q->whereNull('user_permissions.organization_id'))
+            ->when($organizationId === null, fn ($q) => $q->whereNull('user_permissions.organization_id'))
             ->pluck('code');
 
         $viaRoles = Permission::whereHas('roles', function ($query) use ($organizationId) {
@@ -296,9 +298,9 @@ trait HasRoles
                     ->where('user_id', $this->id)
                     ->when($organizationId !== null, function ($q) use ($organizationId) {
                         $q->where('organization_id', $organizationId)
-                          ->orWhereNull('organization_id');
+                            ->orWhereNull('organization_id');
                     })
-                    ->when($organizationId === null, fn($q) => $q->whereNull('organization_id'));
+                    ->when($organizationId === null, fn ($q) => $q->whereNull('organization_id'));
             });
         })->pluck('code');
 

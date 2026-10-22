@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Amenity;
 use App\Models\PropertyFeature;
+use Illuminate\Database\Seeder;
 
 class AmenityAndFeatureSeeder extends Seeder
 {

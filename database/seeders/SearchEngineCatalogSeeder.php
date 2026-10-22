@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Amenity;
-use App\Models\Listing;
 use App\Models\Property;
 use App\Models\PropertyCategory;
 use App\Models\PropertyType;
@@ -93,11 +92,21 @@ class SearchEngineCatalogSeeder extends Seeder
 
             // Attach standard amenities
             $amenityIds = [];
-            if ($generatorAmenity) $amenityIds[] = $generatorAmenity->id;
-            if ($waterAmenity) $amenityIds[] = $waterAmenity->id;
-            if ($securityAmenity) $amenityIds[] = $securityAmenity->id;
-            if ($parkingAmenity) $amenityIds[] = $parkingAmenity->id;
-            if ($index % 3 === 0 && $elevatorAmenity) $amenityIds[] = $elevatorAmenity->id;
+            if ($generatorAmenity) {
+                $amenityIds[] = $generatorAmenity->id;
+            }
+            if ($waterAmenity) {
+                $amenityIds[] = $waterAmenity->id;
+            }
+            if ($securityAmenity) {
+                $amenityIds[] = $securityAmenity->id;
+            }
+            if ($parkingAmenity) {
+                $amenityIds[] = $parkingAmenity->id;
+            }
+            if ($index % 3 === 0 && $elevatorAmenity) {
+                $amenityIds[] = $elevatorAmenity->id;
+            }
 
             $prop->amenities()->syncWithoutDetaching($amenityIds);
         }

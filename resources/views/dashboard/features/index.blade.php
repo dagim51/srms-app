@@ -107,58 +107,65 @@
             </div>
         </div>
 
-        {{-- Filter & Actions Card --}}
-        <div class="cinematic-fade-up cinematic-stagger-2">
-            <x-card padding="p-5">
-            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                {{-- Search & Filter Form --}}
-                <form method="GET" action="{{ route('dashboard.features.index') }}" class="flex flex-wrap items-center gap-3 flex-1">
-                    <div class="relative flex-1 min-w-52">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </div>
-                        <input 
-                            type="text" 
-                            name="search" 
-                            value="{{ request('search') }}" 
-                            placeholder="Search features (e.g. Marble, Ceilings)..." 
-                            class="form-input search-input pl-9 pr-8 w-full text-sm"
-                        >
-                        @if(request('search'))
-                            <a href="{{ route('dashboard.features.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </a>
-                        @endif
-                    </div>
-
-                    <select name="status" onchange="this.form.submit()" class="form-select text-sm min-w-30">
-                        <option value="">{{ __('All Statuses') }}</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
-                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
-                    </select>
-
-                    @if(request('search') || request('status'))
-                        <a href="{{ route('dashboard.features.index') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium px-2 py-1.5">{{ __('Reset filters') }}</a>
-                    @endif
-                </form>
-
-                {{-- Action Button --}}
+        {{-- Actions & Filter Toolbar --}}
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
+                    <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Architectural Features Catalog') }}</h2>
+                    <p class="text-xs text-muted dark:text-muted">{{ __('Physical specifications, interior finishes, and construction traits') }}</p>
+                </div>
+                <div class="flex items-center gap-2">
                     <button 
                         type="button" 
                         @click="showCreateModal = true" 
-                        class="btn btn-primary inline-flex items-center gap-2 whitespace-nowrap cursor-pointer shadow-sm shadow-orange-500/20"
+                        class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20 text-xs cursor-pointer"
                     >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         <span>{{ __('Add Feature') }}</span>
                     </button>
                 </div>
             </div>
-        </x-card>
+
+            {{-- Filter Form --}}
+            <form method="GET" action="{{ route('dashboard.features.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
+                <div class="md:col-span-6 relative">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        placeholder="{{ __('Search features (e.g. Marble, Ceilings)...') }}" 
+                        class="form-input search-input w-full pl-9 pr-8 text-xs"
+                    >
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.features.index', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="md:col-span-4">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs">
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>{{ __('Inactive') }}</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn btn-secondary btn-sm text-xs py-2 px-3 w-full justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        <span>{{ __('Filter') }}</span>
+                    </button>
+                    @if(request()->hasAny(['search', 'status']))
+                        <a href="{{ route('dashboard.features.index') }}" class="btn btn-ghost btn-sm text-xs py-2 px-2.5 text-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors" title="{{ __('Reset Filters') }}">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </a>
+                    @endif
+                </div>
+            </form>
         </div>
 
         {{-- Features Table --}}

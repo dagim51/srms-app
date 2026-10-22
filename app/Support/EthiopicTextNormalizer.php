@@ -112,7 +112,6 @@ class EthiopicTextNormalizer
     /**
      * Extract expanded bilingual search tokens for database queries.
      *
-     * @param string $input
      * @return array<string>
      */
     public static function getSearchTokens(string $input): array

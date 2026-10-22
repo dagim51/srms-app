@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApiToken;
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PropertyGisTest extends TestCase
@@ -12,9 +15,9 @@ class PropertyGisTest extends TestCase
 
     public function test_valid_coordinates_can_be_stored()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
         $response = $this->withToken($token)->postJson('/api/v1/properties', [
             'title' => 'GIS Property',
@@ -29,9 +32,9 @@ class PropertyGisTest extends TestCase
 
     public function test_invalid_coordinates_are_rejected()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
         $response = $this->withToken($token)->postJson('/api/v1/properties', [
             'title' => 'Invalid GIS Property',
@@ -45,12 +48,12 @@ class PropertyGisTest extends TestCase
 
     public function test_radius_search_returns_correct_records()
     {
-        $owner = \App\Models\User::factory()->create();
-        $token = \Illuminate\Support\Str::random(40);
-        \App\Models\ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
+        $owner = User::factory()->create();
+        $token = Str::random(40);
+        ApiToken::create(['user_id' => $owner->id, 'name' => 'test', 'token' => hash('sha256', $token)]);
 
         // Center: Addis Ababa (Bole)
-        \App\Models\Property::create([
+        Property::create([
             'title' => 'Bole Property',
             'property_code' => 'GIS-001',
             'owner_user_id' => $owner->id,
@@ -59,7 +62,7 @@ class PropertyGisTest extends TestCase
         ]);
 
         // Far: Hawassa (~275km away)
-        \App\Models\Property::create([
+        Property::create([
             'title' => 'Hawassa Property',
             'property_code' => 'GIS-002',
             'owner_user_id' => $owner->id,
@@ -69,7 +72,7 @@ class PropertyGisTest extends TestCase
 
         // Search within 50km of Addis Ababa (8.98, 38.75)
         $response = $this->withToken($token)->getJson('/api/v1/properties/search/radius?latitude=8.9800&longitude=38.7500&radius=50');
-        
+
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('Bole Property', $response->json('data.0.title'));

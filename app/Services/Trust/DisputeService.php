@@ -5,6 +5,7 @@ namespace App\Services\Trust;
 use App\Events\Trust\DisputeOpened;
 use App\Events\Trust\DisputeResolved;
 use App\Models\Dispute;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DisputeService
@@ -18,7 +19,7 @@ class DisputeService
             $dispute = Dispute::create([
                 'complainant_id' => $complainantId,
                 'respondent_id' => $data['respondent_id'] ?? null,
-                'disputable_type' => $data['disputable_type'] ?? \App\Models\User::class,
+                'disputable_type' => $data['disputable_type'] ?? User::class,
                 'disputable_id' => $data['disputable_id'] ?? ($data['respondent_id'] ?? $complainantId),
                 'type' => $data['type'] ?? 'general',
                 'subject' => $data['subject'],
@@ -76,7 +77,7 @@ class DisputeService
      */
     public function closeDispute(Dispute $dispute, string $closerId, ?string $notes = null): Dispute
     {
-        return DB::transaction(function () use ($dispute, $closerId, $notes) {
+        return DB::transaction(function () use ($dispute, $notes) {
             $dispute->status = 'closed';
             if ($notes) {
                 $dispute->resolution_notes = $notes;

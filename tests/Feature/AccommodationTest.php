@@ -2,25 +2,26 @@
 
 namespace Tests\Feature;
 
+use App\Models\Accommodation;
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\Accommodation;
 
 class AccommodationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $host;
+
     protected $property;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->host = User::factory()->create();
-        
+
         $this->property = Property::create([
             'title' => 'Test Property for Accommodation',
             'property_code' => 'TEST-ACC-001',
@@ -37,11 +38,11 @@ class AccommodationTest extends TestCase
             'bedrooms' => 2,
             'bathrooms' => 1.5,
         ]);
-        
+
         $response->assertStatus(201)
-                 ->assertJsonPath('data.max_guests', 4)
-                 ->assertJsonPath('data.host_id', $this->host->id);
-                 
+            ->assertJsonPath('data.max_guests', 4)
+            ->assertJsonPath('data.host_id', $this->host->id);
+
         $this->assertDatabaseHas('accommodations', [
             'property_id' => $this->property->id,
             'max_guests' => 4,
@@ -51,12 +52,12 @@ class AccommodationTest extends TestCase
     public function test_non_owner_cannot_configure_accommodation()
     {
         $otherUser = User::factory()->create();
-        
+
         $response = $this->actingAs($otherUser)->postJson('/api/v1/accommodations', [
             'property_id' => $this->property->id,
             'max_guests' => 4,
         ]);
-        
+
         $response->assertStatus(403);
     }
 
@@ -67,12 +68,12 @@ class AccommodationTest extends TestCase
             'host_id' => $this->host->id,
             'max_guests' => 2,
         ]);
-        
+
         $response = $this->actingAs($this->host)->putJson("/api/v1/accommodations/{$accommodation->id}", [
             'rules' => 'No smoking inside.',
             'max_guests' => 3,
         ]);
-        
+
         $response->assertStatus(200);
         $this->assertEquals('No smoking inside.', $accommodation->fresh()->rules);
         $this->assertEquals(3, $accommodation->fresh()->max_guests);
@@ -85,12 +86,12 @@ class AccommodationTest extends TestCase
             'host_id' => $this->host->id,
             'max_guests' => 2,
         ]);
-        
+
         $response = $this->actingAs($this->host)->postJson('/api/v1/accommodations', [
             'property_id' => $this->property->id,
             'max_guests' => 4,
         ]);
-        
+
         $response->assertStatus(422); // Validation error (unique)
     }
 }

@@ -53,10 +53,10 @@ class LeaseService
     public function approveApplication(RentalApplication $application, array $data): Lease
     {
         return DB::transaction(function () use ($application, $data) {
-            $approveAction = new ApproveRentalApplication();
+            $approveAction = new ApproveRentalApplication;
             $lease = $approveAction->execute($application, $data);
 
-            $scheduleAction = new GenerateRentSchedules();
+            $scheduleAction = new GenerateRentSchedules;
             $scheduleAction->execute($lease);
 
             event(new RentalApplicationApproved($application, $lease));

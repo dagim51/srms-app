@@ -6,7 +6,6 @@ use App\Models\Inquiry;
 use App\Models\Listing;
 use App\Models\Offer;
 use App\Models\Payment;
-use App\Models\Property;
 use App\Models\User;
 use App\Models\Viewing;
 use Carbon\Carbon;
@@ -31,10 +30,10 @@ class DashboardAnalyticsService
         }
 
         $activeListings = (clone $listingQuery)->count();
-        $prevListings = $prevStartDate 
+        $prevListings = $prevStartDate
             ? (clone $listingQuery)->whereBetween('created_at', [$prevStartDate, $prevEndDate])->count()
             : 0;
-        $currentPeriodListings = $startDate 
+        $currentPeriodListings = $startDate
             ? (clone $listingQuery)->where('created_at', '>=', $startDate)->count()
             : $activeListings;
 
@@ -91,7 +90,7 @@ class DashboardAnalyticsService
             'portfolio_value' => [
                 'value' => $portfolioValue,
                 'formatted' => $this->formatCurrencyCompact($portfolioValue),
-                'raw_formatted' => number_format($portfolioValue) . ' ETB',
+                'raw_formatted' => number_format($portfolioValue).' ETB',
                 'change' => $valueChange,
                 'caption' => __('Active catalog valuation'),
                 'badge' => 'ETB',
@@ -136,7 +135,7 @@ class DashboardAnalyticsService
     public function getTrends(User $user, array $filters = []): array
     {
         $period = $filters['period'] ?? 'all';
-        $monthsToDisplay = match($period) {
+        $monthsToDisplay = match ($period) {
             'today', 'week' => 7,
             'month' => 30,
             'quarter' => 12,
@@ -335,23 +334,23 @@ class DashboardAnalyticsService
             ->get();
 
         foreach ($recentListings as $item) {
-            $title = $item->property ? $item->property->title : 'Property #' . substr($item->id, 0, 8);
+            $title = $item->property ? $item->property->title : 'Property #'.substr($item->id, 0, 8);
             $activities[] = [
                 'type' => 'listing',
                 'title' => $title,
                 'caption' => __('Listing :purpose created (:price ETB)', [
                     'purpose' => $item->purpose,
-                    'price' => number_format((float)$item->price),
+                    'price' => number_format((float) $item->price),
                 ]),
                 'badge' => ucfirst($item->status),
-                'badgeVariant' => match($item->status) {
+                'badgeVariant' => match ($item->status) {
                     'published' => 'success',
                     'pending_review' => 'warning',
                     default => 'neutral',
                 },
                 'timestamp' => $item->created_at ? $item->created_at->diffForHumans() : __('Recently'),
                 'raw_time' => $item->created_at ? $item->created_at->timestamp : 0,
-                'link' => '/dashboard/listings/' . $item->id,
+                'link' => '/dashboard/listings/'.$item->id,
             ];
         }
 
@@ -387,11 +386,11 @@ class DashboardAnalyticsService
                 'type' => 'offer',
                 'title' => __('Offer Submitted'),
                 'caption' => __(':amount ETB on :property', [
-                    'amount' => number_format((float)$offer->amount),
+                    'amount' => number_format((float) $offer->amount),
                     'property' => $propTitle,
                 ]),
                 'badge' => ucfirst($offer->status),
-                'badgeVariant' => match($offer->status) {
+                'badgeVariant' => match ($offer->status) {
                     'accepted' => 'success',
                     'countered' => 'brand',
                     'rejected' => 'error',
@@ -399,12 +398,12 @@ class DashboardAnalyticsService
                 },
                 'timestamp' => $offer->created_at ? $offer->created_at->diffForHumans() : __('Recently'),
                 'raw_time' => $offer->created_at ? $offer->created_at->timestamp : 0,
-                'link' => '/dashboard/offers/' . $offer->id,
+                'link' => '/dashboard/offers/'.$offer->id,
             ];
         }
 
         // Sort descending by raw_time
-        usort($activities, fn($a, $b) => $b['raw_time'] <=> $a['raw_time']);
+        usort($activities, fn ($a, $b) => $b['raw_time'] <=> $a['raw_time']);
 
         return array_slice($activities, 0, $limit);
     }
@@ -489,15 +488,16 @@ class DashboardAnalyticsService
     protected function formatCurrencyCompact(float $amount): string
     {
         if ($amount >= 1_000_000_000) {
-            return round($amount / 1_000_000_000, 2) . 'B ETB';
+            return round($amount / 1_000_000_000, 2).'B ETB';
         }
         if ($amount >= 1_000_000) {
-            return round($amount / 1_000_000, 2) . 'M ETB';
+            return round($amount / 1_000_000, 2).'M ETB';
         }
         if ($amount >= 1_000) {
-            return round($amount / 1_000, 1) . 'K ETB';
+            return round($amount / 1_000, 1).'K ETB';
         }
-        return number_format($amount) . ' ETB';
+
+        return number_format($amount).' ETB';
     }
 
     /**

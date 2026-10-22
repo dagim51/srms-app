@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\AccommodationBooking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,7 +14,7 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
 
     public $booking;
 
-    public function __construct(\App\Models\AccommodationBooking $booking)
+    public function __construct(AccommodationBooking $booking)
     {
         $this->booking = $booking;
     }
@@ -28,7 +29,7 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Your Booking is Confirmed!')
             ->line('Your accommodation booking has been confirmed.')
-            ->action('View Booking', url('/api/v1/accommodation-bookings/' . $this->booking->id))
+            ->action('View Booking', url('/api/v1/accommodation-bookings/'.$this->booking->id))
             ->line('Thank you for using our platform!');
     }
 
@@ -37,7 +38,7 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
         return [
             'booking_id' => $this->booking->id,
             'message' => 'Your booking has been confirmed.',
-            'type' => 'booking_confirmed'
+            'type' => 'booking_confirmed',
         ];
     }
 }

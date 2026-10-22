@@ -1,13 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Domains\Transaction\Models\WebhookEvent;
 
-class WebhookEvent extends Model
-{
-    use HasUuids;
-
-    protected $fillable = ['provider', 'event_type', 'idempotency_key', 'payload', 'status', 'error_message', 'retry_count'];
-    protected $casts = ['payload' => 'array'];
-}
+class_alias(WebhookEvent::class, 'App\Models\WebhookEvent');

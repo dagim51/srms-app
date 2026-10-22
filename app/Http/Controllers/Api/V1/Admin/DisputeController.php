@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\DisputeResource;
 use App\Http\Resources\DisputeEvidenceResource;
+use App\Http\Resources\DisputeResource;
 use App\Http\Resources\ListingFlagResource;
 use App\Http\Resources\UserFlagResource;
 use App\Models\Dispute;
@@ -13,7 +13,6 @@ use App\Models\ListingFlag;
 use App\Models\UserFlag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
 
 class DisputeController extends Controller
 {
@@ -118,9 +117,9 @@ class DisputeController extends Controller
 
         $oldStatus = $dispute->status;
 
-        if (!$dispute->canTransitionTo($validated['status'])) {
+        if (! $dispute->canTransitionTo($validated['status'])) {
             return response()->json([
-                'message' => "Cannot transition from {$oldStatus} to {$validated['status']}"
+                'message' => "Cannot transition from {$oldStatus} to {$validated['status']}",
             ], 422);
         }
 
@@ -248,7 +247,7 @@ class DisputeController extends Controller
 
         $flag->update($validated);
 
-        if ($validated['status'] === 'under_review' && !$flag->reviewed_at) {
+        if ($validated['status'] === 'under_review' && ! $flag->reviewed_at) {
             $flag->update(['reviewed_at' => now()]);
         }
         if (in_array($validated['status'], ['dismissed', 'validated', 'escalated_to_dispute'])) {
@@ -257,14 +256,14 @@ class DisputeController extends Controller
 
         // If escalated to dispute, create a dispute
         if ($validated['status'] === 'escalated_to_dispute') {
-            $dispute = \App\Models\Dispute::create([
+            $dispute = Dispute::create([
                 'complainant_id' => $flag->reporter_id,
                 'respondent_id' => $flag->listing->owner_user_id,
                 'disputable_type' => 'App\Models\Listing',
                 'disputable_id' => $flag->listing_id,
                 'type' => 'misrepresentation',
                 'subject' => "Escalated from listing flag: {$flag->reason}",
-                'description' => $flag->description ?? "Listing flag escalated to dispute.",
+                'description' => $flag->description ?? 'Listing flag escalated to dispute.',
                 'status' => 'open',
                 'priority' => 'high',
                 'opened_at' => now(),
@@ -318,7 +317,7 @@ class DisputeController extends Controller
 
         $flag->update($validated);
 
-        if ($validated['status'] === 'under_review' && !$flag->reviewed_at) {
+        if ($validated['status'] === 'under_review' && ! $flag->reviewed_at) {
             $flag->update(['reviewed_at' => now()]);
         }
         if (in_array($validated['status'], ['dismissed', 'validated', 'escalated_to_dispute', 'user_suspended'])) {

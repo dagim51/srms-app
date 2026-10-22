@@ -99,6 +99,13 @@ return [
             'flag' => '🇪🇹',
             'direction' => 'ltr',
         ],
+        'om' => [
+            'name' => 'Oromo',
+            'native' => 'Afaan Oromoo',
+            'locale' => 'om-ET',
+            'flag' => '🇪🇹',
+            'direction' => 'ltr',
+        ],
     ],
 
     /*

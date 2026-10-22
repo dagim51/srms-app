@@ -2,18 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Listing\Models\CollectionProperty;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class CollectionProperty extends Model
-{
-    use HasUuids;
-
-    protected $guarded = [];
-
-    public function property()
-    {
-        return $this->belongsTo(Property::class);
-    }
-}
+class_alias(CollectionProperty::class, 'App\Models\CollectionProperty');

@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('notification_preferences', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->boolean('email_notifications')->default(true);
             $table->boolean('in_app_notifications')->default(true);
             $table->boolean('push_notifications')->default(false);
-            
+
             $table->timestamps();
-            
+
             $table->unique('user_id');
         });
     }

@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\IdempotencyMiddleware;
+use App\Http\Middleware\OrganizationScope;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\VerifyApiToken;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,17 +20,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\SetLocale::class,
+            SetLocale::class,
         ]);
         // Attach the named "api" rate limiter (defined in AppServiceProvider)
         // to every route in routes/api.php.
         $middleware->throttleApi();
         $middleware->alias([
-            'api.token' => \App\Http\Middleware\VerifyApiToken::class,
-            'org.scope' => \App\Http\Middleware\OrganizationScope::class,
-            'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
-            'role' => \App\Http\Middleware\CheckRole::class,
-            'permission' => \App\Http\Middleware\CheckPermission::class,
+            'api.token' => VerifyApiToken::class,
+            'org.scope' => OrganizationScope::class,
+            'idempotency' => IdempotencyMiddleware::class,
+            'role' => CheckRole::class,
+            'permission' => CheckPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

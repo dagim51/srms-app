@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PublicDiscoveryTest extends TestCase
@@ -12,8 +13,8 @@ class PublicDiscoveryTest extends TestCase
 
     public function test_public_can_browse_published_listings()
     {
-        $owner = \App\Models\User::factory()->create();
-        $property = \App\Models\Property::create([
+        $owner = User::factory()->create();
+        $property = Property::create([
             'title' => 'Discovery Property',
             'property_code' => 'PUB-001',
             'owner_user_id' => $owner->id,
@@ -33,8 +34,8 @@ class PublicDiscoveryTest extends TestCase
 
     public function test_draft_listings_are_hidden_from_public()
     {
-        $owner = \App\Models\User::factory()->create();
-        $property = \App\Models\Property::create([
+        $owner = User::factory()->create();
+        $property = Property::create([
             'title' => 'Hidden Property',
             'property_code' => 'PUB-002',
             'owner_user_id' => $owner->id,
@@ -57,23 +58,23 @@ class PublicDiscoveryTest extends TestCase
 
     public function test_listing_detail_hides_sensitive_documents()
     {
-        $owner = \App\Models\User::factory()->create();
-        $property = \App\Models\Property::create([
+        $owner = User::factory()->create();
+        $property = Property::create([
             'title' => 'Detailed Property',
             'property_code' => 'PUB-003',
             'owner_user_id' => $owner->id,
         ]);
-        
+
         $property->media()->create([
             'kind' => 'document',
             'storage_key' => 'docs/title_deed.pdf',
-            'visibility' => 'private'
+            'visibility' => 'private',
         ]);
-        
+
         $property->media()->create([
             'kind' => 'image',
             'storage_key' => 'images/front.jpg',
-            'visibility' => 'public'
+            'visibility' => 'public',
         ]);
 
         $listing = $property->listings()->create([

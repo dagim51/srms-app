@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('checksum')->nullable();
             $table->integer('sort_order')->default(0);
             $table->string('visibility')->default('public');
-            
+
             $table->string('status')->default('pending'); // pending, processed, failed
             $table->timestamps();
             $table->softDeletes();

@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SettingsWebController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user() ?? (object)[
+        $user = Auth::user() ?? (object) [
             'id' => 'USR-001',
             'name' => 'Admin User',
             'email' => 'admin@srms.et',
@@ -21,7 +23,7 @@ class SettingsWebController extends Controller
             'created_at' => now(),
         ];
 
-        $organization = \App\Models\Organization::first() ?? (object)[
+        $organization = Organization::first() ?? (object) [
             'id' => 'org_1',
             'name' => 'Addis Real Estate Group',
             'tin' => '0049281729',
@@ -80,7 +82,7 @@ class SettingsWebController extends Controller
         ]);
 
         $user = Auth::user();
-        if ($user && $user instanceof \App\Models\User) {
+        if ($user && $user instanceof User) {
             $user->update([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -100,8 +102,8 @@ class SettingsWebController extends Controller
         ]);
 
         $user = Auth::user();
-        if ($user && $user instanceof \App\Models\User) {
-            if (!Hash::check($validated['current_password'], $user->password)) {
+        if ($user && $user instanceof User) {
+            if (! Hash::check($validated['current_password'], $user->password)) {
                 return redirect()->route('dashboard.settings', ['tab' => 'security'])
                     ->with('error', 'The current password you provided does not match our records.');
             }

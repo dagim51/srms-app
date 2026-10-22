@@ -2,19 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Organization\Models\Team;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Team extends Model
-{
-    use HasUuids, SoftDeletes;
-
-    protected $fillable = ['branch_id', 'name', 'status'];
-
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
-}
+class_alias(Team::class, 'App\Models\Team');

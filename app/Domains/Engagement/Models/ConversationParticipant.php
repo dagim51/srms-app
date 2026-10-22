@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Domains\Engagement\Models;
+
+use App\Models\Conversation;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+
+class ConversationParticipant extends Model
+{
+    use HasUuids;
+
+    protected $fillable = [
+        'conversation_id',
+        'user_id',
+        'last_read_at',
+    ];
+
+    protected $casts = [
+        'last_read_at' => 'datetime',
+    ];
+
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}

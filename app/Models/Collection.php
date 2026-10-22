@@ -2,22 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Domains\Listing\Models\Collection;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-class Collection extends Model
-{
-    use HasUuids;
-
-    protected $guarded = [];
-
-    protected $casts = [
-        'is_private' => 'boolean'
-    ];
-
-    public function properties()
-    {
-        return $this->hasMany(CollectionProperty::class)->orderBy('sort_order', 'asc');
-    }
-}
+class_alias(Collection::class, 'App\Models\Collection');

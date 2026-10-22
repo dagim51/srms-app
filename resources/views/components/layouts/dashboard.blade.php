@@ -80,7 +80,8 @@
     {{-- Multilingual SEO & Alternates --}}
     <link rel="alternate" hreflang="en" href="{{ request()->fullUrlWithQuery(['locale' => 'en']) }}">
     <link rel="alternate" hreflang="am" href="{{ request()->fullUrlWithQuery(['locale' => 'am']) }}">
-    <meta property="og:locale" content="{{ app()->getLocale() === 'am' ? 'am_ET' : 'en_US' }}">
+    <link rel="alternate" hreflang="om" href="{{ request()->fullUrlWithQuery(['locale' => 'om']) }}">
+    <meta property="og:locale" content="{{ app()->getLocale() === 'am' ? 'am_ET' : (app()->getLocale() === 'om' ? 'om_ET' : 'en_US') }}">
 
     {{-- Immediate FOUC Prevention --}}
     <script>
@@ -250,6 +251,12 @@
                        class="sidebar-link {{ request()->is('dashboard/features*') ? 'active' : '' }}">
                         <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                         <span>{{ __('Features') }}</span>
+                    </a>
+
+                    <a href="/dashboard/locations" id="sidebar-locations"
+                       class="sidebar-link {{ request()->is('dashboard/locations*') ? 'active' : '' }}">
+                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                        <span>{{ __('Locations') }}</span>
                     </a>
 
                     <a href="/dashboard/accommodations" id="sidebar-accommodations"

@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\Payments\PaymentCompleted;
+use App\Models\AccommodationAvailability;
 use App\Models\AccommodationBooking;
 use App\Models\Listing;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +17,7 @@ class PaymentCompletedListener implements ShouldQueue
     {
         $payment = $event->payment->load('payable');
 
-        if (!$payment->payable) {
+        if (! $payment->payable) {
             return;
         }
 
@@ -33,17 +34,17 @@ class PaymentCompletedListener implements ShouldQueue
         $booking->update(['status' => 'confirmed']);
 
         // Create availability block
-        \App\Models\AccommodationAvailability::firstOrCreate(
+        AccommodationAvailability::firstOrCreate(
             [
                 'accommodation_id' => $booking->accommodation_id,
                 'start_date' => $booking->check_in_date,
                 'end_date' => $booking->check_out_date,
                 'type' => 'booked',
-                'reason' => 'Booking ID: ' . $booking->id,
+                'reason' => 'Booking ID: '.$booking->id,
             ],
             [
                 'type' => 'booked',
-                'reason' => 'Booking ID: ' . $booking->id,
+                'reason' => 'Booking ID: '.$booking->id,
             ]
         );
     }

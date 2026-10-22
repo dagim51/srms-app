@@ -18,7 +18,7 @@ class CheckRole
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'error' => [
@@ -33,7 +33,7 @@ class CheckRole
 
         $organizationId = $request->header('X-Organization-ID');
 
-        if (!$user->hasAnyRole($roles, $organizationId)) {
+        if (! $user->hasAnyRole($roles, $organizationId)) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
                     'error' => [

@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignUuid('property_id')->constrained('properties')->cascadeOnDelete();
             $table->foreignUuid('requester_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('seller_agent_id')->nullable()->constrained('users')->nullOnDelete();
-            
+
             $table->string('status', 50)->default('pending'); // pending, responded, closed
             $table->text('message')->nullable();
-            
+
             $table->timestamps();
             $table->softDeletes();
         });

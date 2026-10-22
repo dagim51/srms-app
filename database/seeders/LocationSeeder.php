@@ -217,9 +217,9 @@ class LocationSeeder extends Seeder
 
             // Kebeles for each woreda
             $kebeles = [
-                ['name_en' => $data['name_en'] . ' 01', 'name_am' => $data['name_am'] . ' 01', 'name_om' => $data['name_om'] . ' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
-                ['name_en' => $data['name_en'] . ' 02', 'name_am' => $data['name_am'] . ' 02', 'name_om' => $data['name_om'] . ' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
-                ['name_en' => $data['name_en'] . ' 03', 'name_am' => $data['name_am'] . ' 03', 'name_om' => $data['name_om'] . ' 03', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] - 0.001],
+                ['name_en' => $data['name_en'].' 01', 'name_am' => $data['name_am'].' 01', 'name_om' => $data['name_om'].' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 02', 'name_am' => $data['name_am'].' 02', 'name_om' => $data['name_om'].' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 03', 'name_am' => $data['name_am'].' 03', 'name_om' => $data['name_om'].' 03', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] - 0.001],
             ];
 
             foreach ($kebeles as $k) {
@@ -256,8 +256,8 @@ class LocationSeeder extends Seeder
             );
 
             $kebeles = [
-                ['name_en' => $data['name_en'] . ' 01', 'name_am' => $data['name_am'] . ' 01', 'name_om' => $data['name_om'] . ' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
-                ['name_en' => $data['name_en'] . ' 02', 'name_am' => $data['name_am'] . ' 02', 'name_om' => $data['name_om'] . ' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 01', 'name_am' => $data['name_am'].' 01', 'name_om' => $data['name_om'].' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 02', 'name_am' => $data['name_am'].' 02', 'name_om' => $data['name_om'].' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
             ];
 
             foreach ($kebeles as $k) {
@@ -293,8 +293,8 @@ class LocationSeeder extends Seeder
             );
 
             $kebeles = [
-                ['name_en' => $data['name_en'] . ' 01', 'name_am' => $data['name_am'] . ' 01', 'name_om' => $data['name_om'] . ' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
-                ['name_en' => $data['name_en'] . ' 02', 'name_am' => $data['name_am'] . ' 02', 'name_om' => $data['name_om'] . ' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 01', 'name_am' => $data['name_am'].' 01', 'name_om' => $data['name_om'].' 01', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' 02', 'name_am' => $data['name_am'].' 02', 'name_om' => $data['name_om'].' 02', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] + 0.001],
             ];
 
             foreach ($kebeles as $k) {
@@ -330,8 +330,8 @@ class LocationSeeder extends Seeder
             );
 
             $kebeles = [
-                ['name_en' => $data['name_en'] . ' Town', 'name_am' => $data['name_am'] . ' ከተማ', 'name_om' => $data['name_om'] . ' Magaalaa', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
-                ['name_en' => $data['name_en'] . ' Rural', 'name_am' => $data['name_am'] . ' ህብረት', 'name_om' => $data['name_om'] . ' Hiboopphee', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] - 0.001],
+                ['name_en' => $data['name_en'].' Town', 'name_am' => $data['name_am'].' ከተማ', 'name_om' => $data['name_om'].' Magaalaa', 'lat' => $data['lat'] + 0.001, 'lng' => $data['lng'] + 0.001],
+                ['name_en' => $data['name_en'].' Rural', 'name_am' => $data['name_am'].' ህብረት', 'name_om' => $data['name_om'].' Hiboopphee', 'lat' => $data['lat'] - 0.001, 'lng' => $data['lng'] - 0.001],
             ];
 
             foreach ($kebeles as $k) {
@@ -358,10 +358,10 @@ class LocationSeeder extends Seeder
             $kebeles = Kebele::where('woreda_id', $boleMedhanialemWoreda->id)->get();
             foreach ($kebeles as $kebele) {
                 Neighborhood::firstOrCreate(
-                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en . ' Area'],
+                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en.' Area'],
                     [
-                        'name_am' => $kebele->name_am . ' ክፍለ ከተማ',
-                        'name_om' => $kebele->name_om . ' Bakka Magaalaa',
+                        'name_am' => $kebele->name_am.' ክፍለ ከተማ',
+                        'name_om' => $kebele->name_om.' Bakka Magaalaa',
                         'latitude' => $kebele->latitude + 0.0005,
                         'longitude' => $kebele->longitude + 0.0005,
                         'status' => 'active',
@@ -374,10 +374,10 @@ class LocationSeeder extends Seeder
             $kebeles = Kebele::where('woreda_id', $boleAtlasWoreda->id)->get();
             foreach ($kebeles as $kebele) {
                 Neighborhood::firstOrCreate(
-                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en . ' Area'],
+                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en.' Area'],
                     [
-                        'name_am' => $kebele->name_am . ' ክፍለ ከተማ',
-                        'name_om' => $kebele->name_om . ' Bakka Magaalaa',
+                        'name_am' => $kebele->name_am.' ክፍለ ከተማ',
+                        'name_om' => $kebele->name_om.' Bakka Magaalaa',
                         'latitude' => $kebele->latitude + 0.0005,
                         'longitude' => $kebele->longitude + 0.0005,
                         'status' => 'active',
@@ -390,10 +390,10 @@ class LocationSeeder extends Seeder
             $kebeles = Kebele::where('woreda_id', $yekaAbadoWoreda->id)->get();
             foreach ($kebeles as $kebele) {
                 Neighborhood::firstOrCreate(
-                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en . ' Area'],
+                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en.' Area'],
                     [
-                        'name_am' => $kebele->name_am . ' ክፍለ ከተማ',
-                        'name_om' => $kebele->name_om . ' Bakka Magaalaa',
+                        'name_am' => $kebele->name_am.' ክፍለ ከተማ',
+                        'name_om' => $kebele->name_om.' Bakka Magaalaa',
                         'latitude' => $kebele->latitude + 0.0005,
                         'longitude' => $kebele->longitude + 0.0005,
                         'status' => 'active',
@@ -406,10 +406,10 @@ class LocationSeeder extends Seeder
             $kebeles = Kebele::where('woreda_id', $kazanchisWoreda->id)->get();
             foreach ($kebeles as $kebele) {
                 Neighborhood::firstOrCreate(
-                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en . ' Area'],
+                    ['kebele_id' => $kebele->id, 'name_en' => $kebele->name_en.' Area'],
                     [
-                        'name_am' => $kebele->name_am . ' ክፍለ ከተማ',
-                        'name_om' => $kebele->name_om . ' Bakka Magaalaa',
+                        'name_am' => $kebele->name_am.' ክፍለ ከተማ',
+                        'name_om' => $kebele->name_om.' Bakka Magaalaa',
                         'latitude' => $kebele->latitude + 0.0005,
                         'longitude' => $kebele->longitude + 0.0005,
                         'status' => 'active',

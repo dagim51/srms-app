@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('offers', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            
+
             $table->foreignUuid('listing_id')->constrained('listings')->cascadeOnDelete();
             $table->foreignUuid('buyer_id')->constrained('users')->cascadeOnDelete();
             $table->uuid('parent_offer_id')->nullable(); // For counter offers
-            
+
             $table->decimal('amount', 15, 2);
             $table->string('status', 50)->default('pending'); // pending, accepted, rejected, countered, withdrawn
             $table->text('notes')->nullable();
-            
+
             $table->timestamps();
             $table->softDeletes();
         });

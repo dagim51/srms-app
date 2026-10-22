@@ -1,23 +1,7 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Domains\PropertyManagement\Models\Community as DomainCommunity;
 
-class Community extends Model
-{
-    use HasUuids, SoftDeletes;
-
-    protected $fillable = [
-        'name',
-        'description',
-        'hoa_rules',
-        'status'
-    ];
-
-    public function facilities()
-    {
-        return $this->hasMany(SharedFacility::class);
-    }
-}
+class_alias(DomainCommunity::class, 'App\Models\Community');

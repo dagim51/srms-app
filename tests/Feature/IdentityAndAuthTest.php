@@ -2,13 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class IdentityAndAuthTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -23,15 +25,15 @@ class IdentityAndAuthTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure(['data' => ['user', 'token']]);
-        
+
         $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
         $this->assertDatabaseHas('api_tokens', ['user_id' => $response['data']['user']['id']]);
     }
 
     public function test_duplicate_registration_rejected()
     {
-        \App\Models\User::factory()->create([
-            'email' => 'jane@example.com'
+        User::factory()->create([
+            'email' => 'jane@example.com',
         ]);
 
         $response = $this->postJson('/api/v1/auth/register', [
@@ -56,8 +58,8 @@ class IdentityAndAuthTest extends TestCase
 
     public function test_successful_login_and_logout()
     {
-        $user = \App\Models\User::factory()->create([
-            'password' => \Illuminate\Support\Facades\Hash::make('password123')
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
         ]);
 
         $loginResponse = $this->postJson('/api/v1/auth/login', [
@@ -75,7 +77,7 @@ class IdentityAndAuthTest extends TestCase
         $logoutResponse->assertStatus(204);
 
         $this->assertDatabaseMissing('api_tokens', ['token' => hash('sha256', $token)]);
-        
+
         $profileResponseAfter = $this->withToken($token)->getJson('/api/v1/users/profile');
         $profileResponseAfter->assertStatus(401);
     }
@@ -88,12 +90,12 @@ class IdentityAndAuthTest extends TestCase
 
     public function test_password_reset_flow()
     {
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
 
         $forgotResponse = $this->postJson('/api/v1/auth/password/email', [
-            'email' => $user->email
+            'email' => $user->email,
         ]);
-        
+
         $forgotResponse->assertStatus(200);
         $token = $forgotResponse['token'];
 

@@ -3,6 +3,8 @@
 ## Project Overview
 An integrated real estate marketplace, short-stay, property management, and development platform.
 
+The application follows a **Modular Domain-Driven Architecture** under `app/Domains/` with a backward-compatible Forwarder Pattern. For detailed architectural guidelines, domain boundaries, and coding standards, refer to [ARCHITECTURE.md](file:///c:/Users/dell/Desktop/SRMS/srms-app/ARCHITECTURE.md).
+
 ## Development Setup (Local)
 This project uses Laravel and SQLite for local development (or PostgreSQL if preferred).
 

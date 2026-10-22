@@ -2,33 +2,33 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
-use App\Models\DevelopmentProject;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class DevelopmentTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $user;
+
     protected $organization;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
-        
+
         $this->organization = Organization::create([
             'name' => 'Developer Corp',
             'slug' => 'dev-corp',
             'status' => 'active',
             'created_by' => $this->user->id,
         ]);
-        
+
         OrganizationMember::create([
             'organization_id' => $this->organization->id,
             'user_id' => $this->user->id,
@@ -61,10 +61,10 @@ class DevelopmentTest extends TestCase
             'floor_name' => 'Ground',
             'unit_number' => 'G-01',
             'status' => 'available',
-            'price' => 150000.00
+            'price' => 150000.00,
         ]);
         $unitResponse->assertStatus(201);
-        
+
         // 4. Add Payment Plan
         $planResponse = $this->actingAs($this->user)->postJson("/api/v1/development/projects/{$projectId}/payment-plans", [
             'name' => 'Standard Handover Plan',

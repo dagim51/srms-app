@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('conversation_id')->constrained('conversations')->cascadeOnDelete();
             $table->foreignUuid('sender_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->text('body');
-            
+
             $table->timestamps();
             $table->softDeletes();
         });

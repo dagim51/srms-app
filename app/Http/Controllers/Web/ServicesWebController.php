@@ -10,7 +10,7 @@ class ServicesWebController extends Controller
     public function publicIndex(Request $request)
     {
         $categories = ['Legal & Notary', 'Surveyors', 'Architects', 'Valuers', 'Contractors', 'Inspectors'];
-        
+
         $professionals = collect([
             [
                 'id' => 'PRO-001',
@@ -80,8 +80,8 @@ class ServicesWebController extends Controller
 
         if ($request->filled('q')) {
             $q = strtolower(trim($request->input('q')));
-            $professionals = $professionals->filter(function($p) use ($q) {
-                return str_contains(strtolower($p['name']), $q) 
+            $professionals = $professionals->filter(function ($p) use ($q) {
+                return str_contains(strtolower($p['name']), $q)
                     || str_contains(strtolower($p['category']), $q)
                     || str_contains(strtolower($p['specialty']), $q);
             });
@@ -110,8 +110,8 @@ class ServicesWebController extends Controller
                 'services' => [
                     ['name' => 'Title Deed Verification', 'price' => '5,000 ETB', 'duration' => '3 Days', 'desc' => 'Comprehensive land bureau registry record search to guarantee clean ownership without injunctions or liens.'],
                     ['name' => 'Contract Review & Drafting', 'price' => '3,500 ETB', 'duration' => '1 Day', 'desc' => 'Bilingual Amharic/English sales or lease agreements protecting buyer/seller obligations.'],
-                    ['name' => 'Full Escrow Transfer Service', 'price' => '1% of Value', 'duration' => 'Variable', 'desc' => 'Bank-backed escrow management until final title document registration and keys handover.']
-                ]
+                    ['name' => 'Full Escrow Transfer Service', 'price' => '1% of Value', 'duration' => 'Variable', 'desc' => 'Bank-backed escrow management until final title document registration and keys handover.'],
+                ],
             ],
             'PRO-002' => [
                 'id' => 'PRO-002',
@@ -126,7 +126,7 @@ class ServicesWebController extends Controller
                 'services' => [
                     ['name' => 'Cadastral Boundary Survey', 'price' => '15,000 ETB', 'duration' => '2 Days', 'desc' => 'Precise GPS boundary alignment preventing encroachment disputes with neighbors.'],
                     ['name' => 'Topographic Site Plan', 'price' => '22,000 ETB', 'duration' => '4 Days', 'desc' => 'Contour lines, elevation levels, and municipal submission formats.'],
-                ]
+                ],
             ],
             'PRO-003' => [
                 'id' => 'PRO-003',
@@ -141,8 +141,8 @@ class ServicesWebController extends Controller
                 'services' => [
                     ['name' => 'Residential Architectural Design', 'price' => 'Custom Quote', 'duration' => '3-6 Weeks', 'desc' => 'Full 3D visualization, BIM schematics, and structural engineering documentation.'],
                     ['name' => 'Building Permit Expediting', 'price' => '25,000 ETB', 'duration' => '2 Weeks', 'desc' => 'Submission coordination with Addis Ababa Construction Bureau.'],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $provider = $providers[$id] ?? [
@@ -156,8 +156,8 @@ class ServicesWebController extends Controller
             'avatar' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=256&q=80',
             'about' => 'Verified professional service provider registered on the SRMS Ethiopian Property Platform.',
             'services' => [
-                ['name' => 'General Advisory Consultation', 'price' => '2,000 ETB', 'duration' => '1 Hour', 'desc' => 'Direct expert consultation regarding property acquisition, laws, or valuation.']
-            ]
+                ['name' => 'General Advisory Consultation', 'price' => '2,000 ETB', 'duration' => '1 Hour', 'desc' => 'Direct expert consultation regarding property acquisition, laws, or valuation.'],
+            ],
         ];
 
         return view('frontend.services.public_show', compact('provider'));
@@ -166,7 +166,7 @@ class ServicesWebController extends Controller
     public function index(Request $request)
     {
         $categories = ['Legal & Notary', 'Surveyors', 'Architects', 'Valuers', 'Contractors', 'Inspectors'];
-        
+
         $professionals = collect([
             ['id' => 'PRO-001', 'name' => 'Addis Legal Associates', 'category' => 'Legal & Notary', 'rating' => 4.9, 'reviews' => 128, 'rate' => '2,500 ETB/hr'],
             ['id' => 'PRO-002', 'name' => 'Ethio Surveying Experts', 'category' => 'Surveyors', 'rating' => 4.7, 'reviews' => 45, 'rate' => '15,000 ETB/project'],
@@ -179,7 +179,7 @@ class ServicesWebController extends Controller
 
         if ($request->filled('q')) {
             $q = strtolower(trim($request->input('q')));
-            $professionals = $professionals->filter(function($p) use ($q) {
+            $professionals = $professionals->filter(function ($p) use ($q) {
                 return str_contains(strtolower($p['name']), $q)
                     || str_contains(strtolower($p['category']), $q);
             });
@@ -201,8 +201,8 @@ class ServicesWebController extends Controller
             'services' => [
                 ['name' => 'Title Deed Verification', 'price' => '5,000 ETB', 'duration' => '3 Days'],
                 ['name' => 'Contract Review', 'price' => '3,000 ETB', 'duration' => '1 Day'],
-                ['name' => 'Full Transfer Escrow', 'price' => '1% of Property Value', 'duration' => 'Variable']
-            ]
+                ['name' => 'Full Transfer Escrow', 'price' => '1% of Property Value', 'duration' => 'Variable'],
+            ],
         ];
 
         return view('frontend.services.show', compact('provider'));
@@ -220,7 +220,7 @@ class ServicesWebController extends Controller
             'active_requests' => 5,
             'completed_jobs' => 128,
             'rating' => 4.9,
-            'monthly_earnings' => '145,000 ETB'
+            'monthly_earnings' => '145,000 ETB',
         ];
 
         return view('frontend.services.dashboard', compact('requests', 'stats'));

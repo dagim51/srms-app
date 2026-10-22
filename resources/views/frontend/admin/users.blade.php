@@ -59,26 +59,55 @@
         @include('frontend.admin.partials.tabs')
 
         {{-- Filter Bar & Table Card --}}
-        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden shadow-xs">
-            <div class="p-4 sm:p-5 border-b border-[#EBDBC9] dark:border-[#273244] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-[#FFF5EB]/30 dark:bg-[#172033]/40">
-                <div class="relative flex-1 max-w-md">
-                    <input type="text" x-model="searchQuery" placeholder="{{ __('Search by name, email, or role...') }}" class="form-input text-xs sm:text-sm pl-9">
-                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('User Accounts & Access') }}</h2>
+                    <p class="text-xs text-muted dark:text-muted">{{ __('System administrators, verified brokers, landlords, and client accounts') }}</p>
                 </div>
-                <div class="flex items-center gap-2.5 flex-wrap">
-                    <select x-model="roleFilter" class="form-input text-xs py-2 pr-8 w-auto">
+                <div class="flex items-center gap-2">
+                    <button @click="showCreateModal = true" class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20 text-xs">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        {{ __('Add New User') }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
+                <div class="md:col-span-6 relative">
+                    <input type="text" x-model="searchQuery" placeholder="{{ __('Search by name, email, or role...') }}" class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    <button type="button" x-show="searchQuery.length > 0" @click="searchQuery = ''" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <div class="md:col-span-3">
+                    <select x-model="roleFilter" class="form-select w-full text-xs">
                         <option value="">{{ __('All Roles') }}</option>
                         @foreach($roles as $r)
                             <option value="{{ $r }}">{{ $r }}</option>
                         @endforeach
                     </select>
-                    <select x-model="statusFilter" class="form-input text-xs py-2 pr-8 w-auto">
+                </div>
+
+                <div class="md:col-span-2">
+                    <select x-model="statusFilter" class="form-select w-full text-xs">
                         <option value="">{{ __('All Statuses') }}</option>
                         <option value="active">{{ __('Active') }}</option>
                         <option value="suspended">{{ __('Suspended') }}</option>
                     </select>
                 </div>
+
+                <div class="md:col-span-1 flex items-center justify-end">
+                    <button type="button" x-show="searchQuery !== '' || roleFilter !== '' || statusFilter !== ''" @click="searchQuery = ''; roleFilter = ''; statusFilter = ''" class="p-2 text-muted hover:text-orange-600 dark:hover:text-orange-400" title="{{ __('Reset Filters') }}">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
             </div>
+        </div>
+
+        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden shadow-xs">
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

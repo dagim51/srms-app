@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->geometry('property_point')->nullable();
                 $table->geometry('property_boundary')->nullable();
                 // $table->spatialIndex('property_point'); // Often causes issue on basic SQLite
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Ignore if driver unsupported in testing
             }
         });

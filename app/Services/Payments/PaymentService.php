@@ -3,15 +3,17 @@
 namespace App\Services\Payments;
 
 use App\Contracts\PaymentGatewayInterface;
-use App\Models\Payment;
+use App\Events\Payments\PaymentCompleted;
+use App\Events\Payments\PaymentFailed;
+use App\Events\Payments\PaymentRefunded;
 use App\Models\LedgerAccount;
 use App\Models\LedgerEntry;
 use App\Models\LedgerEntryLine;
-use Illuminate\Support\Facades\DB;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Exception;
 
 class PaymentService
 {
@@ -33,7 +35,7 @@ class PaymentService
         $paymentMethod = $data['payment_method'] ?? 'telebirr';
 
         // Validate payable exists and belongs to user
-        if (!class_exists($payableType)) {
+        if (! class_exists($payableType)) {
             throw new \InvalidArgumentException('Invalid payable type');
         }
 
@@ -124,13 +126,14 @@ class PaymentService
                     $query->orWhere('id', $transactionRef)
                         ->orWhere(function ($q) use ($transactionRef, $metadata) {
                             $q->where('payable_id', $transactionRef)
-                              ->where('payable_type', $metadata['payable_type'] ?? 'App\Models\AccommodationBooking');
+                                ->where('payable_type', $metadata['payable_type'] ?? 'App\Models\AccommodationBooking');
                         });
                 }
             })->firstOrFail();
 
             if ($payment->status === 'completed') {
                 Log::info('Payment already completed', ['payment_id' => $payment->id]);
+
                 return $payment;
             }
 
@@ -146,7 +149,7 @@ class PaymentService
             $this->onPaymentCompleted($payment);
 
             // Fire domain event
-            event(new \App\Events\Payments\PaymentCompleted($payment));
+            event(new PaymentCompleted($payment));
 
             return $payment;
         });
@@ -172,7 +175,7 @@ class PaymentService
             ]);
 
             // Fire domain event
-            event(new \App\Events\Payments\PaymentFailed($payment));
+            event(new PaymentFailed($payment));
 
             return $payment;
         });
@@ -185,7 +188,7 @@ class PaymentService
     {
         $orderRef = $payment->metadata['gateway_order_ref'] ?? $payment->transaction_reference;
 
-        if (!$orderRef) {
+        if (! $orderRef) {
             throw new \RuntimeException('No gateway reference found');
         }
 
@@ -227,7 +230,7 @@ class PaymentService
             ],
         ]);
 
-        event(new \App\Events\Payments\PaymentRefunded($refund, $payment));
+        event(new PaymentRefunded($refund, $payment));
 
         $this->recordLedgerRefundEntry($refund, $payment, $amount);
 
@@ -260,7 +263,7 @@ class PaymentService
     protected function generateIdempotencyKey(string $payableType, string $payableId, string $userId): string
     {
         $prefix = config('payments.idempotency.prefix', 'payment:idempotency:');
-        $key = $prefix . hash('sha256', "{$payableType}:{$payableId}:{$userId}");
+        $key = $prefix.hash('sha256', "{$payableType}:{$payableId}:{$userId}");
 
         // Store in cache with TTL
         $ttl = config('payments.idempotency.ttl', 3600);
@@ -291,12 +294,13 @@ class PaymentService
             'app_id' => $appId,
             'app_id_empty' => empty($appId),
         ]);
-        
+
         if ($isTesting && empty($appId)) {
             \Log::debug('Using mock Telebirr gateway');
+
             return [
                 'code' => 'SUCCESS',
-                'payment_url' => 'https://test.telebirr.com/pay/' . $orderRef,
+                'payment_url' => 'https://test.telebirr.com/pay/'.$orderRef,
                 'qr_code' => 'data:image/png;base64,mock',
                 'out_trade_no' => $orderRef,
             ];
@@ -324,7 +328,7 @@ class PaymentService
             'payment_url' => $this->gateway->getPaymentUrl([
                 'out_trade_no' => $orderRef,
                 'amount' => $payment->amount,
-                'subject' => 'Payment for ' . class_basename($payment->payable_type) . ' ' . $payment->payable_id,
+                'subject' => 'Payment for '.class_basename($payment->payable_type).' '.$payment->payable_id,
             ]),
             'qr_code' => $payment->metadata['gateway_response']['qr_code'] ?? null,
             'order_ref' => $orderRef,
@@ -339,7 +343,7 @@ class PaymentService
         // 1. Record balanced double-entry ledger lines for settlement
         $this->recordLedgerJournalEntry($payment);
 
-        if (!$payment->payable) {
+        if (! $payment->payable) {
             return;
         }
 

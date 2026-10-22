@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('dispute_id')->constrained('disputes')->cascadeOnDelete();
             $table->foreignUuid('submitted_by')->constrained('users')->cascadeOnDelete();
-            
+
             $table->string('type'); // document, screenshot, communication, transaction_record, contract, other
             $table->string('title');
             $table->text('description')->nullable();
@@ -24,14 +24,14 @@ return new class extends Migration
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
             $table->json('metadata')->nullable(); // Additional context (e.g., page numbers, timestamps)
-            
+
             $table->boolean('is_verified')->default(false);
             $table->foreignUuid('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('verified_at')->nullable();
-            
+
             $table->softDeletes();
             $table->timestamps();
-            
+
             $table->index(['dispute_id', 'type']);
             $table->index(['submitted_by', 'created_at']);
         });

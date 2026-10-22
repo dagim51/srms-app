@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\MaintenanceTicket;
 use App\Models\CleaningTask;
+use App\Models\MaintenanceTicket;
 use App\Models\User;
-use App\Models\Property;
+use Illuminate\Http\Request;
 
 class OperationsWebController extends Controller
 {
@@ -29,7 +28,7 @@ class OperationsWebController extends Controller
         if ($dbTickets->isNotEmpty()) {
             $recentTickets = $dbTickets->map(function ($t, $idx) {
                 return [
-                    'id' => 'TKT-' . (1000 + $idx),
+                    'id' => 'TKT-'.(1000 + $idx),
                     'unit' => $t->property?->title ?? 'Apartment Unit',
                     'issue' => $t->title ?? 'Maintenance Issue',
                     'priority' => $t->priority ?? 'medium',
@@ -54,7 +53,7 @@ class OperationsWebController extends Controller
         if ($dbTickets->isNotEmpty()) {
             $tickets = $dbTickets->map(function ($t, $idx) {
                 return [
-                    'id' => 'TKT-' . (1000 + $idx),
+                    'id' => 'TKT-'.(1000 + $idx),
                     'unit' => $t->property?->title ?? 'Unit',
                     'issue' => $t->title ?? 'Issue',
                     'priority' => $t->priority ?? 'medium',
@@ -75,7 +74,7 @@ class OperationsWebController extends Controller
 
         if ($request->filled('search')) {
             $q = strtolower(trim($request->search));
-            $tickets = $tickets->filter(function($t) use ($q) {
+            $tickets = $tickets->filter(function ($t) use ($q) {
                 return str_contains(strtolower($t['id']), $q)
                     || str_contains(strtolower($t['unit']), $q)
                     || str_contains(strtolower($t['issue']), $q)
@@ -86,14 +85,14 @@ class OperationsWebController extends Controller
         }
 
         return view('frontend.operations.tickets', [
-            'tickets' => $tickets->values()
+            'tickets' => $tickets->values(),
         ]);
     }
 
     public function ticketShow($id)
     {
         $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->find($id);
-        if (!$dbTicket) {
+        if (! $dbTicket) {
             $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->first();
         }
 
@@ -112,16 +111,16 @@ class OperationsWebController extends Controller
             ];
         } else {
             $ticket = [
-                'id' => $id, 
-                'unit' => 'Bole Apt 405', 
-                'issue' => 'Water Leak in Bathroom', 
+                'id' => $id,
+                'unit' => 'Bole Apt 405',
+                'issue' => 'Water Leak in Bathroom',
                 'description' => 'The tenant reported a severe water leak under the master bathroom sink. It is causing damage to the cabinet.',
-                'priority' => 'high', 
-                'status' => 'in_progress', 
+                'priority' => 'high',
+                'status' => 'in_progress',
                 'assigned' => 'Amanuel T.',
                 'reporter' => 'Abebe Kebede',
                 'reporter_phone' => '+251 911 234567',
-                'created_at' => '2026-10-08 09:15 AM'
+                'created_at' => '2026-10-08 09:15 AM',
             ];
         }
 
@@ -140,7 +139,7 @@ class OperationsWebController extends Controller
         if ($dbTasks->isNotEmpty()) {
             $tasks = $dbTasks->map(function ($c, $idx) {
                 return [
-                    'id' => 'CLN-' . (200 + $idx),
+                    'id' => 'CLN-'.(200 + $idx),
                     'unit' => $c->property?->title ?? 'Apartment Unit',
                     'type' => 'Routine / Turnover Cleaning',
                     'date' => $c->created_at ? $c->created_at->format('Y-m-d') : '2026-10-08',

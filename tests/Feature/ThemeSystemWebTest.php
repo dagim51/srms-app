@@ -17,7 +17,7 @@ class ThemeSystemWebTest extends TestCase
 
         // FOUC prevention script in head
         $response->assertSee("localStorage.getItem('theme')", false);
-        $response->assertSee("prefers-color-scheme: dark", false);
+        $response->assertSee('prefers-color-scheme: dark', false);
         $response->assertSee("document.documentElement.classList.add('dark')", false);
 
         // Reusable Theme toggle button
@@ -34,7 +34,7 @@ class ThemeSystemWebTest extends TestCase
 
         // FOUC prevention script in head
         $response->assertSee("localStorage.getItem('theme')", false);
-        $response->assertSee("prefers-color-scheme: dark", false);
+        $response->assertSee('prefers-color-scheme: dark', false);
         $response->assertSee("document.documentElement.classList.add('dark')", false);
 
         // Auth Theme toggle button
@@ -51,7 +51,7 @@ class ThemeSystemWebTest extends TestCase
 
         // FOUC prevention script in head
         $response->assertSee("localStorage.getItem('theme')", false);
-        $response->assertSee("prefers-color-scheme: dark", false);
+        $response->assertSee('prefers-color-scheme: dark', false);
         $response->assertSee("document.documentElement.classList.add('dark')", false);
 
         // Dashboard Topbar Theme toggle button
@@ -68,7 +68,7 @@ class ThemeSystemWebTest extends TestCase
         $cssFile = $manifest['resources/css/app.css']['file'] ?? null;
         $this->assertNotNull($cssFile, 'resources/css/app.css must be registered in manifest.');
 
-        $cssContent = file_get_contents(public_path('build/' . $cssFile));
+        $cssContent = file_get_contents(public_path('build/'.$cssFile));
         $this->assertStringContainsString('.dark', $cssContent, 'Built CSS must contain .dark selectors for dark mode.');
     }
 }

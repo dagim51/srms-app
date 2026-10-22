@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('unit_number');
             $table->string('status')->default('available'); // available, reserved, sold
             $table->decimal('price', 15, 2)->nullable();
-            
+
             // Optional tie to the generic Property core table if needed
             $table->foreignUuid('property_id')->nullable()->constrained()->nullOnDelete();
-            
+
             $table->timestamps();
         });
     }

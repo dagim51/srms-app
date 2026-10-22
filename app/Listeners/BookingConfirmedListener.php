@@ -25,11 +25,11 @@ class BookingConfirmedListener implements ShouldQueue
                 'start_date' => $booking->check_in_date,
                 'end_date' => $booking->check_out_date,
                 'type' => 'booked',
-                'reason' => 'Booking ID: ' . $booking->id,
+                'reason' => 'Booking ID: '.$booking->id,
             ],
             [
                 'type' => 'booked',
-                'reason' => 'Booking ID: ' . $booking->id,
+                'reason' => 'Booking ID: '.$booking->id,
             ]
         );
 

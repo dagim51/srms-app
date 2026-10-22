@@ -30,7 +30,7 @@ class NegotiationService
         }
 
         return DB::transaction(function () use ($buyerId, $data) {
-            $action = new SubmitOffer();
+            $action = new SubmitOffer;
             $offer = $action->execute($buyerId, $data);
 
             event(new OfferSubmitted($offer));
@@ -142,12 +142,12 @@ class NegotiationService
         $isOwner = $offer->listing->owner_actor_id === $actorId;
         $isBuyer = $offer->buyer_id === $actorId;
 
-        if (!$isOwner && !$isBuyer) {
+        if (! $isOwner && ! $isBuyer) {
             throw new AuthorizationException('Unauthorized to counter this offer.');
         }
 
         return DB::transaction(function () use ($offer, $actorId, $counterAmount, $notes) {
-            $action = new CounterOffer();
+            $action = new CounterOffer;
             $counterOffer = $action->execute($offer, $actorId, $counterAmount, $notes);
 
             event(new OfferCountered($counterOffer, $offer, $actorId));

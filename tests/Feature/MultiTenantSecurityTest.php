@@ -2,34 +2,42 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\Lease;
-use App\Models\TenantProfile;
+use App\Http\Middleware\IdempotencyMiddleware;
 use App\Models\Accommodation;
 use App\Models\AccommodationBooking;
 use App\Models\Dispute;
+use App\Models\Lease;
 use App\Models\Payment;
+use App\Models\Property;
+use App\Models\TenantProfile;
+use App\Models\User;
+use Database\Seeders\AuthorizationSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Tests\TestCase;
 
 class MultiTenantSecurityTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $owner;
+
     protected User $tenant;
+
     protected User $unrelated;
+
     protected Property $property;
+
     protected Lease $lease;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->seed(\Database\Seeders\AuthorizationSeeder::class);
+        $this->seed(AuthorizationSeeder::class);
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Administrator');
@@ -159,17 +167,17 @@ class MultiTenantSecurityTest extends TestCase
 
     public function test_idempotency_middleware_prevents_duplicate_mutating_requests(): void
     {
-        $idempotencyKey = 'unique-key-' . uniqid();
+        $idempotencyKey = 'unique-key-'.uniqid();
 
         // Simulate request through the middleware
-        $middleware = new \App\Http\Middleware\IdempotencyMiddleware();
+        $middleware = new IdempotencyMiddleware;
 
-        $request = \Illuminate\Http\Request::create('/api/v1/payments', 'POST', [
+        $request = Request::create('/api/v1/payments', 'POST', [
             'amount' => 1000,
         ], [], [], [
             'HTTP_X_IDEMPOTENCY_KEY' => $idempotencyKey,
         ]);
-        $request->setUserResolver(fn() => $this->tenant);
+        $request->setUserResolver(fn () => $this->tenant);
 
         // First execution
         $response1 = $middleware->handle($request, function ($req) {

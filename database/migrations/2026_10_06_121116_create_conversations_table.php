@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('conversations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('subject')->nullable();
-            
+
             // Context linking, optionally linked to listing or property
             $table->foreignUuid('listing_id')->nullable()->constrained('listings')->nullOnDelete();
             $table->foreignUuid('property_id')->nullable()->constrained('properties')->nullOnDelete();
             $table->foreignUuid('inquiry_id')->nullable()->constrained('inquiries')->nullOnDelete();
-            
+
             $table->timestamps();
             $table->softDeletes();
         });

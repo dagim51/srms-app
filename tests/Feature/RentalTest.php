@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Property;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Property;
-use App\Models\TenantProfile;
 
 class RentalTest extends TestCase
 {
@@ -18,7 +17,7 @@ class RentalTest extends TestCase
         $property = Property::create([
             'property_code' => 'PROP-1234',
             'title' => 'Test Apartment',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // 1. Create Profile
@@ -46,27 +45,27 @@ class RentalTest extends TestCase
             'rent_amount' => 1200,
             'deposit_amount' => 1200,
         ]);
-        
+
         $leaseResponse->assertStatus(201);
-        
+
         $this->assertDatabaseHas('rental_applications', [
             'id' => $appId,
-            'status' => 'approved'
+            'status' => 'approved',
         ]);
 
         $this->assertDatabaseHas('leases', [
             'property_id' => $property->id,
-            'rent_amount' => 1200
+            'rent_amount' => 1200,
         ]);
 
         // Should generate 12 months of rent schedules
         $leaseId = $leaseResponse->json('data.id');
         $this->assertDatabaseCount('rent_schedules', 12);
-        
+
         $this->assertDatabaseHas('rent_schedules', [
             'lease_id' => $leaseId,
             'due_date' => '2026-11-01',
-            'amount' => 1200
+            'amount' => 1200,
         ]);
     }
 }

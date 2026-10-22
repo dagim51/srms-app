@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Amenity;
-use App\Models\Listing;
 use App\Models\Property;
-use App\Models\PropertyType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -117,7 +115,7 @@ class SearchEngineWebTest extends TestCase
     public function test_combined_filters_work_together()
     {
         $owner = User::factory()->create();
-        
+
         // Property 1: Matches all filters
         $p1 = Property::create([
             'title' => 'Matching Penthouse',

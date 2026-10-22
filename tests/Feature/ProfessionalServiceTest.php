@@ -1,12 +1,10 @@
 <?php
+
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\ServiceProviderProfile;
-use App\Models\ServiceListing;
-use App\Models\ServiceRequest;
 
 class ProfessionalServiceTest extends TestCase
 {
@@ -20,7 +18,7 @@ class ProfessionalServiceTest extends TestCase
         // 1. Create Profile
         $res = $this->actingAs($provider)->postJson('/api/v1/services/profiles', [
             'business_name' => 'Top Cleaners',
-            'category' => 'cleaning'
+            'category' => 'cleaning',
         ]);
         $res->assertStatus(201);
         $profileId = $res->json('data.id');
@@ -29,7 +27,7 @@ class ProfessionalServiceTest extends TestCase
         $res = $this->actingAs($provider)->postJson("/api/v1/services/profiles/{$profileId}/listings", [
             'title' => 'Deep Cleaning',
             'price' => 150.00,
-            'price_unit' => 'fixed'
+            'price_unit' => 'fixed',
         ]);
         $res->assertStatus(201);
         $listingId = $res->json('data.id');
@@ -38,7 +36,7 @@ class ProfessionalServiceTest extends TestCase
         $res = $this->actingAs($customer)->postJson("/api/v1/services/profiles/{$profileId}/listings", [
             'title' => 'Fake Service',
             'price' => 10,
-            'price_unit' => 'fixed'
+            'price_unit' => 'fixed',
         ]);
         $res->assertStatus(403);
 
@@ -48,19 +46,19 @@ class ProfessionalServiceTest extends TestCase
         ]);
         $res->assertStatus(201);
         $requestId = $res->json('data.id');
-        
+
         $this->assertEquals('pending', $res->json('data.status'));
 
         // 5. Provider accepts the request
         $res = $this->actingAs($provider)->patchJson("/api/v1/services/requests/{$requestId}/status", [
-            'status' => 'accepted'
+            'status' => 'accepted',
         ]);
         $res->assertStatus(200);
         $this->assertEquals('accepted', $res->json('data.status'));
 
         // 6. Customer cannot complete it
         $res = $this->actingAs($customer)->patchJson("/api/v1/services/requests/{$requestId}/status", [
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
         $res->assertStatus(403);
     }

@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\LedgerAccount;
 
 class FinancialsTest extends TestCase
 {
@@ -19,13 +18,13 @@ class FinancialsTest extends TestCase
         $cashAcc = $this->actingAs($user)->postJson('/api/v1/financials/accounts', [
             'code' => '1001',
             'name' => 'Cash',
-            'type' => 'Asset'
+            'type' => 'Asset',
         ])->json('data.id');
 
         $revenueAcc = $this->actingAs($user)->postJson('/api/v1/financials/accounts', [
             'code' => '4001',
             'name' => 'Rent Revenue',
-            'type' => 'Revenue'
+            'type' => 'Revenue',
         ])->json('data.id');
 
         // 2. Record balanced entry
@@ -36,17 +35,17 @@ class FinancialsTest extends TestCase
                 [
                     'ledger_account_id' => $cashAcc,
                     'type' => 'debit',
-                    'amount' => 1500.00
+                    'amount' => 1500.00,
                 ],
                 [
                     'ledger_account_id' => $revenueAcc,
                     'type' => 'credit',
-                    'amount' => 1500.00
-                ]
-            ]
+                    'amount' => 1500.00,
+                ],
+            ],
         ]);
         $entryRes->assertStatus(201);
-        
+
         $entryId = $entryRes->json('data.id');
         $this->assertDatabaseHas('ledger_entries', ['id' => $entryId]);
         $this->assertDatabaseCount('ledger_entry_lines', 2);
@@ -59,14 +58,14 @@ class FinancialsTest extends TestCase
                 [
                     'ledger_account_id' => $cashAcc,
                     'type' => 'debit',
-                    'amount' => 1500.00
+                    'amount' => 1500.00,
                 ],
                 [
                     'ledger_account_id' => $revenueAcc,
                     'type' => 'credit',
-                    'amount' => 1400.00 // Unbalanced!
-                ]
-            ]
+                    'amount' => 1400.00, // Unbalanced!
+                ],
+            ],
         ]);
         $failRes->assertStatus(400);
 
@@ -74,7 +73,7 @@ class FinancialsTest extends TestCase
         $invRes = $this->actingAs($user)->postJson('/api/v1/financials/invoices', [
             'user_id' => $user->id,
             'amount' => 1500.00,
-            'due_date' => '2026-11-05'
+            'due_date' => '2026-11-05',
         ]);
         $invRes->assertStatus(201);
         $this->assertDatabaseHas('invoices', ['amount' => 1500.00]);

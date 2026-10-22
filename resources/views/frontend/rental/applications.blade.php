@@ -14,38 +14,63 @@
 
         @include('frontend.rental.partials.tabs')
 
-        <div class="card overflow-hidden">
-            <div class="p-6 border-b border-[#EBDBC9] dark:border-[#273244] flex flex-wrap gap-4 items-center">
-                <form method="GET" action="{{ route('dashboard.rental.applications') }}" class="flex items-center gap-2 flex-1 max-w-md">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </div>
-                        <input type="text"
-                               name="search"
-                               value="{{ request('search') }}"
-                               placeholder="{{ __('Search applicants by name or unit...') }}"
-                               class="form-input search-input pl-9 pr-8 w-full text-sm">
-                        @if(request('search'))
-                            <a href="{{ route('dashboard.rental.applications') }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </a>
-                        @endif
-                    </div>
-                    @if(request('search'))
-                        <a href="{{ route('dashboard.rental.applications') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium whitespace-nowrap">{{ __('Reset') }}</a>
-                    @endif
-                </form>
-                <select class="input max-w-xs">
-                    <option>{{ __('All Statuses') }}</option>
-                    <option>{{ __('Pending') }}</option>
-                    <option>{{ __('Under Review') }}</option>
-                    <option>{{ __('Approved') }}</option>
-                    <option>{{ __('Rejected') }}</option>
-                </select>
+        {{-- Actions & Filter Toolbar --}}
+        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Rental Applications Queue') }}</h2>
+                    <p class="text-xs text-muted dark:text-muted">{{ __('Applicant verification, employment documentation, and tenancy review') }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="btn btn-primary btn-sm flex items-center gap-1.5 shadow-sm shadow-orange-500/20 text-xs">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        {{ __('New Application') }}
+                    </button>
+                </div>
             </div>
+
+            {{-- Filter Form --}}
+            <form method="GET" action="{{ route('dashboard.rental.applications') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-warm dark:border-warm items-center">
+                <div class="md:col-span-6 relative">
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           placeholder="{{ __('Search applicants by name or unit...') }}"
+                           class="form-input search-input w-full pl-9 pr-8 text-xs">
+                    <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard.rental.applications', request()->except('search')) }}" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="{{ __('Clear search') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="md:col-span-4">
+                    <select name="status" onchange="this.form.submit()" class="form-select w-full text-xs">
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                        <option value="under_review" {{ request('status') === 'under_review' ? 'selected' : '' }}>{{ __('Under Review') }}</option>
+                        <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="btn btn-secondary btn-sm text-xs py-2 px-3 w-full justify-center">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+                        <span>{{ __('Filter') }}</span>
+                    </button>
+
+                    @if(request()->hasAny(['search', 'status']))
+                        <a href="{{ route('dashboard.rental.applications') }}" class="p-2 text-muted hover:text-orange-600 dark:hover:text-orange-400" title="{{ __('Reset Filters') }}">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        <div class="card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>

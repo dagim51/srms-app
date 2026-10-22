@@ -2,9 +2,9 @@
 
 namespace App\Services\Inquiries;
 
+use App\Actions\CloseInquiry;
 use App\Actions\CreateInquiry;
 use App\Actions\RespondToInquiry;
-use App\Actions\CloseInquiry;
 use App\Events\Inquiries\InquiryCreated;
 use App\Events\Inquiries\InquiryResponded;
 use App\Models\Inquiry;
@@ -22,7 +22,7 @@ class InquiryService
         return DB::transaction(function () use ($data, $requesterId) {
             $listing = Listing::findOrFail($data['listing_id']);
 
-            $action = new CreateInquiry();
+            $action = new CreateInquiry;
             $inquiry = $action->execute($listing, $requesterId, $data['message'] ?? null);
 
             event(new InquiryCreated($inquiry));
@@ -37,11 +37,11 @@ class InquiryService
     public function respond(Inquiry $inquiry, string $response, ?string $status = 'responded'): Inquiry
     {
         return DB::transaction(function () use ($inquiry, $response, $status) {
-            if (!in_array($inquiry->status, ['pending', 'responded'])) {
+            if (! in_array($inquiry->status, ['pending', 'responded'])) {
                 throw new \InvalidArgumentException('Only pending or responded inquiries can be updated');
             }
 
-            $action = new RespondToInquiry();
+            $action = new RespondToInquiry;
             $respondedInquiry = $action->execute($inquiry, $response, $status);
 
             event(new InquiryResponded($respondedInquiry, $response));
@@ -60,7 +60,7 @@ class InquiryService
                 throw new \InvalidArgumentException('Inquiry is already closed');
             }
 
-            $action = new CloseInquiry();
+            $action = new CloseInquiry;
             $closedInquiry = $action->execute($inquiry);
 
             // No event for close as it's a terminal state

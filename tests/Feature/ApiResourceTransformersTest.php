@@ -2,20 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\DevelopmentProject;
 use App\Models\Invoice;
-use App\Models\Lead;
-use App\Models\LedgerAccount;
 use App\Models\Listing;
-use App\Models\Offer;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Role;
-use App\Models\TenantProfile;
 use App\Models\User;
-use App\Models\Viewing;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,9 +28,9 @@ class ApiResourceTransformersTest extends TestCase
         $user = User::factory()->create();
         $org = Organization::create([
             'name' => 'Emaar Addis',
-            'slug' => 'emaar-addis-' . uniqid(),
+            'slug' => 'emaar-addis-'.uniqid(),
             'legal_name' => 'Emaar Addis Real Estate SC',
-            'tax_id' => 'TID-' . uniqid(),
+            'tax_id' => 'TID-'.uniqid(),
             'status' => 'active',
         ]);
         OrganizationMember::create([
@@ -151,7 +145,7 @@ class ApiResourceTransformersTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'PENT'], ['name_en' => 'Penthouse']);
         $property = Property::create([
             'title' => 'Sky Penthouse',
-            'property_code' => 'SKY-' . uniqid(),
+            'property_code' => 'SKY-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);
@@ -199,7 +193,7 @@ class ApiResourceTransformersTest extends TestCase
         $propertyType = PropertyType::firstOrCreate(['code' => 'TOWN'], ['name_en' => 'Townhouse']);
         $property = Property::create([
             'title' => 'Modern Townhouse',
-            'property_code' => 'TWN-' . uniqid(),
+            'property_code' => 'TWN-'.uniqid(),
             'type_id' => $propertyType->id,
             'status' => 'active',
         ]);

@@ -27,6 +27,7 @@ class DevelopmentAndMaintenanceDomainServicesTest extends TestCase
     use RefreshDatabase;
 
     protected DeveloperSalesService $developerSalesService;
+
     protected MaintenanceService $maintenanceService;
 
     protected function setUp(): void

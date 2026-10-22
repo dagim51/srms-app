@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('accommodation_availabilities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            
+
             $table->foreignUuid('accommodation_id')->constrained('accommodations')->cascadeOnDelete();
-            
+
             $table->date('start_date');
             $table->date('end_date');
-            
+
             $table->string('type', 50)->default('blocked'); // blocked, booked
             $table->string('reason')->nullable();
-            
+
             $table->timestamps();
-            
+
             // To prevent double booking logic we might need DB-level constraints for date overlaps,
             // but for simplicity we rely on app-level and normal indexing here, or a PostgreSQL exclusion constraint if enabled.
             // Since we use generic driver compatibility, we use regular index.
