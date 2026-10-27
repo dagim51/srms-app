@@ -124,12 +124,12 @@ class Property extends Model
 
     public function priceHistory(): HasMany
     {
-        return $this->hasMany(PropertyPriceHistory::class)->orderByDesc('created_at');
+        return $this->hasMany(PropertyPriceHistory::class)->orderByDesc('created_at')->orderByDesc('id');
     }
 
     public function statusHistory(): HasMany
     {
-        return $this->hasMany(PropertyStatusHistory::class)->orderByDesc('created_at');
+        return $this->hasMany(PropertyStatusHistory::class)->orderByDesc('created_at')->orderByDesc('id');
     }
 
     /**

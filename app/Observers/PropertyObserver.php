@@ -20,7 +20,7 @@ class PropertyObserver
                 'currency' => $property->currency ?? 'ETB',
                 'changed_by' => auth()->id() ?? $property->owner_user_id,
                 'reason' => 'Initial property price',
-                'created_at' => now(),
+                'created_at' => now()->subSecond(),
             ]);
         }
 
@@ -31,7 +31,7 @@ class PropertyObserver
                 'to_status' => $property->status,
                 'changed_by' => auth()->id() ?? $property->owner_user_id,
                 'comment' => 'Initial property status',
-                'created_at' => now(),
+                'created_at' => now()->subSecond(),
             ]);
         }
     }
