@@ -15,7 +15,7 @@
             icon="key"
             badge="Accommodations" />
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
 
             @if($properties->isEmpty())
                 <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium">

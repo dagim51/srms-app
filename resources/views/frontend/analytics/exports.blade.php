@@ -10,7 +10,7 @@
 
         @include('frontend.analytics.partials.tabs')
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6">
             <div class="space-y-4">
                 @foreach($exports as $export)
                     <div class="border border-warm dark:border-warm rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

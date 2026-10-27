@@ -120,10 +120,12 @@ Route::prefix('v1')->group(function () {
             Route::delete('/properties/{property}/media/{media}', [PropertyMediaController::class, 'destroy']);
 
             // Listings
-            Route::post('/properties/{property}/listings', [ListingController::class, 'store']);
+            Route::post('/properties/{property}/listings', [ListingController::class, 'store'])->middleware('subscription.limits');
+            Route::post('/listings', [ListingController::class, 'storeDirect'])->middleware('subscription.limits');
             Route::put('/listings/{listing}', [ListingController::class, 'update']);
             Route::post('/listings/{listing}/submit', [ListingController::class, 'submit']);
             Route::patch('/listings/{listing}/status', [ListingController::class, 'updateStatus']);
+            Route::post('/listings/{listing}/promote', [ListingController::class, 'promote']);
 
             // Moderation
             Route::get('/moderation/listings', [ListingModerationController::class, 'index']);
@@ -311,6 +313,8 @@ Route::prefix('v1')->group(function () {
 Route::post('/webhooks/{provider}', [WebhookController::class, 'handle']);
 Route::post('/webhooks/payments/telebirr', [PaymentWebhookController::class, 'telebirr'])
     ->middleware('throttle:webhooks');
+Route::post('/webhooks/payments/cbe-birr', [PaymentWebhookController::class, 'cbeBirr'])
+    ->middleware('throttle:webhooks');
 
 Route::prefix('v1')->group(function () {
     Route::get('/public/listings', [PublicListingController::class, 'index']);
@@ -325,4 +329,9 @@ Route::prefix('v1')->group(function () {
 
     // GIS Foundation (Phase 10)
     Route::get('/properties/search/radius', [PropertyController::class, 'radiusSearch']);
+
+    // Advertising & Campaign Tracking (Phase 35 / Module 14)
+    Route::post('/ads/{campaign}/impression', [MarketingController::class, 'recordImpression'])->name('api.v1.ads.impression');
+    Route::post('/ads/{campaign}/click', [MarketingController::class, 'recordClick'])->name('api.v1.ads.click');
+    Route::get('/ads/{campaign}/click', [MarketingController::class, 'recordClick'])->name('api.v1.ads.click.redirect');
 });

@@ -78,7 +78,7 @@
         <div x-show="viewMode === 'role'" class="space-y-6">
 
             {{-- Role Selector Cards --}}
-            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-5 rounded-2xl shadow-xs">
+            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-5 rounded-2xl">
                 <div class="flex items-center justify-between mb-3">
                     <label class="text-xs font-bold uppercase tracking-wider text-muted dark:text-muted">
                         {{ __('Select Role to Configure') }}
@@ -145,7 +145,7 @@
                         @php
                             $catCodes = collect($category['permissions'])->pluck('code')->toArray();
                         @endphp
-                        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden shadow-xs flex flex-col justify-between">
+                        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden flex flex-col justify-between">
                             
                             {{-- Category Header --}}
                             <div>
@@ -213,7 +213,7 @@
                 </div>
 
                 {{-- Bottom Sticky Save Bar --}}
-                <div x-show="dirty" class="sticky bottom-4 z-30 mt-6 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-orange-300 dark:border-orange-500/50 shadow-xl flex items-center justify-between gap-4">
+                <div x-show="dirty" class="card sticky bottom-4 z-30 mt-6 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-orange-300 dark:border-orange-500/50 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-2 text-xs text-muted dark:text-dark-subtle">
                         <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
                         <span class="font-bold">{{ __('You have unsaved permission changes for') }} {{ $selectedRole->name ?? 'this role' }}.</span>
@@ -230,7 +230,7 @@
              ═══════════════════════════════════════════════════════════ --}}
         <div x-show="viewMode === 'user'" class="space-y-6" x-cloak>
             
-            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-6 rounded-2xl shadow-xs">
+            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-6 rounded-2xl">
                 <div class="max-w-xl">
                     <label class="form-label form-label-required text-sm font-bold">
                         {{ __('Select User to Inspect Effective Permissions') }}
@@ -249,7 +249,7 @@
             </div>
 
             {{-- User Abilities Visual Cloud --}}
-            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
+            <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] p-6 sm:p-8 rounded-2xl space-y-6">
                 <div class="flex items-center justify-between border-b border-[#EBDBC9] dark:border-[#273244] pb-4">
                     <div>
                         <h3 class="text-lg font-bold font-display text-muted dark:text-white">

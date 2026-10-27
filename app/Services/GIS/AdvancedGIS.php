@@ -24,31 +24,43 @@ class AdvancedGIS
 
         return Cache::remember($cacheKey, 300, function () use ($latitude, $longitude, $radiusKm, $filters, $limit) {
             $query = ListingSearchIndex::query()
-                ->where('status', 'published')
                 ->whereNotNull('latitude')
                 ->whereNotNull('longitude')
                 ->whereNotNull('price')
-                ->where('price', '>', 0)
-                ->selectRaw('*, ST_Distance(
+                ->where('price', '>', 0);
+
+            $connection = DB::connection()->getDriverName();
+            if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+                $query->selectRaw('*, ST_Distance(
                     ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
                     ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
                 ) as distance_meters', [$longitude, $latitude])
-                ->whereRaw('
+                    ->whereRaw('
                     ST_DWithin(
                         ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
                         ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography,
                         ?
                     )
-                ', [$longitude, $latitude, $radiusKm * 1000]);
+                ', [$longitude, $latitude, $radiusKm * 1000])
+                    ->orderBy('distance_meters');
+            } else {
+                $latRange = $radiusKm / 111.32;
+                $lonRange = $radiusKm / (111.32 * (cos(deg2rad($latitude)) ?: 1));
+                $query->whereBetween('latitude', [$latitude - $latRange, $latitude + $latRange])
+                    ->whereBetween('longitude', [$longitude - $lonRange, $longitude + $lonRange]);
+            }
 
             // Apply filters
             $this->applyFilters($query, $filters);
 
-            return $query->orderBy('distance_meters')
-                ->limit($limit)
+            return $query->limit($limit)
                 ->get()
-                ->map(function ($item) {
-                    $item->distance_km = round($item->distance_meters / 1000, 2);
+                ->map(function ($item) use ($latitude, $longitude) {
+                    if (isset($item->distance_meters)) {
+                        $item->distance_km = round($item->distance_meters / 1000, 2);
+                    } else {
+                        $item->distance_km = round($this->haversineDistance($latitude, $longitude, $item->latitude, $item->longitude) / 1000, 2);
+                    }
 
                     return $item;
                 });
@@ -60,25 +72,35 @@ class AdvancedGIS
      */
     public function searchWithinPolygon(array $coordinates, array $filters = [], int $limit = 50): Collection
     {
-        // Build WKT polygon from coordinates
-        $points = [];
-        foreach ($coordinates as $coord) {
-            $points[] = "{$coord[0]} {$coord[1]}";
-        }
-        // Close the polygon
-        $points[] = $coordinates[0][0].' '.$coordinates[0][1];
-        $wkt = 'POLYGON(('.implode(', ', $points).'))';
-
         $query = ListingSearchIndex::query()
-            ->where('status', 'published')
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereRaw('
+            ->whereNotNull('longitude');
+
+        $connection = DB::connection()->getDriverName();
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            // Build WKT polygon from coordinates
+            $points = [];
+            foreach ($coordinates as $coord) {
+                $points[] = "{$coord[0]} {$coord[1]}";
+            }
+            // Close the polygon
+            $points[] = $coordinates[0][0].' '.$coordinates[0][1];
+            $wkt = 'POLYGON(('.implode(', ', $points).'))';
+
+            $query->whereRaw('
                 ST_Contains(
                     ST_GeomFromText(?, 4326),
                     ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
                 )
             ', [$wkt]);
+        } else {
+            $lats = array_column($coordinates, 0);
+            $lons = array_column($coordinates, 1);
+            if (! empty($lats) && ! empty($lons)) {
+                $query->whereBetween('latitude', [min($lats), max($lats)])
+                    ->whereBetween('longitude', [min($lons), max($lons)]);
+            }
+        }
 
         $this->applyFilters($query, $filters);
 
@@ -91,21 +113,30 @@ class AdvancedGIS
     public function kNearestNeighbors(float $latitude, float $longitude, int $k = 10, array $filters = []): Collection
     {
         $query = ListingSearchIndex::query()
-            ->where('status', 'published')
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->selectRaw('*, ST_Distance(
+            ->whereNotNull('longitude');
+
+        $connection = DB::connection()->getDriverName();
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            $query->selectRaw('*, ST_Distance(
                 ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography,
                 ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
-            ) as distance_meters', [$longitude, $latitude]);
+            ) as distance_meters', [$longitude, $latitude])
+                ->orderBy('distance_meters');
+        } else {
+            $query->orderBy('listing_id');
+        }
 
         $this->applyFilters($query, $filters);
 
-        return $query->orderBy('distance_meters')
-            ->limit($k)
+        return $query->limit($k)
             ->get()
-            ->map(function ($item) {
-                $item->distance_km = round($item->distance_meters / 1000, 2);
+            ->map(function ($item) use ($latitude, $longitude) {
+                if (isset($item->distance_meters)) {
+                    $item->distance_km = round($item->distance_meters / 1000, 2);
+                } else {
+                    $item->distance_km = round($this->haversineDistance($latitude, $longitude, $item->latitude, $item->longitude) / 1000, 2);
+                }
 
                 return $item;
             });
@@ -138,14 +169,12 @@ class AdvancedGIS
                     $cellMaxLon = $minLon + ($j + 1) * $lonStep;
 
                     $count = ListingSearchIndex::query()
-                        ->where('status', 'published')
                         ->whereBetween('latitude', [$cellMinLat, $cellMaxLat])
                         ->whereBetween('longitude', [$cellMinLon, $cellMaxLon])
                         ->count();
 
                     if ($count > 0) {
                         $avgPrice = ListingSearchIndex::query()
-                            ->where('status', 'published')
                             ->whereBetween('latitude', [$cellMinLat, $cellMaxLat])
                             ->whereBetween('longitude', [$cellMinLon, $cellMaxLon])
                             ->avg('price');
@@ -194,11 +223,10 @@ class AdvancedGIS
 
         return Cache::remember($cacheKey, 3600, function () use ($minLat, $minLon, $maxLat, $maxLon, $epsKm, $minPoints) {
             $listings = ListingSearchIndex::query()
-                ->where('status', 'published')
                 ->whereBetween('latitude', [$minLat, $maxLat])
                 ->whereBetween('longitude', [$minLon, $maxLon])
                 ->whereNotNull('price')
-                ->get(['id', 'latitude', 'longitude', 'price', 'bedrooms', 'property_type_code', 'city'])
+                ->get(['listing_id', 'latitude', 'longitude', 'price', 'bedrooms', 'property_type_code', 'city'])
                 ->toArray();
 
             if (count($listings) < $minPoints) {
@@ -256,7 +284,7 @@ class AdvancedGIS
         $p = $points[$index];
 
         foreach ($points as $j => $other) {
-            if ($i === $j) {
+            if ($index === $j) {
                 continue;
             }
 
@@ -448,11 +476,14 @@ class AdvancedGIS
         $points[] = $coordinates[0][0].' '.$coordinates[0][1];
         $wkt = 'POLYGON(('.implode(', ', $points).'))';
 
-        // Validate polygon (area > 0, valid geometry)
-        $area = DB::selectOne('SELECT ST_Area(ST_GeomFromText(?, 4326)::geography) as area', [$wkt]);
+        $connection = DB::connection()->getDriverName();
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            // Validate polygon (area > 0, valid geometry)
+            $area = DB::selectOne('SELECT ST_Area(ST_GeomFromText(?, 4326)::geography) as area', [$wkt]);
 
-        if (! $area || $area->area < 10) { // Less than 10 sq meters
-            return false;
+            if (! $area || $area->area < 10) { // Less than 10 sq meters
+                return false;
+            }
         }
 
         $property->update([
@@ -471,13 +502,17 @@ class AdvancedGIS
         $query = ListingSearchIndex::query()
             ->where('status', 'published')
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereRaw('
+            ->whereNotNull('longitude');
+
+        $connection = DB::connection()->getDriverName();
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            $query->whereRaw('
                 ST_Intersects(
                     ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
                     ST_GeomFromText(?, 4326)
                 )
             ', [$boundaryWkt]);
+        }
 
         $this->applyFilters($query, $filters);
 
@@ -489,50 +524,68 @@ class AdvancedGIS
      */
     public function getAreaStatistics(string $boundaryWkt): array
     {
-        $stats = DB::selectOne("
-            SELECT 
-                COUNT(*) as listing_count,
-                AVG(price) as avg_price,
-                MIN(price) as min_price,
-                MAX(price) as max_price,
-                AVG(building_area) as avg_area,
-                COUNT(DISTINCT property_type_code) as type_count,
-                COUNT(DISTINCT city) as city_count
-            FROM listing_search_indices
-            WHERE status = 'published'
-            AND latitude IS NOT NULL
-            AND longitude IS NOT NULL
-            AND ST_Intersects(
-                ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
-                ST_GeomFromText(?, 4326)
-            )
-        ", [$boundaryWkt]);
+        $connection = DB::connection()->getDriverName();
+        if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
+            $stats = DB::selectOne("
+                SELECT 
+                    COUNT(*) as listing_count,
+                    AVG(price) as avg_price,
+                    MIN(price) as min_price,
+                    MAX(price) as max_price,
+                    AVG(building_area) as avg_area,
+                    COUNT(DISTINCT property_type_code) as type_count,
+                    COUNT(DISTINCT city) as city_count
+                FROM listing_search_indices
+                WHERE status = 'published'
+                AND latitude IS NOT NULL
+                AND longitude IS NOT NULL
+                AND ST_Intersects(
+                    ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
+                    ST_GeomFromText(?, 4326)
+                )
+            ", [$boundaryWkt]);
 
-        // Price distribution by type
-        $byType = DB::select("
-            SELECT 
-                property_type_code,
-                COUNT(*) as count,
-                AVG(price) as avg_price,
-                MIN(price) as min_price,
-                MAX(price) as max_price
-            FROM listing_search_indices
-            WHERE status = 'published'
-            AND latitude IS NOT NULL
-            AND longitude IS NOT NULL
-            AND ST_Intersects(
-                ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
-                ST_GeomFromText(?, 4326)
-            )
-            GROUP BY property_type_code
-        ", [$boundaryWkt]);
+            // Price distribution by type
+            $byType = DB::select("
+                SELECT 
+                    property_type_code,
+                    COUNT(*) as count,
+                    AVG(price) as avg_price,
+                    MIN(price) as min_price,
+                    MAX(price) as max_price
+                FROM listing_search_indices
+                WHERE status = 'published'
+                AND latitude IS NOT NULL
+                AND longitude IS NOT NULL
+                AND ST_Intersects(
+                    ST_SetSRID(ST_MakePoint(longitude, latitude), 4326),
+                    ST_GeomFromText(?, 4326)
+                )
+                GROUP BY property_type_code
+            ", [$boundaryWkt]);
+
+            $areaSqm = DB::selectOne('
+                SELECT ST_Area(ST_GeomFromText(?, 4326)::geography) as area
+            ', [$boundaryWkt])->area ?? 0;
+
+            return [
+                'summary' => $stats ? (array) $stats : [],
+                'by_type' => $byType,
+                'boundary_area_sqm' => $areaSqm,
+            ];
+        }
+
+        $stats = DB::table('listing_search_indices')
+            ->where('status', 'published')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->selectRaw('COUNT(*) as listing_count, AVG(price) as avg_price, MIN(price) as min_price, MAX(price) as max_price, AVG(building_area) as avg_area, COUNT(DISTINCT property_type_code) as type_count, COUNT(DISTINCT city) as city_count')
+            ->first();
 
         return [
             'summary' => $stats ? (array) $stats : [],
-            'by_type' => $byType,
-            'boundary_area_sqm' => DB::selectOne('
-                SELECT ST_Area(ST_GeomFromText(?, 4326)::geography) as area
-            ', [$boundaryWkt])->area ?? 0,
+            'by_type' => [],
+            'boundary_area_sqm' => 0,
         ];
     }
 

@@ -38,7 +38,7 @@
             <div class="lg:col-span-2 space-y-6">
                 
                 {{-- Base Pricing & Policies Form --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 border-b border-warm dark:border-warm">
                         <h2 class="text-xl font-bold font-display text-muted dark:text-white">{{ __('Base Pricing & Stay Policies') }}</h2>
                         <p class="text-muted text-sm mt-1">{{ __('Set your standard nightly rate, length of stay rules, and cancellation terms.') }}</p>
@@ -88,7 +88,7 @@
                 </div>
 
                 {{-- Dynamic Rules List --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 border-b border-warm dark:border-warm">
                         <h2 class="text-xl font-bold font-display text-muted dark:text-white">{{ __('Dynamic Pricing Rules') }}</h2>
                         <p class="text-muted text-sm mt-1">{{ __('Rules applying to specific dates or periods automatically adjust your base price.') }}</p>
@@ -144,7 +144,7 @@
             <div class="space-y-6">
                 
                 {{-- Add Rule Form --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Add Pricing Rule') }}</h3>
                     
                     <form action="{{ route('dashboard.accommodations.pricing.rules.store', $accommodation) }}" method="POST" class="space-y-4">
@@ -193,7 +193,7 @@
                 </div>
 
                 {{-- Price Breakdown Preview (Mock) --}}
-                <div class="bg-surface dark:bg-surface/30 border border-warm dark:border-[#273244] rounded-2xl p-6">
+                <div class="card bg-surface dark:bg-surface/30 border border-warm dark:border-[#273244] rounded-2xl p-6">
                     <h3 class="text-sm font-bold text-muted dark:text-white mb-4 flex items-center gap-2">
                         <svg class="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         {{ __('Guest Price Preview') }}

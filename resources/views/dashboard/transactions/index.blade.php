@@ -75,7 +75,7 @@
         </div>
 
         {{-- Filter Console & Search Form --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4 mb-6">
             {{-- Deal Stage Status Tabs --}}
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-warm dark:border-[#273244] text-xs">
                 @php
@@ -150,7 +150,7 @@
         @else
             <div class="space-y-5">
                 @foreach($deals as $deal)
-                    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-900/5 hover:border-orange-500/40 transition-all duration-300">
+                    <div class="card card-hover bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-5 sm:p-6 hover:border-orange-500/40 transition-all duration-300">
                         {{-- Top Header Row --}}
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/80">
                             <div class="flex items-center flex-wrap gap-2.5">

@@ -32,7 +32,7 @@
         @endif
 
         {{-- Top Summary Header --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <img src="{{ $cover }}" class="w-16 h-16 rounded-xl object-cover shadow-sm flex-shrink-0" alt="">
                 <div>
@@ -59,7 +59,7 @@
         </div>
 
         {{-- Pre-Submission Automated Validation Results --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-5">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-warm dark:border-warm pb-4">
                 <div>
                     <h3 class="font-display font-bold text-base text-muted dark:text-white">{{ __('Pre-Submission Validation Check') }}</h3>
@@ -115,7 +115,7 @@
         <form action="{{ route('dashboard.listings.submit.process', $listing) }}" method="POST" class="space-y-6" x-data="{ agreed: false }">
             @csrf
 
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-5">
+            <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-5">
                 <div class="border-b border-warm dark:border-warm pb-4">
                     <h3 class="font-display font-bold text-base text-muted dark:text-white">{{ __('Submitter Remarks & Compliance') }}</h3>
                     <p class="text-xs text-muted dark:text-muted mt-0.5">{{ __('Provide optional comments or title deed details for the moderation committee.') }}</p>

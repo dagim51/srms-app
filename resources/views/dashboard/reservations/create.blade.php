@@ -15,7 +15,7 @@
             icon="key"
             badge="Reservations" />
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
             
             @if(session('error'))
                 <div class="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
@@ -24,7 +24,7 @@
             @endif
 
             @if($listing)
-                <div class="flex flex-col md:flex-row items-start gap-6 p-5 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 mb-8">
+                <div class="card flex flex-col md:flex-row items-start gap-6 p-5 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 mb-8">
                     @php $primaryImg = $listing->property->media->first() ? ($listing->property->media->first()->url ?? $listing->property->media->first()->storage_key) : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'; @endphp
                     <div class="w-full md:w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
                         <img src="{{ $primaryImg }}" alt="{{ $listing->property->title }}" class="w-full h-full object-cover">
@@ -34,13 +34,13 @@
                         <p class="text-sm text-muted dark:text-muted mb-3">{{ $listing->formatted_price }} • {{ $listing->purpose }}</p>
                         
                         <div class="grid grid-cols-2 gap-4 text-xs">
-                            <div class="p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-warm dark:border-warm">
+                            <div class="card p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-warm dark:border-warm">
                                 <span class="block text-muted uppercase tracking-wider font-bold mb-1">{{ __('Reservation Fee') }}</span>
                                 <span class="font-bold text-muted dark:text-white text-sm">
                                     {{ $listing->currency === 'USD' ? '$' : 'Br' }}{{ number_format($listing->price * 0.05, 2) }}
                                 </span>
                             </div>
-                            <div class="p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-warm dark:border-warm">
+                            <div class="card p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-warm dark:border-warm">
                                 <span class="block text-muted uppercase tracking-wider font-bold mb-1">{{ __('Hold Duration') }}</span>
                                 <span class="font-bold text-muted dark:text-white text-sm">{{ __('48 Hours') }}</span>
                             </div>

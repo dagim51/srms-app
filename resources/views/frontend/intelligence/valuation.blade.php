@@ -12,7 +12,7 @@
         @include('frontend.intelligence.partials.tabs')
 
         <!-- Estimate Banner -->
-        <div class="card p-6 md:p-8 mb-8 bg-gradient-to-br from-primary-600 to-indigo-700 text-white relative overflow-hidden border-none shadow-md">
+        <div class="card p-6 md:p-8 mb-8 bg-gradient-to-br from-primary-600 to-indigo-700 text-white relative overflow-hidden border-none">
             <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
             
             <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">

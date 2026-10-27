@@ -51,7 +51,7 @@
         <!-- Professionals Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($professionals as $pro)
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 hover: transition- group flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-4">
                             <span class="badge badge-neutral uppercase text-xs">{{ $pro['category'] }}</span>

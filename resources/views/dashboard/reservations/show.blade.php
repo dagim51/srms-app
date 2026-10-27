@@ -61,7 +61,7 @@
             <div class="lg:col-span-2 space-y-6">
                 
                 {{-- Status Card --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 sm:p-8">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <div>
@@ -139,9 +139,9 @@
                 </div>
 
                 @if($reservation->notes)
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+                    <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Your Notes') }}</h3>
-                        <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl text-sm text-muted dark:text-dark-subtle border border-warm dark:border-warm">
+                        <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl text-sm text-muted dark:text-dark-subtle border border-warm dark:border-warm">
                             {{ $reservation->notes }}
                         </div>
                     </div>
@@ -150,7 +150,7 @@
             
             {{-- Right Column: Property & Fee Summary --}}
             <div class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 border-b border-warm dark:border-warm">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Reservation Summary') }}</h3>
                         

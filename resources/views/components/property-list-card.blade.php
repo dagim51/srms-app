@@ -145,28 +145,28 @@
             {{-- Specs Pill Grid --}}
             <div class="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-300">
                 @if($bedrooms)
-                    <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+                    <div class="card flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                         <span><strong class="text-slate-900 dark:text-white font-semibold">{{ $bedrooms }}</strong> {{ __('Bedrooms') }}</span>
                     </div>
                 @endif
 
                 @if($bathrooms)
-                    <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+                    <div class="card flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         <span><strong class="text-slate-900 dark:text-white font-semibold">{{ $bathrooms }}</strong> {{ __('Bathrooms') }}</span>
                     </div>
                 @endif
 
                 @if($area)
-                    <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+                    <div class="card flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                         <span><strong class="text-slate-900 dark:text-white font-semibold">{{ $area }}</strong> m² {{ __('Total Area') }}</span>
                     </div>
                 @endif
 
                 @if($targetProperty && $targetProperty->amenities->contains('code', 'ample_parking'))
-                    <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+                    <div class="card flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
                         <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h4a3 3 0 013 3v0a3 3 0 01-3 3H8V7zm0 6v5" /></svg>
                         <span>{{ __('Parking') }}</span>
                     </div>

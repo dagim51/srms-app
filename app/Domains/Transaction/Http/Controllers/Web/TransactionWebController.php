@@ -10,7 +10,7 @@ class TransactionWebController extends Controller
     /**
      * Get active pipeline transactions with real models & comprehensive escrow metadata
      */
-    protected function getPipelineDeals()
+    public static function getPipelineDeals()
     {
         // Base realistic Ethiopian real estate transaction pipeline
         return collect([

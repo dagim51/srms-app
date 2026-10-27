@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Domains\Development\Models\PaymentPlan;
+use App\Domains\Development\Models\PaymentPlanInstallment;
+use App\Jobs\InstallmentBillingJob;
 use App\Models\DevelopmentProject;
 use Illuminate\Console\Command;
 
@@ -38,7 +41,14 @@ class ProcessConstructionMilestonesCommand extends Command
 
             $this->line("Project: [{$project->name}] Current Progress: {$progress}%");
 
+            if ($progress > 0) {
+                // Dispatch installment billing job to release due milestone invoices
+                InstallmentBillingJob::dispatchSync($project->id, $progress);
+            }
+
+            /** @var PaymentPlan $plan */
             foreach ($project->paymentPlans as $plan) {
+                /** @var PaymentPlanInstallment $installment */
                 foreach ($plan->installments as $installment) {
                     // Milestone installment unlocked if progress reached
                     $requiredThreshold = (float) $installment->percentage;

@@ -9,11 +9,15 @@
             {{ __('Transactions') }}
         </a>
         <a href="{{ route('dashboard.finance.invoices') }}" 
-           class="{{ request()->routeIs('dashboard.finance.invoices') ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-bold' : 'border-transparent text-muted hover:text-muted hover:border-warm dark:text-muted dark:hover:text-muted' }} whitespace-nowrap py-4 px-1 border-b-2 text-sm transition-colors">
+           class="{{ request()->routeIs('dashboard.finance.invoices*') ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-bold' : 'border-transparent text-muted hover:text-muted hover:border-warm dark:text-muted dark:hover:text-muted' }} whitespace-nowrap py-4 px-1 border-b-2 text-sm transition-colors">
             {{ __('Invoices') }}
         </a>
+        <a href="{{ route('dashboard.finance.payouts') }}" 
+           class="{{ request()->routeIs('dashboard.finance.payouts*') ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-bold' : 'border-transparent text-muted hover:text-muted hover:border-warm dark:text-muted dark:hover:text-muted' }} whitespace-nowrap py-4 px-1 border-b-2 text-sm transition-colors">
+            {{ __('Payouts & Settlements') }}
+        </a>
         <a href="{{ route('dashboard.finance.ledger') }}" 
-           class="{{ request()->routeIs('dashboard.finance.ledger') ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-bold' : 'border-transparent text-muted hover:text-muted hover:border-warm dark:text-muted dark:hover:text-muted' }} whitespace-nowrap py-4 px-1 border-b-2 text-sm transition-colors">
+           class="{{ request()->routeIs('dashboard.finance.ledger*') ? 'border-primary-500 text-primary-600 dark:text-primary-400 font-bold' : 'border-transparent text-muted hover:text-muted hover:border-warm dark:text-muted dark:hover:text-muted' }} whitespace-nowrap py-4 px-1 border-b-2 text-sm transition-colors">
             {{ __('Ledger View') }}
         </a>
     </nav>

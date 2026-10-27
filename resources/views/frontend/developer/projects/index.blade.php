@@ -17,7 +17,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($projects as $project)
                 <a href="{{ route('dashboard.projects.show', $project['id']) }}" class="block group">
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm group-hover:border-primary-500 transition-colors">
+                    <div class="card card-hover bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden group-hover:border-primary-500 transition-colors">
                         <div class="h-48 overflow-hidden relative">
                             <img src="{{ $project['image'] }}" alt="{{ $project['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

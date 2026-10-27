@@ -16,7 +16,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($staff as $person)
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm flex flex-col">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center font-bold text-lg relative">

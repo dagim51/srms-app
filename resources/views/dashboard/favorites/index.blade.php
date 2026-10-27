@@ -131,7 +131,7 @@
         </x-page-header>
 
         {{-- Search & Filter Controls Bar --}}
-        <div class="cinematic-fade-up cinematic-stagger-1 bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="card cinematic-fade-up cinematic-stagger-1 bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <form action="{{ route('dashboard.favorites.index') }}" method="GET" class="flex-1 w-full flex flex-col sm:flex-row items-center gap-2.5">
                 {{-- Search Input --}}
                 <div class="relative flex-1 w-full">

@@ -3,6 +3,8 @@
 namespace App\Domains\Property\Models;
 
 use App\Models\Listing;
+use App\Models\PropertyPriceHistory;
+use App\Models\PropertyStatusHistory;
 use App\Models\Region;
 use App\Models\SubCity;
 use App\Models\Woreda;
@@ -118,6 +120,16 @@ class Property extends Model
         $media = $this->media()->first();
 
         return $media ? $media->url : null;
+    }
+
+    public function priceHistory(): HasMany
+    {
+        return $this->hasMany(PropertyPriceHistory::class)->orderByDesc('created_at');
+    }
+
+    public function statusHistory(): HasMany
+    {
+        return $this->hasMany(PropertyStatusHistory::class)->orderByDesc('created_at');
     }
 
     /**

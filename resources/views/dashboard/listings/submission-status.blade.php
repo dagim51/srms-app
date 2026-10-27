@@ -33,7 +33,7 @@
         @endif
 
         {{-- Top Summary Header --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <img src="{{ $cover }}" class="w-16 h-16 rounded-xl object-cover shadow-sm flex-shrink-0" alt="">
                 <div>
@@ -60,7 +60,7 @@
         </div>
 
         {{-- Visual Lifecycle Progress Stepper --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
             <h3 class="font-display font-bold text-base text-muted dark:text-white mb-6">{{ __('Listing Lifecycle Progression') }}</h3>
             
             @php
@@ -135,7 +135,7 @@
                         <h3 class="text-base font-bold text-rose-900 dark:text-rose-100 mt-1">
                             {{ __('Moderator Feedback & Rejection Reason') }}
                         </h3>
-                        <div class="mt-3 bg-white dark:bg-[#1E293B] border border-rose-200 dark:border-rose-900/60 rounded-xl p-4 text-xs text-muted dark:text-muted leading-relaxed shadow-sm font-medium">
+                        <div class="card mt-3 bg-white dark:bg-[#1E293B] border border-rose-200 dark:border-rose-900/60 rounded-xl p-4 text-xs text-muted dark:text-muted leading-relaxed font-medium">
                             {{ $latestModeration->comments ?? __('Listing details did not satisfy trust and verification standards. Please review photos, pricing, or description.') }}
                         </div>
                     </div>
@@ -212,14 +212,14 @@
         @endif
 
         {{-- Moderation Audit Trail & Event Timeline --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-4">
             <h3 class="font-display font-bold text-base text-muted dark:text-white">{{ __('Moderation & Audit Event History') }}</h3>
             <p class="text-xs text-muted dark:text-muted">{{ __('Complete immutable record of all lifecycle events for compliance and trust.') }}</p>
 
             @if($history->count() > 0)
                 <div class="space-y-3 pt-2">
                     @foreach($history as $ev)
-                        <div class="p-3.5 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 flex items-start justify-between gap-4 text-xs">
+                        <div class="card p-3.5 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 flex items-start justify-between gap-4 text-xs">
                             <div class="flex items-start gap-3">
                                 @if($ev->action === 'approve')
                                     <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 flex items-center justify-center font-bold text-xs">✓</span>

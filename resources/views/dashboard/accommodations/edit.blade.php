@@ -17,7 +17,7 @@
             icon="key"
             badge="Accommodations" />
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
 
             <form action="{{ route('dashboard.accommodations.update', $accommodation) }}" method="POST" class="space-y-6">
                 @csrf @method('PUT')

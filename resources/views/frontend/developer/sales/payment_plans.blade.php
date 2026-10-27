@@ -16,7 +16,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($plans as $plan)
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6">
                     <h3 class="text-xl font-bold text-muted dark:text-white mb-4">{{ $plan['name'] }}</h3>
                     
                     <ul class="space-y-3 mb-6 text-sm">

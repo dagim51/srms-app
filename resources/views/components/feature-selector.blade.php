@@ -154,7 +154,7 @@
     </div>
 
     {{-- Interactive Feature Badges / Chips Grid --}}
-    <div class="flex flex-wrap gap-2 max-h-64 overflow-y-auto p-2 border border-warm dark:border-[#273244] rounded-xl bg-surface/50 dark:bg-[#0B0F19]/40">
+    <div class="card flex flex-wrap gap-2 max-h-64 overflow-y-auto p-2 border border-warm dark:border-[#273244] rounded-xl bg-surface/50 dark:bg-[#0B0F19]/40">
         <template x-for="item in filteredCatalog" :key="item.id">
             <button 
                 type="button"
@@ -197,7 +197,7 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <template x-for="item in selectedList" :key="item.id">
-                <div class="flex items-center justify-between gap-2 bg-white dark:bg-[#111827] border border-orange-200 dark:border-orange-800/60 rounded-lg p-2 text-xs shadow-2xs">
+                <div class="card flex items-center justify-between gap-2 bg-white dark:bg-[#111827] border border-orange-200 dark:border-orange-800/60 rounded-lg p-2 text-xs -2xs">
                     <span class="font-medium text-muted dark:text-white truncate flex-1" x-text="item.name"></span>
                     
                     <input 

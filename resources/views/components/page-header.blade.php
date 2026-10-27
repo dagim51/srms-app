@@ -474,6 +474,44 @@
             'badge' => 'Settings',
         ],
 
+        // Notifications & Preferences
+        'dashboard.notifications.*' => [
+            'name' => 'Notifications',
+            'desc' => 'Real-time transactional audit updates, escrow milestones, Diaspora inquiries, and security events.',
+            'icon' => 'bell',
+            'badge' => 'Alerts',
+        ],
+        'dashboard.notifications.index' => [
+            'name' => 'Notifications',
+            'desc' => 'Real-time transactional audit updates, escrow milestones, Diaspora inquiries, and security events.',
+            'icon' => 'bell',
+            'badge' => 'Alerts',
+        ],
+        'dashboard.notifications' => [
+            'name' => 'Notifications',
+            'desc' => 'Real-time transactional audit updates, escrow milestones, Diaspora inquiries, and security events.',
+            'icon' => 'bell',
+            'badge' => 'Alerts',
+        ],
+        'dashboard/notifications' => [
+            'name' => 'Notifications',
+            'desc' => 'Real-time transactional audit updates, escrow milestones, Diaspora inquiries, and security events.',
+            'icon' => 'bell',
+            'badge' => 'Alerts',
+        ],
+        'dashboard.preferences' => [
+            'name' => 'Notification Preferences',
+            'desc' => 'Configure how and when you receive automated emails, topbar popovers, and browser push alerts.',
+            'icon' => 'cog',
+            'badge' => 'Preferences',
+        ],
+        'dashboard/preferences' => [
+            'name' => 'Notification Preferences',
+            'desc' => 'Configure how and when you receive automated emails, topbar popovers, and browser push alerts.',
+            'icon' => 'cog',
+            'badge' => 'Preferences',
+        ],
+
         // Trust & Safety
         'dashboard.trust.*' => [
             'name' => 'Trust & Safety Center',
@@ -584,7 +622,7 @@
     $desc = (string) $desc;
 @endphp
 
-<div {{ $attributes->merge(['class' => 'cinematic-fade-up page-header-card relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-white/85 dark:bg-[#0D1527]/85 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/80 border-t-white/60 dark:border-t-white/10 shadow-sm transition-all mb-6']) }} data-component="page-header">
+<div {{ $attributes->merge(['class' => 'cinematic-fade-up card page-header-card relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-white/85 dark:bg-[#0D1527]/85 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/80 border-t-white/60 dark:border-t-white/10 transition-all mb-6']) }} data-component="page-header">
 
     {{-- Subtle Primary Accent Line (#C2410C) at the top --}}
     <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#C2410C] via-amber-500 to-transparent"></div>
@@ -629,6 +667,8 @@
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6H2.25m0 0v10.5m0-10.5h19.5m0 0v.75a.75.75 0 01-.75.75h-.75m1.5-1.5v10.5m-19.5 0h19.5m-19.5 0v.75c0 .414.336.75.75.75H4.5m15 0h.75a.75.75 0 00.75-.75v-.75m-16.5 0h16.5m-16.5 0V6.75m16.5 0V6.75m-8.25 5.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" /></svg>
                 @elseif(in_array($iconType, ['ticket', 'operations', 'maintenance']))
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" /></svg>
+                @elseif(in_array($iconType, ['bell', 'notifications', 'alert', 'alerts']))
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
                 @elseif(in_array($iconType, ['sparkles', 'ai', 'copilot', 'assistant', 'alerts']))
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
                 @elseif(in_array($iconType, ['cog', 'settings', 'preferences']))

@@ -30,7 +30,7 @@
         @endif
 
         {{-- Form Card --}}
-        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-6 sm:p-8 shadow-xs">
+        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-6 sm:p-8">
             <form action="{{ route('dashboard.admin.users.store') }}" method="POST" class="space-y-6">
                 @csrf
 

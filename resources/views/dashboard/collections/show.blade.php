@@ -116,7 +116,7 @@
         {{-- PROPERTIES IN THIS COLLECTION --}}
         @if($collection->properties->isEmpty())
             {{-- EMPTY COLLECTION STATE --}}
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-12 text-center max-w-xl mx-auto my-8 shadow-sm">
+            <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-12 text-center max-w-xl mx-auto my-8">
                 <div class="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-950/40 text-primary-600 dark:text-primary-400 mx-auto flex items-center justify-center mb-5">
                     <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 </div>
@@ -144,7 +144,7 @@
                     @endphp
 
                     @if($prop)
-                        <div class="collection-item-card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
+                        <div class="collection-item-card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden hover: transition-all duration-200 flex flex-col justify-between"
                              id="col-property-{{ $prop->id }}">
 
                             <div>
@@ -244,7 +244,7 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div x-show="moveModalOpen"
-                     class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm p-6 space-y-5">
+                     class="card inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm p-6 space-y-5">
                     
                     <div class="flex items-center justify-between pb-3 border-b border-warm dark:border-warm">
                         <div>
@@ -299,7 +299,7 @@
                     <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                     <div x-show="editModalOpen"
-                         class="inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm">
+                         class="card inline-block align-bottom bg-white dark:bg-[#1E293B] rounded-3xl text-left overflow-hidden transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-warm dark:border-warm">
                         
                         <form action="{{ route('dashboard.collections.update', $collection->id) }}" method="POST" class="p-6 space-y-5">
                             @csrf

@@ -28,7 +28,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-[#F9FAFB] antialiased min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white relative overflow-x-hidden">
+<body class="bg-slate-50 dark:bg-[#0F172A] text-slate-900 dark:text-[#F1F5F9] antialiased min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white relative overflow-x-hidden">
 
     {{-- Ambient Multicolored Background Meshes --}}
     <div class="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-orange-500/10 via-amber-400/10 to-transparent rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>

@@ -40,7 +40,7 @@
             </div>
         @enderror
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
             {{-- Header section --}}
             <div class="p-6 sm:p-8 border-b border-warm dark:border-warm flex flex-col sm:flex-row sm:items-start justify-between gap-6">
                 <div>
@@ -84,7 +84,7 @@
                         </form>
 
                         {{-- Reschedule Dropdown/Modal --}}
-                        <div x-show="showReschedule" x-cloak class="absolute right-8 mt-12 bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] shadow-xl rounded-2xl p-6 w-80 z-20" @click.away="showReschedule = false">
+                        <div x-show="showReschedule" x-cloak class="card absolute right-8 mt-12 bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl p-6 w-80 z-20" @click.away="showReschedule = false">
                             <h4 class="font-bold text-muted dark:text-white mb-4">{{ __('Reschedule Viewing') }}</h4>
                             <form action="{{ route('dashboard.viewings.update', $viewing) }}" method="POST" class="space-y-4">
                                 @csrf @method('PUT')
@@ -142,7 +142,7 @@
                     @if($viewing->notes)
                         <div class="mt-8">
                             <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-2">{{ __('Additional Notes') }}</h3>
-                            <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl text-sm text-muted dark:text-dark-subtle leading-relaxed border border-warm dark:border-warm">
+                            <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl text-sm text-muted dark:text-dark-subtle leading-relaxed border border-warm dark:border-warm">
                                 {{ $viewing->notes }}
                             </div>
                         </div>

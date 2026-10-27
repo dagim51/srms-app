@@ -191,7 +191,7 @@
              x-cloak>
             
             <div @click.outside="showOrgModal = false"
-                 class="w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl border border-[#EBDBC9] dark:border-[#273244] shadow-2xl p-6 sm:p-8 space-y-6">
+                 class="card w-full max-w-lg bg-white dark:bg-[#111827] rounded-3xl border border-[#EBDBC9] dark:border-[#273244] p-6 sm:p-8 space-y-6">
                 
                 <div class="flex items-center justify-between">
                     <div>

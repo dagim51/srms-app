@@ -162,7 +162,7 @@
         </div>
 
         {{-- Actions & Filter Toolbar --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Geographic Hierarchy & Administrative Boundaries') }}</h2>
@@ -527,7 +527,7 @@
         <div x-show="showCreateSubCityModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showCreateSubCityModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 shadow-xl">
+                <div class="card relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6">
                     <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">{{ __('Add New Sub-City') }}</h3>
                     <form method="POST" action="{{ route('dashboard.locations.subcities.store') }}" class="space-y-4">
                         @csrf
@@ -567,7 +567,7 @@
         <div x-show="showCreateZoneModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showCreateZoneModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 shadow-xl">
+                <div class="card relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6">
                     <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">{{ __('Add Regional Zone') }}</h3>
                     <form method="POST" action="{{ route('dashboard.locations.zones.store') }}" class="space-y-4">
                         @csrf
@@ -607,7 +607,7 @@
         <div x-show="showCreateWoredaModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog" x-data="{ parentType: 'sub_city' }">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showCreateWoredaModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 shadow-xl">
+                <div class="card relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6">
                     <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">{{ __('Add New Woreda (District)') }}</h3>
                     <form method="POST" action="{{ route('dashboard.locations.woredas.store') }}" class="space-y-4">
                         @csrf
@@ -674,7 +674,7 @@
         <div x-show="showEditModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showEditModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 shadow-xl">
+                <div class="card relative w-full max-w-lg rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6">
                     <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">
                         <span x-text="editItem.type === 'subcity' ? '{{ __('Edit Sub-City') }}' : (editItem.type === 'zone' ? '{{ __('Edit Zone') }}' : '{{ __('Edit Woreda') }}')"></span>
                     </h3>
@@ -793,7 +793,7 @@
         <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" role="dialog">
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showDeleteModal = false"></div>
             <div class="flex min-h-full items-center justify-center p-4">
-                <div class="relative w-full max-w-sm rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 shadow-xl text-center">
+                <div class="card relative w-full max-w-sm rounded-xl bg-surface dark:bg-slate-900 border border-warm dark:border-[#273244] p-6 text-center">
                     <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 mx-auto flex items-center justify-center mb-3">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
                     </div>

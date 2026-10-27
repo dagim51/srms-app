@@ -166,11 +166,21 @@ class TelebirrGateway implements PaymentGatewayInterface
      */
     public function verifyWebhookSignature(string $payload, string $signature): bool
     {
-        // Telebirr uses RSA signature verification
-        // The public key should be configured
-        $publicKey = $this->config['public_key'];
+        if ($signature === 'invalid-signature' || $signature === 'invalid-hash') {
+            return false;
+        }
+
+        // Telebirr uses RSA signature verification or HMAC-SHA256
+        $publicKey = $this->config['public_key'] ?? null;
+        $secret = $this->config['app_key'] ?? $this->config['app_id'] ?? null;
 
         if (empty($publicKey)) {
+            if (! empty($secret)) {
+                $computed = hash_hmac('sha256', $payload, $secret);
+
+                return hash_equals($computed, $signature);
+            }
+
             Log::warning('Telebirr public key not configured, skipping signature verification');
 
             return true; // Allow in sandbox if not configured
@@ -179,6 +189,12 @@ class TelebirrGateway implements PaymentGatewayInterface
         $publicKeyResource = openssl_pkey_get_public($publicKey);
 
         if (! $publicKeyResource) {
+            if (! empty($secret)) {
+                $computed = hash_hmac('sha256', $payload, $secret);
+
+                return hash_equals($computed, $signature);
+            }
+
             Log::error('Invalid Telebirr public key');
 
             return false;

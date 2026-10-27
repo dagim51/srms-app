@@ -78,7 +78,7 @@
         </div>
 
         {{-- Aura Estates Signature Welcome Banner --}}
-        <div class="cinematic-fade-up relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500/[0.08] via-amber-500/[0.04] to-transparent border border-orange-200/70 dark:border-orange-900/40 p-5 sm:p-6 backdrop-blur-md">
+        <div class="cinematic-fade-up card relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500/[0.08] via-amber-500/[0.04] to-transparent border border-orange-200/70 dark:border-orange-900/40 p-5 sm:p-6 backdrop-blur-md">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                 <div class="space-y-1.5">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100/90 dark:bg-orange-950/70 border border-orange-200/80 dark:border-orange-800/80 text-orange-700 dark:text-orange-300 text-[11px] font-semibold tracking-wide uppercase">

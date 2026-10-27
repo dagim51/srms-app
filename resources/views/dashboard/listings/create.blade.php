@@ -93,7 +93,7 @@
             badge="Publisher" />
 
         {{-- Step Navigation Indicator --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 shadow-sm mb-6">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-4 mb-6">
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <h2 class="text-base font-bold text-muted dark:text-white">{{ __('Listing Editor Flow') }}</h2>
@@ -149,7 +149,7 @@
 
             {{-- STEP 1: PROPERTY SELECTION --}}
             <div x-show="step === 1" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('1. Link Canonical Property') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('Listings are commercial offers attached directly to an existing real estate record. No duplicate property record will be created.') }}</p>
@@ -168,7 +168,7 @@
 
                             {{-- Canonical Property Preview Card --}}
                             <template x-if="currentProperty">
-                                <div class="bg-surface dark:bg-surface/50 border border-warm dark:border-warm rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4">
+                                <div class="card bg-surface dark:bg-surface/50 border border-warm dark:border-warm rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-4">
                                     <img :src="currentProperty.cover" class="w-full sm:w-28 h-24 rounded-lg object-cover flex-shrink-0" alt="">
                                     <div class="flex-1 space-y-1">
                                         <div class="flex items-center gap-2">
@@ -190,7 +190,7 @@
                             </template>
                         </div>
                     @else
-                        <div class="p-6 text-center bg-surface dark:bg-surface/40 rounded-xl">
+                        <div class="card p-6 text-center bg-surface dark:bg-surface/40 rounded-xl">
                             <p class="text-sm text-muted dark:text-muted mb-3">{{ __('You don\'t have any canonical properties yet.') }}</p>
                             <a href="{{ url('/dashboard/properties/create') }}" class="btn btn-primary text-xs">{{ __('Create Property First') }}</a>
                         </div>
@@ -200,7 +200,7 @@
 
             {{-- STEP 2: LISTING MODE --}}
             <div x-show="step === 2" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('2. Listing Mode & Transaction Intent') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('Select the transaction format for this commercial offer.') }}</p>
@@ -254,7 +254,7 @@
 
             {{-- STEP 3: PRICING & TERMS --}}
             <div x-show="step === 3" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5 flex items-center justify-between">
                         <div>
                             <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('3. Commercial Pricing & Terms') }}</h3>
@@ -352,7 +352,7 @@
 
             {{-- STEP 4: DESCRIPTION & MARKETING --}}
             <div x-show="step === 4" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('4. Marketing Headline & Description') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('Craft engaging copywriting that highlights key selling points.') }}</p>
@@ -379,7 +379,7 @@
 
             {{-- STEP 5: MEDIA REVIEW --}}
             <div x-show="step === 5" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5 flex items-center justify-between">
                         <div>
                             <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('5. Property Media & Photography') }}</h3>
@@ -409,23 +409,23 @@
 
             {{-- STEP 6: FEATURES & AMENITIES --}}
             <div x-show="step === 6" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('6. Features & Amenities Verification') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('These amenities will be displayed on the public marketplace card.') }}</p>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                        <div class="p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
+                        <div class="card p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
                             <span class="text-emerald-500">✓</span> Backup Generator
                         </div>
-                        <div class="p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
+                        <div class="card p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
                             <span class="text-emerald-500">✓</span> Reserve Water Tank
                         </div>
-                        <div class="p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
+                        <div class="card p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
                             <span class="text-emerald-500">✓</span> 24/7 Gated Security
                         </div>
-                        <div class="p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
+                        <div class="card p-3 rounded-xl bg-surface dark:bg-surface/50 flex items-center gap-2 border border-warm dark:border-warm">
                             <span class="text-emerald-500">✓</span> Dedicated Parking
                         </div>
                     </div>
@@ -434,7 +434,7 @@
 
             {{-- STEP 7: LOCATION & PRIVACY --}}
             <div x-show="step === 7" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('7. Location & Map Privacy') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('Control how precise the map marker appears to public marketplace visitors.') }}</p>
@@ -460,7 +460,7 @@
 
             {{-- STEP 8: VISIBILITY & SUBMISSION --}}
             <div x-show="step === 8" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6">
                     <div class="border-b border-warm dark:border-warm pb-4 mb-5">
                         <h3 class="font-display font-bold text-lg text-muted dark:text-white">{{ __('8. Marketplace Visibility & Schedule') }}</h3>
                         <p class="text-xs text-muted dark:text-muted mt-1">{{ __('Determine public discoverability and expiration settings.') }}</p>
@@ -486,14 +486,14 @@
 
             {{-- STEP 9: LIVE PREVIEW & FINAL CONFIRMATION --}}
             <div x-show="step === 9" class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-6">
                     <div class="border-b border-warm dark:border-warm pb-4">
                         <h3 class="font-display font-bold text-lg text-[#0F172A] dark:text-white">{{ __('9. Final Marketplace Preview') }}</h3>
                         <p class="text-xs text-[#4B5563] dark:text-[#CBD5E1] mt-1">{{ __('Review how your listing appears to buyers and tenants before publishing.') }}</p>
                     </div>
 
                     {{-- Card Simulation --}}
-                    <div class="max-w-sm mx-auto bg-white dark:bg-[#0F172A] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-lg">
+                    <div class="card max-w-sm mx-auto bg-white dark:bg-[#0F172A] border border-warm dark:border-warm rounded-2xl overflow-hidden">
                         <div class="relative aspect-[4/3] bg-surface-subtle dark:bg-surface">
                             <img :src="currentProperty ? currentProperty.cover : ''" class="w-full h-full object-cover" alt="">
                             <div class="absolute top-3 left-3 flex gap-1.5">

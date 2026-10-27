@@ -6,6 +6,8 @@ use App\Models\DevelopmentProject;
 use App\Models\DevelopmentUnit;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DevelopmentBuilding extends Model
 {
@@ -19,12 +21,12 @@ class DevelopmentBuilding extends Model
         'progress_percentage',
     ];
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(DevelopmentProject::class, 'development_project_id');
     }
 
-    public function units()
+    public function units(): HasMany
     {
         return $this->hasMany(DevelopmentUnit::class);
     }

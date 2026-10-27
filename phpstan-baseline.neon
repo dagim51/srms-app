@@ -31,33 +31,9 @@ parameters:
 			path: app/Console/Commands/GenerateRentInvoicesCommand.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Development\\Models\\DevelopmentProject\:\:\$paymentPlans\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/ProcessConstructionMilestonesCommand.php
-
-		-
-			message: '#^Relation ''organization'' is not found in App\\Domains\\Development\\Models\\DevelopmentProject model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/ProcessConstructionMilestonesCommand.php
-
-		-
-			message: '#^Relation ''paymentPlans'' is not found in App\\Domains\\Development\\Models\\DevelopmentProject model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Console/Commands/ProcessConstructionMilestonesCommand.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Administration\\Models\\AuditLog\:\:\$actor\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Administration/Http/Controllers/Web/AdminWebController.php
-
-		-
 			message: '#^Relation ''actor'' is not found in App\\Domains\\Administration\\Models\\AuditLog model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 2
 			path: app/Domains/Administration/Http/Controllers/Web/AdminWebController.php
 
 		-
@@ -71,18 +47,6 @@ parameters:
 			identifier: ternary.alwaysTrue
 			count: 2
 			path: app/Domains/Administration/Models/AuditLog.php
-
-		-
-			message: '#^Relation ''assignee'' is not found in App\\Domains\\CRM\\Models\\Lead model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Advertising/Http/Controllers/Api/V1/MarketingController.php
-
-		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\CRM\\Models\\Lead model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Advertising/Http/Controllers/Api/V1/MarketingController.php
 
 		-
 			message: '#^Relation ''requester'' is not found in App\\Domains\\Analytics\\Models\\GeneratedReport model\.$#'
@@ -157,58 +121,172 @@ parameters:
 			path: app/Domains/Booking/Http/Controllers/Web/BookingEngineWebController.php
 
 		-
-			message: '#^Relation ''assignee'' is not found in App\\Domains\\CRM\\Models\\Lead model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/CRM/Http/Controllers/Api/V1/LeadController.php
+			message: '#^Class App\\Models\\BookingGuest not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Booking/Models/AccommodationBooking.php
 
 		-
-			message: '#^Relation ''listing'' is not found in App\\Domains\\CRM\\Models\\Lead model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Class App\\Models\\CancellationRecord not found\.$#'
+			identifier: class.notFound
 			count: 1
-			path: app/Domains/CRM/Http/Controllers/Api/V1/LeadController.php
+			path: app/Domains/Booking/Models/AccommodationBooking.php
 
 		-
-			message: '#^Relation ''buildings'' is not found in App\\Domains\\Development\\Models\\DevelopmentProject model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Class App\\Models\\CheckInOutRecord not found\.$#'
+			identifier: class.notFound
 			count: 1
-			path: app/Domains/Development/Http/Controllers/Api/V1/DevelopmentController.php
+			path: app/Domains/Booking/Models/AccommodationBooking.php
 
 		-
-			message: '#^Relation ''paymentPlans'' is not found in App\\Domains\\Development\\Models\\DevelopmentProject model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Development/Http/Controllers/Api/V1/DevelopmentController.php
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Domains/Booking/Models/AccommodationBooking.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Development\\Models\\PaymentPlan\:\:\$installments\.$#'
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasOne\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Booking/Models/AccommodationBooking.php
+
+		-
+			message: '#^Class App\\Models\\CancellationPolicy not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Booking/Models/CancellationRecord.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Booking/Models/CancellationRecord.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$property\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Domains\\CRM\\Models\\Lead\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Domains\\CRM\\Models\\Lead\>\:\:through\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Relation ''agent'' is not found in App\\Domains\\CRM\\Models\\Commission model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 6
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 4
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Call to static method with\(\) on an unknown class App\\Models\\HandoverRecord\.$#'
+			identifier: class.notFound
 			count: 2
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
 			message: '#^Relation ''building'' is not found in App\\Domains\\Development\\Models\\DevelopmentUnit model\.$#'
 			identifier: larastan.relationExistence
-			count: 7
+			count: 5
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
-			message: '#^Relation ''installments'' is not found in App\\Domains\\Development\\Models\\PaymentPlan model\.$#'
+			message: '#^Relation ''handoverRecord'' is not found in App\\Domains\\Development\\Models\\DevelopmentUnit model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 1
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
 			message: '#^Relation ''property'' is not found in App\\Domains\\Development\\Models\\DevelopmentUnit model\.$#'
 			identifier: larastan.relationExistence
-			count: 3
+			count: 2
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>floor_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
+			count: 6
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>price" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>unit_number" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 2
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Class App\\Models\\HandoverRecord not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Development/Models/DevelopmentUnit.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Development/Models/DevelopmentUnit.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasOne\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Development/Models/DevelopmentUnit.php
 
 		-
 			message: '#^Relation ''messages'' is not found in App\\Domains\\Engagement\\Models\\Conversation model\.$#'
@@ -245,18 +323,6 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 2
 			path: app/Domains/Engagement/Http/Controllers/Api/V1/InquiryController.php
-
-		-
-			message: '#^Relation ''attachments'' is not found in App\\Domains\\Engagement\\Models\\Message model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/MessageController.php
-
-		-
-			message: '#^Relation ''sender'' is not found in App\\Domains\\Engagement\\Models\\Message model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Engagement/Http/Controllers/Api/V1/MessageController.php
 
 		-
 			message: '#^Relation ''messages'' is not found in App\\Domains\\Engagement\\Models\\Conversation model\.$#'
@@ -361,6 +427,18 @@ parameters:
 			path: app/Domains/Identity/Http/Resources/UserResource.php
 
 		-
+			message: '#^Class App\\Models\\HandoverRecord not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Identity/Models/User.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Identity/Models/User.php
+
+		-
 			message: '#^Relation ''permissions'' is not found in App\\Domains\\Identity\\Models\\Role model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -415,32 +493,20 @@ parameters:
 			path: app/Domains/Listing/Http/Controllers/Web/ListingModerationWebController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bedrooms\.$#'
-			identifier: property.notFound
+			message: '#^Class App\\Models\\Promotion not found\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Listing/Models/Listing.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Domains/Listing/Models/Listing.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$building_area\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Listing/Models/Listing.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$land_area\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Listing/Models/Listing.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$media\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Listing/Models/Listing.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasOne\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/Domains/Listing/Models/Listing.php
 
@@ -559,21 +625,9 @@ parameters:
 			path: app/Domains/Organization/Http/Resources/OrganizationResource.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$currency\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$distance\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$price\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
@@ -673,6 +727,24 @@ parameters:
 			path: app/Domains/Property/Models/Property.php
 
 		-
+			message: '#^Class App\\Models\\PropertyPriceHistory not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Property/Models/Property.php
+
+		-
+			message: '#^Class App\\Models\\PropertyStatusHistory not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Property/Models/Property.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Property/Models/Property.php
+
+		-
 			message: '#^Relation ''assignee'' is not found in App\\Domains\\PropertyManagement\\Models\\MaintenanceTicket model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
@@ -709,6 +781,12 @@ parameters:
 			path: app/Domains/Rental/Http/Controllers/Api/V1/RentalController.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$property\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
 			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$schedules\.$#'
 			identifier: property.notFound
 			count: 2
@@ -729,13 +807,13 @@ parameters:
 		-
 			message: '#^Relation ''lease'' is not found in App\\Domains\\Rental\\Models\\RentSchedule model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 3
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
 			message: '#^Relation ''property'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
 			identifier: larastan.relationExistence
-			count: 6
+			count: 9
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -747,7 +825,13 @@ parameters:
 		-
 			message: '#^Relation ''tenantProfile'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
 			identifier: larastan.relationExistence
-			count: 7
+			count: 10
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>end_date" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -764,6 +848,12 @@ parameters:
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>phone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
@@ -841,6 +931,186 @@ parameters:
 			path: app/Domains/Transaction/Http/Controllers/Api/V1/PaymentController.php
 
 		-
+			message: '#^Call to an undefined method App\\Domains\\Transaction\\Http\\Controllers\\Api\\V1\\PaymentWebhookController\:\:handleFailed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Api/V1/PaymentWebhookController.php
+
+		-
+			message: '#^Access to property \$created_at on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$created_at on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$file_path on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$file_size on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$mime_type on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$name on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$notes on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$risk_score on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$status on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$status on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$type on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$type on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$user on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Access to property \$user on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 4
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to method fresh\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to method update\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method count\(\) on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\DocumentAccessLog\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method sum\(\) on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method with\(\) on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Call to static method with\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Parameter \$d of anonymous function has invalid type App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Parameter \$document of method App\\Domains\\Transaction\\Http\\Controllers\\Web\\DocumentWebController\:\:downloadDocument\(\) has invalid type App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Parameter \$v of anonymous function has invalid type App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
+			message: '#^Parameter \$verification of method App\\Domains\\Transaction\\Http\\Controllers\\Web\\DocumentWebController\:\:reviewVerification\(\) has invalid type App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
+
+		-
 			message: '#^Relation ''account'' is not found in App\\Domains\\Transaction\\Models\\LedgerEntryLine model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -855,13 +1125,13 @@ parameters:
 		-
 			message: '#^Relation ''user'' is not found in App\\Domains\\Transaction\\Models\\Invoice model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 2
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
 
 		-
 			message: '#^Relation ''user'' is not found in App\\Domains\\Transaction\\Models\\Payment model\.$#'
 			identifier: larastan.relationExistence
-			count: 4
+			count: 5
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
 
 		-
@@ -881,6 +1151,48 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 3
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Class App\\Models\\DocumentAccessLog not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Models/Document.php
+
+		-
+			message: '#^Class App\\Models\\DocumentVersion not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Models/Document.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Transaction/Models/Document.php
+
+		-
+			message: '#^Class App\\Models\\Document not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Models/DocumentAccessLog.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Transaction/Models/DocumentAccessLog.php
+
+		-
+			message: '#^Class App\\Models\\Document not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Transaction/Models/DocumentVersion.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:belongsTo\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Transaction/Models/DocumentVersion.php
 
 		-
 			message: '#^Relation ''assignedModerator'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
@@ -955,7 +1267,7 @@ parameters:
 			path: app/Domains/Trust/Http/Controllers/Api/V1/DisputeController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Trust\\Models\\Dispute\:\:\$evidence\.$#'
+			message: '#^Access to an undefined property App\\Domains\\Trust\\Models\\Dispute\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Trust\\Models\\Dispute\>\:\:\$evidence\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
@@ -963,37 +1275,37 @@ parameters:
 		-
 			message: '#^Relation ''complainant'' is not found in App\\Domains\\Trust\\Models\\Dispute model\.$#'
 			identifier: larastan.relationExistence
-			count: 3
+			count: 6
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Relation ''evidence'' is not found in App\\Domains\\Trust\\Models\\Dispute model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 3
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Relation ''listing'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 2
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Relation ''reporter'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 2
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Relation ''respondent'' is not found in App\\Domains\\Trust\\Models\\Dispute model\.$#'
 			identifier: larastan.relationExistence
-			count: 3
+			count: 6
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 5
+			count: 6
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
@@ -1001,6 +1313,18 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Events/MessageSent.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Events/MessageSent.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\ListingFlag\:\:\$listing\.$#'
@@ -1155,7 +1479,7 @@ parameters:
 		-
 			message: '#^Relation ''reporter'' is not found in App\\Domains\\PropertyManagement\\Models\\MaintenanceTicket model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Web/OperationsWebController.php
 
 		-
@@ -1175,6 +1499,12 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 4
 			path: app/Http/Controllers/Web/OperationsWebController.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Domains\\Identity\\Models\\User and ''notify'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Controllers/Web/PasswordResetWebController.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$storage_key\.$#'
@@ -1207,6 +1537,36 @@ parameters:
 			path: app/Http/Controllers/Web/SettingsWebController.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Identity\\Models\\User\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/CheckFeatureFlag.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/CheckFeatureFlag.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>role" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/CheckFeatureFlag.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$max_listings\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/EnforceSubscriptionLimits.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>max_listings" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/EnforceSubscriptionLimits.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -1225,7 +1585,7 @@ parameters:
 			path: app/Http/Middleware/VerifyApiToken.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Development\\Models\\DevelopmentBuilding\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Development\\Models\\DevelopmentBuilding\>\:\:\$project\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$organization_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Http/Requests/Development/StoreUnitRequest.php
@@ -4969,6 +5329,30 @@ parameters:
 			path: app/Http/Resources/ViewingResource.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\RentSchedule\:\:\$lease\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Jobs/CheckOverdueRentJob.php
+
+		-
+			message: '#^Relation ''lease'' is not found in App\\Domains\\Rental\\Models\\RentSchedule model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Jobs/CheckOverdueRentJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bank_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Jobs/PayoutProcessingJob.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>bank_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Jobs/PayoutProcessingJob.php
+
+		-
 			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$accommodation\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4985,6 +5369,12 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 1
 			path: app/Listeners/BookingCreatedListener.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Contracts\\Auth\\Authenticatable\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Listeners/Identity/LoginListener.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Inquiry\:\:\$sellerAgent\.$#'
@@ -5065,6 +5455,24 @@ parameters:
 			path: app/Listeners/PaymentRefundedListener.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Property\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Observers/PropertyObserver.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\PropertyPriceHistory\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Observers/PropertyObserver.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\PropertyStatusHistory\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Observers/PropertyObserver.php
+
+		-
 			message: '#^Class App\\Policies\\AccommodationBookingPolicy not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -5131,6 +5539,48 @@ parameters:
 			path: app/Services/Bookings/BookingManager.php
 
 		-
+			message: '#^Access to property \$fee_percentage on an unknown class App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Access to property \$flexible_days on an unknown class App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Access to property \$refund_percentage on an unknown class App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Method App\\Services\\Bookings\\CancellationService\:\:cancel\(\) has invalid return type App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
+			message: '#^Parameter \$policy of method App\\Services\\Bookings\\CancellationService\:\:cancel\(\) has invalid type App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Bookings/CancellationService.php
+
+		-
 			message: '#^Access to an undefined property App\\Domains\\Engagement\\Models\\Inquiry\:\:\$property\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5149,32 +5599,38 @@ parameters:
 			path: app/Services/Dashboard/DashboardAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Development\\Models\\DevelopmentBuilding\:\:\$project\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$organization_id\.$#'
 			identifier: property.notFound
+			count: 1
+			path: app/Services/Development/DeveloperSalesService.php
+
+		-
+			message: '#^Method App\\Services\\Development\\DeveloperSalesService\:\:createBuilding\(\) should return App\\Domains\\Development\\Models\\DevelopmentBuilding but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Development/DeveloperSalesService.php
+
+		-
+			message: '#^Method App\\Services\\Development\\DeveloperSalesService\:\:createPaymentPlan\(\) should return App\\Domains\\Development\\Models\\PaymentPlan but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Development/DeveloperSalesService.php
+
+		-
+			message: '#^Method App\\Services\\Development\\DeveloperSalesService\:\:createUnit\(\) should return App\\Domains\\Development\\Models\\DevelopmentUnit but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
 			count: 1
 			path: app/Services/Development/DeveloperSalesService.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\ListingSearchIndex\:\:\$distance_km\.$#'
 			identifier: property.notFound
-			count: 2
-			path: app/Services/GIS/AdvancedGIS.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Listing\\Models\\ListingSearchIndex\:\:\$distance_meters\.$#'
-			identifier: property.notFound
-			count: 2
+			count: 4
 			path: app/Services/GIS/AdvancedGIS.php
 
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Services/GIS/AdvancedGIS.php
-
-		-
-			message: '#^Variable \$i might not be defined\.$#'
-			identifier: variable.undefined
 			count: 1
 			path: app/Services/GIS/AdvancedGIS.php
 
@@ -5189,6 +5645,66 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Services/Inquiries/InquiryService.php
+
+		-
+			message: '#^Call to method increment\(\) on an unknown class App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Services/Listing/ListingPromotionService.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Listing/ListingPromotionService.php
+
+		-
+			message: '#^Method App\\Services\\Listing\\ListingPromotionService\:\:promote\(\) has invalid return type App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Listing/ListingPromotionService.php
+
+		-
+			message: '#^Parameter \$promotion of method App\\Services\\Listing\\ListingPromotionService\:\:recordClick\(\) has invalid type App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Listing/ListingPromotionService.php
+
+		-
+			message: '#^Parameter \$promotion of method App\\Services\\Listing\\ListingPromotionService\:\:recordImpression\(\) has invalid type App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Services/Listing/ListingPromotionService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amenities\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Listing/ListingQualityScorer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$media\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/Listing/ListingQualityScorer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Listing/ListingQualityScorer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:amenities\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Listing/ListingQualityScorer.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:media\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/Listing/ListingQualityScorer.php
 
 		-
 			message: '#^Parameter \#1 \$listing of method App\\Services\\Listings\\ListingPublisher\:\:publish\(\) expects App\\Domains\\Listing\\Models\\Listing, Illuminate\\Database\\Eloquent\\Model given\.$#'
@@ -5207,6 +5723,12 @@ parameters:
 			identifier: property.notFound
 			count: 3
 			path: app/Services/Offers/NegotiationService.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 4
+			path: app/Services/Payments/CbeBirrGateway.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Transaction\\Models\\Payment\:\:\$payable\.$#'
@@ -5463,7 +5985,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Api\\V1\\ListingController not found\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 6
 			path: routes/api.php
 
 		-
@@ -5481,7 +6003,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Api\\V1\\MarketingController not found\.$#'
 			identifier: class.notFound
-			count: 3
+			count: 6
 			path: routes/api.php
 
 		-
@@ -5523,7 +6045,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Api\\V1\\PaymentWebhookController not found\.$#'
 			identifier: class.notFound
-			count: 1
+			count: 2
 			path: routes/api.php
 
 		-
@@ -5613,7 +6135,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\AdminWebController not found\.$#'
 			identifier: class.notFound
-			count: 13
+			count: 14
 			path: routes/web.php
 
 		-
@@ -5679,7 +6201,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\DocumentWebController not found\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 6
 			path: routes/web.php
 
 		-
@@ -5733,7 +6255,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\MessageWebController not found\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 5
 			path: routes/web.php
 
 		-
@@ -5799,7 +6321,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\TrustWebController not found\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 6
 			path: routes/web.php
 
 		-
@@ -5875,6 +6397,222 @@ parameters:
 			path: tests/Feature/LocationHierarchyTest.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Identity\\Models\\User\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$download_url on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 6
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$notes on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$reviewed_at on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$reviewed_by on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to property \$status on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Call to method refresh\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\DocumentVersion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Verification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Module11DocumentVerificationTest\:\:\$document has unknown class App\\Models\\Document as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Module11DocumentVerificationTest\:\:\$verification has unknown class App\\Models\\Verification as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module11DocumentVerificationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$from_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module3PropertyMediaTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$price\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module3PropertyMediaTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$to_status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module3PropertyMediaTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tier\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module4MarketplacePromotionTest.php
+
+		-
+			message: '#^Access to property \$clicks_count on an unknown class App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module4MarketplacePromotionTest.php
+
+		-
+			message: '#^Call to method refresh\(\) on an unknown class App\\Models\\Promotion\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module4MarketplacePromotionTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$bookingGuests\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$cancellationRecord\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$checkInOutRecords\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$guestsRoster\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to property \$fee_amount on an unknown class App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to property \$refund_amount on an unknown class App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Access to property \$status on an unknown class App\\Models\\CancellationRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\BookingGuest\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\CancellationPolicy\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\CheckInOutRecord\.$#'
+			identifier: class.notFound
+			count: 2
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Class App\\Models\\CancellationRecord not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Commission\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Phase1ControllersTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\CommissionRule\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Phase1ControllersTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\PropertyPriceHistory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Phase1ControllersTest.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\PropertyStatusHistory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/Phase1ControllersTest.php
+
+		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Amenity\:\:\$status\.$#'
 			identifier: property.notFound
 			count: 2
@@ -5945,6 +6683,18 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: tests/Feature/PublicDiscoveryTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$file_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/RealtimeChatEventTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$file_path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/RealtimeChatEventTest.php
 
 		-
 			message: '#^Call to method update\(\) on an unknown class App\\Policies\\PropertyPolicy\.$#'

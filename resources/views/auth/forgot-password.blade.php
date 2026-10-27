@@ -1,7 +1,7 @@
 <x-layouts.auth>
     <x-slot name="title">{{ __('Forgot Password') }}</x-slot>
 
-    <div class="bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-7 sm:p-9 shadow-xl shadow-orange-950/5">
+    <div class="card bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-3xl p-7 sm:p-9">
         {{-- Header --}}
         <div class="text-center mb-7">
             <div class="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-3 shadow-xs">
@@ -38,7 +38,7 @@
                            autofocus
                            autocomplete="email" 
                            placeholder="you@example.com" 
-                           class="w-full pl-10 pr-3.5 py-3 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-[#EBDBC9] dark:border-[#273244] text-[#111827] dark:text-white placeholder:text-[#9CA3AF] focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-3.5 py-3 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-[#111827] dark:text-white placeholder:text-[#9CA3AF] focus:border-orange-500 outline-none transition-colors">
                 </div>
                 @if($errors->has('email'))
                     <p class="text-rose-600 text-xs mt-1 font-bold">{{ $errors->first('email') }}</p>
@@ -55,7 +55,7 @@
             </button>
         </form>
 
-        <div class="h-px bg-[#EBDBC9] dark:bg-[#273244] my-6"></div>
+        <div class="h-px bg-slate-200 dark:bg-slate-700 my-6"></div>
 
         <p class="text-center text-xs sm:text-sm">
             <a href="/login" class="text-orange-600 dark:text-orange-400 font-extrabold hover:underline inline-flex items-center gap-1.5" id="back-to-login">

@@ -124,7 +124,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="dashboard-shell bg-slate-50 dark:bg-[#070B14] text-slate-800 dark:text-slate-100 antialiased selection:bg-orange-500 selection:text-white">
+<body class="dashboard-shell bg-slate-50 dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 antialiased selection:bg-orange-500 selection:text-white">
 
     <div class="flex h-dvh overflow-hidden">
 
@@ -142,11 +142,11 @@
 
         {{-- ═══ SIDEBAR ═══ --}}
         <aside id="dashboard-sidebar"
-               class="fixed lg:static inset-y-0 left-0 z-40 w-68 flex-shrink-0 bg-white/95 dark:bg-[#0A101D]/95 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800/70 flex flex-col transition-transform duration-[240ms] [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] shadow-xl lg:shadow-none"
+               class="fixed lg:static inset-y-0 left-0 z-40 w-68 flex-shrink-0 bg-white/95 dark:bg-[#111A2E]/95 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col transition-transform duration-[240ms] [transition-timing-function:cubic-bezier(0.32,0.72,0,1)] shadow-xl lg:shadow-none"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
             {{-- Sidebar Header: Aura Estates & Apple Design Synergy --}}
-            <div class="flex items-center gap-3 px-5 h-17 border-b border-slate-200/80 dark:border-slate-800/70 flex-shrink-0 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
+            <div class="flex items-center gap-3 px-5 h-17 border-b border-slate-200/80 dark:border-slate-800/80 flex-shrink-0 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 via-[#C2410C] to-amber-500 flex items-center justify-center text-white font-serif font-bold text-xl shadow-md shadow-orange-500/25 ring-1 ring-orange-400/30">
                     A
                 </div>
@@ -177,7 +177,7 @@
                         </div>
                         <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
-                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#0D1527] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl shadow-slate-950/20 p-1.5 z-50" x-cloak>
+                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl shadow-slate-950/20 p-1.5 z-50" x-cloak>
                         <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{{ __('Active Workspaces') }}</div>
                         <a href="#" class="dropdown-item rounded-lg flex items-center justify-between bg-orange-50/50 dark:bg-orange-950/20">
                             <div class="flex items-center gap-2 min-w-0">
@@ -235,6 +235,17 @@
                        class="sidebar-link {{ request()->is('dashboard/moderation*') ? 'active' : '' }}">
                         <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
                         <span>{{ __('Moderation Queue') }}</span>
+                    </a>
+
+                    <a href="{{ route('dashboard.notifications.index') }}" id="sidebar-notifications"
+                       class="sidebar-link {{ request()->is('dashboard/notifications*') ? 'active' : '' }}">
+                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                        <span class="flex-1">{{ __('Notifications') }}</span>
+                        @if(($unreadNotificationsCount ?? 0) > 0)
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold bg-orange-600 text-white">
+                                {{ $unreadNotificationsCount > 9 ? '9+' : $unreadNotificationsCount }}
+                            </span>
+                        @endif
                     </a>
                 </div>
 
@@ -456,7 +467,7 @@
                         <svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
                     </button>
                     <div x-show="open" @click.outside="open = false"
-                         class="dropdown absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-[#0D1322] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl shadow-slate-950/10 p-1"
+                         class="dropdown absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl shadow-slate-950/10 p-1"
                          x-cloak>
                         <a href="/dashboard/profile" class="dropdown-item rounded-lg" id="sidebar-user-profile">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
@@ -476,14 +487,14 @@
         </aside>
 
         {{-- ═══ MAIN AREA ═══ --}}
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 dark:bg-[#070B14] relative">
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 dark:bg-[#0F172A] relative">
 
             {{-- Aura Estates Ambient Light Orbs --}}
             <div class="absolute -top-32 -left-32 w-96 h-96 bg-orange-500/10 dark:bg-orange-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
             <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 dark:bg-amber-600/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
 
             {{-- Topbar --}}
-            <header class="flex-shrink-0 h-16 bg-white/80 dark:bg-[#0A101D]/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/70 border-t border-t-white/60 dark:border-t-white/10 flex items-center justify-between gap-4 px-4 lg:px-8 shadow-xs relative z-10" id="dashboard-topbar">
+            <header class="flex-shrink-0 h-16 bg-white/80 dark:bg-[#111A2E]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 border-t border-t-white/60 dark:border-t-white/10 flex items-center justify-between gap-4 px-4 lg:px-8 shadow-xs relative z-10" id="dashboard-topbar">
                 {{-- Mobile sidebar toggle & Page Title --}}
                 <div class="flex items-center gap-3 min-w-0">
                     <button @click="sidebarOpen = !sidebarOpen"
@@ -544,16 +555,143 @@
                     {{-- Dark Mode --}}
                     <x-theme-toggle id="topbar-dark-toggle" />
 
-                    {{-- Notifications --}}
-                    <button class="btn btn-ghost btn-icon rounded-xl relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" aria-label="Notifications" id="topbar-notifications">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white dark:ring-[#0A101D]" aria-hidden="true"></span>
-                    </button>
+                    {{-- Notifications Popover --}}
+                    <div class="relative" x-data="{ 
+                        open: false, 
+                        unreadCount: {{ $unreadNotificationsCount ?? 0 }},
+                        markAllRead() {
+                            fetch('{{ route('dashboard.notifications.mark-all-read') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                }
+                            }).then(r => r.json()).then(data => {
+                                if (data.success) {
+                                    this.unreadCount = 0;
+                                    document.querySelectorAll('.notification-dot').forEach(el => el.remove());
+                                }
+                            });
+                        }
+                    }" @click.outside="open = false" @keydown.escape.window="open = false">
+                        <button @click="open = !open" 
+                                class="btn btn-ghost btn-icon rounded-xl relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-hidden" 
+                                aria-label="Notifications" 
+                                id="topbar-notifications"
+                                :aria-expanded="open">
+                            <svg class="w-5 h-5 text-slate-700 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                            <template x-if="unreadCount > 0">
+                                <span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-orange-600 text-white font-mono text-[10px] font-extrabold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#111A2E] shadow-sm animate-pulse" 
+                                      x-text="unreadCount > 9 ? '9+' : unreadCount">
+                                </span>
+                            </template>
+                        </button>
+
+                        {{-- Dropdown Card --}}
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-180" 
+                             x-transition:enter-start="opacity-0 translate-y-2 scale-95" 
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100" 
+                             x-transition:leave="transition ease-in duration-120" 
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100" 
+                             x-transition:leave-end="opacity-0 translate-y-2 scale-95" 
+                             x-cloak 
+                             class="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 shadow-2xl z-50 overflow-hidden" 
+                             id="notifications-popover-menu">
+                            
+                            {{-- Dropdown Header --}}
+                            <div class="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/40">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="font-display font-extrabold text-sm text-slate-900 dark:text-white">{{ __('Notifications') }}</h3>
+                                    <template x-if="unreadCount > 0">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20" x-text="unreadCount + ' new'"></span>
+                                    </template>
+                                </div>
+                                <template x-if="unreadCount > 0">
+                                    <button @click="markAllRead()" 
+                                            class="text-xs font-bold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 transition-colors cursor-pointer">
+                                        {{ __('Mark all read') }}
+                                    </button>
+                                </template>
+                            </div>
+
+                            {{-- Notifications List --}}
+                            <div class="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
+                                @forelse($recentNotifications ?? [] as $n)
+                                    @php
+                                        $isUnread = is_null($n->read_at);
+                                        $type = $n->type ?? '';
+                                        $title = $n->data['title'] ?? __('Notification');
+                                        $message = $n->data['message'] ?? '';
+                                        $actionUrl = $n->data['action_url'] ?? route('dashboard.notifications.index');
+                                        $time = $n->created_at ? $n->created_at->diffForHumans() : __('Just now');
+                                        
+                                        $isDeal = str_contains($type, 'Milestone') || str_contains($type, 'Escrow') || str_contains($type, 'Deal');
+                                        $isInquiry = str_contains($type, 'Inquiry') || str_contains($type, 'Message') || str_contains($type, 'Lead');
+                                    @endphp
+                                    <form method="POST" action="{{ route('dashboard.notifications.read', $n->id) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="redirect" value="{{ $actionUrl }}">
+                                        <button type="submit" class="w-full text-left p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-start gap-3 group cursor-pointer {{ $isUnread ? 'bg-orange-500/[0.03] dark:bg-orange-500/[0.04]' : '' }}">
+                                            {{-- Icon Avatar --}}
+                                            <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 {{ $isDeal ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : ($isInquiry ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400') }}">
+                                                @if($isDeal)
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                @elseif($isInquiry)
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.75.75 0 01-.734-.993l.613-2.044A8.52 8.52 0 013 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
+                                                @else
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                                                @endif
+                                            </div>
+
+                                            {{-- Content --}}
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between gap-1">
+                                                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                                                        {{ $title }}
+                                                    </p>
+                                                    @if($isUnread)
+                                                        <span class="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0 notification-dot"></span>
+                                                    @endif
+                                                </div>
+                                                <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5 leading-snug">
+                                                    {{ $message }}
+                                                </p>
+                                                <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-1 block">
+                                                    {{ $time }}
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </form>
+                                @empty
+                                    <div class="p-8 text-center text-slate-400 dark:text-slate-500">
+                                        <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+                                        <p class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('No new notifications') }}</p>
+                                        <p class="text-[11px] text-slate-400">{{ __('You are completely caught up!') }}</p>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            {{-- Dropdown Footer --}}
+                            <div class="px-4 py-2.5 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold">
+                                <a href="{{ route('dashboard.notifications.index') }}" class="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 flex items-center gap-1">
+                                    <span>{{ __('View Notification Center') }}</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                </a>
+                                <a href="{{ route('dashboard.preferences') }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                                    {{ __('Settings') }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {{-- Page Content --}}
-            <main class="flex-1 overflow-y-auto p-4 lg:p-7 bg-slate-50/50 dark:bg-[#070B14]" role="main">
+            <main class="flex-1 overflow-y-auto p-4 lg:p-7 bg-slate-50/50 dark:bg-[#0F172A]" role="main">
                 @if (session('success'))
                     <div class="mb-5 alert alert-success" role="alert">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.745 3.745 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>

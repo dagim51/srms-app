@@ -216,6 +216,9 @@ class PublicPropertyWebController extends Controller
                 'property.features',
                 'property.category',
                 'property.type',
+                'property.subCity',
+                'property.zone',
+                'property.woreda',
             ])
             ->firstOrFail();
 

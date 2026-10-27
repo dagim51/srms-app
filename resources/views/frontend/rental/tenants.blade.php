@@ -15,7 +15,7 @@
         @include('frontend.rental.partials.tabs')
 
         {{-- Actions & Filter Toolbar --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Active Tenants Roster') }}</h2>
@@ -76,7 +76,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[#EBDBC9]/50 dark:divide-[#273244]">
-                        @foreach($tenants as $tenant)
+                        @forelse($tenants as $tenant)
                             <tr class="hover:bg-surface dark:hover:bg-surface/30 transition-colors">
                                 <td class="p-4 font-bold text-muted dark:text-white">
                                     <a href="{{ route('dashboard.rental.tenants.show', $tenant['id']) }}" class="hover:text-primary-600">{{ $tenant['name'] }}</a>
@@ -93,10 +93,21 @@
                                     <a href="{{ route('dashboard.rental.tenants.show', $tenant['id']) }}" class="text-primary-600 hover:text-primary-700 font-medium text-sm">{{ __('View Profile') }}</a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-muted">
+                                    {{ __('No tenants found.') }}
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($tenants, 'links'))
+                <div class="p-4 border-t border-[#EBDBC9] dark:border-[#273244]">
+                    {{ $tenants->links() }}
+                </div>
+            @endif
         </div>
 
     </div>

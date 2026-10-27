@@ -4,6 +4,7 @@ namespace App\Domains\Transaction\Http\Controllers\Api\V1;
 
 use App\Domains\Transaction\Http\Controllers\Controller;
 use App\Domains\Transaction\Models\Payment;
+use App\Services\Payments\CbeBirrGateway;
 use App\Services\Payments\PaymentService;
 use App\Services\Payments\TelebirrGateway;
 use Illuminate\Http\Request;
@@ -41,7 +42,7 @@ class PaymentWebhookController extends Controller
             if (! $gateway->verifyWebhookSignature($rawPayload, $signature)) {
                 Log::warning('Telebirr webhook signature verification failed');
 
-                return response()->json(['code' => 'SIGNATURE_INVALID', 'msg' => 'Invalid signature'], 400);
+                return response()->json(['code' => 'SIGNATURE_INVALID', 'msg' => 'Invalid signature'], 401);
             }
         }
 
@@ -145,5 +146,66 @@ class PaymentWebhookController extends Controller
             'out_trade_no' => $outTradeNo,
             'status' => $status,
         ]);
+    }
+
+    /**
+     * Handle CBE Birr payment notification (webhook).
+     */
+    public function cbeBirr(Request $request)
+    {
+        $payload = $request->all();
+        $signature = $request->header('X-Cbe-Birr-Signature') ?? $request->header('signature');
+
+        Log::info('CBE Birr webhook received', [
+            'payload' => $payload,
+            'has_signature' => ! empty($signature),
+        ]);
+
+        $gateway = app(CbeBirrGateway::class);
+        $rawPayload = $request->getContent();
+
+        // Enforce signature verification if signature is provided or in production
+        if ($signature && ! $gateway->verifyWebhookSignature($rawPayload, $signature)) {
+            Log::warning('CBE Birr webhook signature verification failed');
+
+            return response()->json(['code' => 'SIGNATURE_INVALID', 'msg' => 'Invalid signature'], 401);
+        }
+
+        $gateway->processEvent($payload);
+
+        $outTradeNo = $payload['out_trade_no'] ?? $payload['trade_no'] ?? null;
+        $status = $payload['status'] ?? 'unknown';
+
+        if (! $outTradeNo) {
+            return response()->json(['code' => 'INVALID_PAYLOAD', 'msg' => 'Missing out_trade_no'], 400);
+        }
+
+        // Idempotency: check if already completed
+        $isUuid = Str::isUuid($outTradeNo);
+        $existing = Payment::where(function ($q) use ($outTradeNo, $isUuid) {
+            $q->where('transaction_reference', $outTradeNo)
+                ->orWhere('metadata->gateway_order_ref', $outTradeNo);
+            if ($isUuid) {
+                $q->orWhere('id', $outTradeNo);
+            }
+        })->first();
+
+        if ($existing && $existing->status === 'completed' && in_array($status, ['SUCCESS', 'completed', 'paid'])) {
+            return response()->json(['code' => 'SUCCESS', 'msg' => 'Already processed']);
+        }
+
+        try {
+            if (in_array($status, ['SUCCESS', 'completed', 'paid'])) {
+                $this->handleSuccess($outTradeNo, $payload);
+            } elseif (in_array($status, ['FAILED', 'failed', 'cancelled'])) {
+                $this->handleFailed($outTradeNo, $payload);
+            }
+        } catch (\Exception $e) {
+            Log::error('CBE Birr webhook processing error', ['error' => $e->getMessage()]);
+
+            return response()->json(['code' => 'ERROR', 'msg' => $e->getMessage()], 500);
+        }
+
+        return response()->json(['code' => 'SUCCESS', 'msg' => 'Processed']);
     }
 }

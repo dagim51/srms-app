@@ -2,11 +2,17 @@
 
 namespace App\Domains\Trust\Http\Controllers\Web;
 
+use App\Domains\Listing\Models\ListingFlag;
+use App\Domains\Property\Models\Property;
+use App\Domains\Trust\Models\Dispute;
+use App\Domains\Trust\Models\DisputeEvidence;
+use App\Domains\Trust\Models\UserFlag;
+use App\Domains\Trust\Models\Verification;
 use App\Http\Controllers\Controller;
-use App\Models\Dispute;
-use App\Models\ListingFlag;
-use App\Models\UserFlag;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TrustWebController extends Controller
 {
@@ -14,173 +20,401 @@ class TrustWebController extends Controller
     {
         $openDisputes = Dispute::whereIn('status', ['open', 'under_review', 'escalated'])->count();
         $newReports = ListingFlag::where('status', 'open')->count() + UserFlag::where('status', 'open')->count();
+        $pendingVerifications = Verification::whereIn('status', ['pending', 'pending_review'])->count();
         $activeCases = $openDisputes + $newReports;
 
         $stats = [
-            'active_cases' => $activeCases > 0 ? $activeCases : 14,
-            'new_reports' => $newReports > 0 ? $newReports : 5,
-            'open_disputes' => $openDisputes > 0 ? $openDisputes : 8,
+            'active_cases' => $activeCases,
+            'new_reports' => $newReports,
+            'open_disputes' => $openDisputes,
+            'pending_verifications' => $pendingVerifications,
             'avg_resolution' => '24h',
         ];
 
-        $dbDisputes = Dispute::with(['complainant', 'respondent'])->latest()->take(5)->get();
-        if ($dbDisputes->isNotEmpty()) {
-            $recentActivity = $dbDisputes->map(function ($d, $idx) {
+        $recentActivity = Dispute::with(['complainant', 'respondent'])
+            ->latest()
+            ->take(6)
+            ->get()
+            ->map(function ($d) {
                 return [
-                    'id' => 'CAS-'.(800 + $idx + 1),
-                    'type' => 'Dispute',
-                    'subject' => $d->subject ?? 'Deposit Deduction Dispute',
-                    'status' => $d->status ?? 'escalated',
-                    'date' => $d->created_at ? $d->created_at->format('Y-m-d') : '2026-10-08',
+                    'id' => 'CAS-'.strtoupper(substr($d->id, 0, 8)),
+                    'raw_id' => $d->id,
+                    'type' => ucwords(str_replace('_', ' ', $d->type ?? 'Dispute')),
+                    'subject' => $d->subject ?? 'Dispute Case',
+                    'status' => $d->status ?? 'open',
+                    'date' => $d->created_at ? $d->created_at->format('Y-m-d') : now()->format('Y-m-d'),
                 ];
             })->toArray();
-        } else {
-            $recentActivity = [
-                ['id' => 'CAS-801', 'type' => 'Fraud Report', 'subject' => 'Suspicious Listing #405', 'status' => 'investigating', 'date' => '2026-10-08'],
-                ['id' => 'CAS-802', 'type' => 'Dispute', 'subject' => 'Deposit Deduction', 'status' => 'escalated', 'date' => '2026-10-07'],
-                ['id' => 'CAS-803', 'type' => 'Moderation', 'subject' => 'Inappropriate Message', 'status' => 'resolved', 'date' => '2026-10-05'],
-                ['id' => 'CAS-804', 'type' => 'Fraud Report', 'subject' => 'Fake Identity Upload', 'status' => 'action_taken', 'date' => '2026-10-02'],
-            ];
-        }
 
-        return view('frontend.trust.index', compact('stats', 'recentActivity'));
+        $recentVerifications = Verification::with('user')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $users = User::select('id', 'name', 'email')->orderBy('name')->take(50)->get();
+        $properties = Property::select('id', 'title', 'property_code')->latest()->take(30)->get();
+
+        return view('frontend.trust.index', compact('stats', 'recentActivity', 'recentVerifications', 'users', 'properties'));
     }
 
     public function reports(Request $request)
     {
-        $listingFlags = ListingFlag::with(['listing', 'reporter'])->latest()->get();
-        if ($listingFlags->isNotEmpty()) {
-            $reports = $listingFlags->map(function ($f, $idx) {
-                return [
-                    'id' => 'REP-'.(500 + $idx + 1),
-                    'reporter' => $f->reporter?->name ?? 'User #'.rand(100, 999),
-                    'reason' => $f->reason ?? 'Scam/Fraud',
-                    'target' => 'Listing: '.($f->listing?->property?->title ?? 'Apartment'),
-                    'status' => $f->status ?? 'open',
-                    'date' => $f->created_at ? $f->created_at->format('Y-m-d') : '2026-10-08',
-                ];
-            });
-        } else {
-            $reports = collect([
-                ['id' => 'REP-501', 'reporter' => 'User ID 405', 'reason' => 'Scam/Fraud', 'target' => 'Listing: CMC Condo', 'status' => 'open', 'date' => '2026-10-08'],
-                ['id' => 'REP-502', 'reporter' => 'Sara Tadesse', 'reason' => 'Harassment', 'target' => 'User ID 912', 'status' => 'reviewing', 'date' => '2026-10-07'],
-                ['id' => 'REP-503', 'reporter' => 'System (Automated)', 'reason' => 'Suspicious IP', 'target' => 'Account: Dawit M.', 'status' => 'resolved', 'date' => '2026-10-06'],
-            ]);
+        $query = ListingFlag::with(['listing.property', 'reporter'])->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $reports = $reports->filter(function ($r) use ($q) {
-                return str_contains(strtolower($r['id']), $q)
-                    || str_contains(strtolower($r['reporter']), $q)
-                    || str_contains(strtolower($r['reason']), $q)
-                    || str_contains(strtolower($r['target']), $q)
-                    || str_contains(strtolower($r['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->where('reason', 'like', "%{$q}%")
+                    ->orWhereHas('reporter', function ($u) use ($q) {
+                        $u->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('listing.property', function ($p) use ($q) {
+                        $p->where('title', 'like', "%{$q}%");
+                    });
             });
         }
 
-        return view('frontend.trust.reports', [
-            'reports' => $reports->values(),
-        ]);
+        $reports = $query->paginate(20)->withQueryString()->through(function ($f) {
+            return [
+                'raw_id' => $f->id,
+                'id' => 'REP-'.strtoupper(substr($f->id, 0, 8)),
+                'reporter' => $f->reporter?->name ?? 'Anonymous Reporter',
+                'reason' => $f->reason ?? 'Flagged Content',
+                'description' => $f->description ?? $f->reason,
+                'target' => 'Listing: '.($f->listing?->property?->title ?? 'Real Estate Property'),
+                'severity' => $f->severity ?? 'medium',
+                'status' => $f->status ?? 'open',
+                'moderator_notes' => $f->moderator_notes,
+                'date' => $f->created_at ? $f->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+            ];
+        });
+
+        return view('frontend.trust.reports', compact('reports'));
     }
 
     public function disputes(Request $request)
     {
-        $dbDisputes = Dispute::with(['complainant', 'respondent'])->latest()->get();
-        if ($dbDisputes->isNotEmpty()) {
-            $disputes = $dbDisputes->map(function ($d, $idx) {
-                return [
-                    'id' => 'DSP-'.(300 + $idx + 1),
-                    'plaintiff' => $d->complainant?->name ?? 'Tenant',
-                    'defendant' => $d->respondent?->name ?? 'Property Owner',
-                    'amount' => number_format($d->amount_in_dispute ?? 5000).' '.($d->currency ?? 'ETB'),
-                    'reason' => $d->subject ?? 'Deposit Deduction',
-                    'status' => $d->status ?? 'escalated',
-                    'date' => $d->created_at ? $d->created_at->format('Y-m-d') : '2026-10-08',
-                ];
-            });
-        } else {
-            $disputes = collect([
-                ['id' => 'DSP-301', 'plaintiff' => 'Abebe Kebede', 'defendant' => 'Property Manager', 'amount' => '5,000 ETB', 'reason' => 'Unfair Deposit Deduction', 'status' => 'escalated', 'date' => '2026-10-08'],
-                ['id' => 'DSP-302', 'plaintiff' => 'Sara Cleaning', 'defendant' => 'System', 'amount' => '1,500 ETB', 'reason' => 'Payment Failed', 'status' => 'investigating', 'date' => '2026-10-06'],
-            ]);
+        $query = Dispute::with(['complainant', 'respondent'])->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $disputes = $disputes->filter(function ($d) use ($q) {
-                return str_contains(strtolower($d['id']), $q)
-                    || str_contains(strtolower($d['plaintiff']), $q)
-                    || str_contains(strtolower($d['defendant']), $q)
-                    || str_contains(strtolower($d['reason']), $q)
-                    || str_contains(strtolower($d['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->where('subject', 'like', "%{$q}%")
+                    ->orWhere('id', 'like', "%{$q}%")
+                    ->orWhereHas('complainant', function ($u) use ($q) {
+                        $u->where('name', 'like', "%{$q}%");
+                    })
+                    ->orWhereHas('respondent', function ($u) use ($q) {
+                        $u->where('name', 'like', "%{$q}%");
+                    });
             });
         }
 
-        return view('frontend.trust.disputes', [
-            'disputes' => $disputes->values(),
+        $disputes = $query->paginate(20)->withQueryString()->through(function ($d) {
+            return [
+                'raw_id' => $d->id,
+                'id' => 'DSP-'.strtoupper(substr($d->id, 0, 8)),
+                'plaintiff' => $d->complainant?->name ?? 'Complainant',
+                'defendant' => $d->respondent?->name ?? 'Respondent',
+                'amount' => number_format((float) ($d->amount_in_dispute ?? 0)).' '.($d->currency ?? 'ETB'),
+                'raw_amount' => $d->amount_in_dispute ?? 0,
+                'reason' => $d->subject ?? 'Dispute Case',
+                'type' => ucwords(str_replace('_', ' ', $d->type ?? 'Contract Dispute')),
+                'status' => $d->status ?? 'open',
+                'priority' => $d->priority ?? 'medium',
+                'date' => $d->created_at ? $d->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+            ];
+        });
+
+        $users = User::select('id', 'name', 'email')->orderBy('name')->take(50)->get();
+        $properties = Property::select('id', 'title', 'property_code')->latest()->take(30)->get();
+
+        return view('frontend.trust.disputes', compact('disputes', 'users', 'properties'));
+    }
+
+    public function storeCase(Request $request)
+    {
+        $validated = $request->validate([
+            'complainant_id' => 'required|exists:users,id',
+            'respondent_id' => 'required|exists:users,id|different:complainant_id',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string|max:2000',
+            'type' => 'required|string|in:contract_dispute,payment_issue,damage_claim,fraud_suspect,escrow_violation',
+            'amount_in_dispute' => 'nullable|numeric|min:0',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'disputable_id' => 'nullable|string',
         ]);
+
+        $dispute = Dispute::create([
+            'complainant_id' => $validated['complainant_id'],
+            'respondent_id' => $validated['respondent_id'],
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'type' => $validated['type'],
+            'amount_in_dispute' => $validated['amount_in_dispute'] ?? 0,
+            'currency' => 'ETB',
+            'status' => 'open',
+            'priority' => $validated['priority'],
+            'disputable_type' => Property::class,
+            'disputable_id' => $validated['disputable_id'] ?? Property::first()?->id ?? Str::uuid(),
+            'opened_at' => now(),
+        ]);
+
+        return redirect()->route('dashboard.trust.cases.show', $dispute->id)->with('success', 'Dispute case successfully logged and registered for mediation.');
     }
 
     public function caseShow($id)
     {
-        $dbDispute = Dispute::with(['complainant', 'respondent', 'evidence'])->first();
-        if ($dbDispute) {
-            $case = [
-                'id' => $id,
-                'type' => 'Dispute',
-                'subject' => $dbDispute->subject,
-                'status' => $dbDispute->status ?? 'escalated',
-                'priority' => $dbDispute->priority ?? 'high',
-                'plaintiff' => ($dbDispute->complainant?->name ?? 'Abebe Kebede').' (Tenant)',
-                'defendant' => ($dbDispute->respondent?->name ?? 'Manager').' (Property Owner)',
-                'amount_contested' => number_format($dbDispute->amount_in_dispute ?? 5000).' '.($dbDispute->currency ?? 'ETB'),
-                'created_at' => $dbDispute->created_at ? $dbDispute->created_at->format('Y-m-d h:i A') : '2026-10-08 10:15 AM',
-                'description' => $dbDispute->description ?? 'Dispute description provided by complainant.',
-            ];
+        $dbDispute = Dispute::with(['complainant', 'respondent', 'evidence'])->find($id);
 
-            $evidence = $dbDispute->evidence->map(function ($ev) {
-                return [
-                    'type' => ucfirst($ev->type ?? 'document'),
-                    'name' => $ev->title ?? 'evidence_document.pdf',
-                    'submitted_by' => 'Complainant',
-                    'date' => $ev->created_at ? $ev->created_at->format('Y-m-d H:i') : '2026-10-08 10:20',
-                ];
-            })->toArray();
-
-            if (empty($evidence)) {
-                $evidence = [
-                    ['type' => 'Image', 'name' => 'move_out_condition_living_room.jpg', 'submitted_by' => 'Abebe Kebede', 'date' => '2026-10-08 10:20'],
-                    ['type' => 'Document', 'name' => 'move_in_inspection_report.pdf', 'submitted_by' => 'Manager', 'date' => '2026-10-08 11:00'],
-                ];
-            }
-        } else {
-            $case = [
-                'id' => $id,
-                'type' => 'Dispute',
-                'subject' => 'Unfair Deposit Deduction',
-                'status' => 'escalated',
-                'priority' => 'high',
-                'plaintiff' => 'Abebe Kebede (Tenant)',
-                'defendant' => 'Manager (Property Owner)',
-                'amount_contested' => '5,000 ETB',
-                'created_at' => '2026-10-08 10:15 AM',
-                'description' => 'Tenant claims that the 5,000 ETB deduction for "painting" was unjustified as the apartment was returned in the same condition it was received.',
-            ];
-
-            $evidence = [
-                ['type' => 'Image', 'name' => 'move_out_condition_living_room.jpg', 'submitted_by' => 'Abebe Kebede', 'date' => '2026-10-08 10:20'],
-                ['type' => 'Document', 'name' => 'move_in_inspection_report.pdf', 'submitted_by' => 'Manager', 'date' => '2026-10-08 11:00'],
-            ];
+        if (! $dbDispute && (str_starts_with((string) $id, 'DSP-') || str_starts_with((string) $id, 'CAS-'))) {
+            $short = strtolower(substr((string) $id, 4));
+            $dbDispute = Dispute::with(['complainant', 'respondent', 'evidence'])
+                ->where('id', 'like', $short.'%')
+                ->first();
         }
 
-        $timeline = [
-            ['action' => 'Dispute Filed', 'user' => 'Tenant', 'date' => '2026-10-08 10:15 AM'],
-            ['action' => 'Evidence Uploaded', 'user' => 'Tenant', 'date' => '2026-10-08 10:20 AM'],
-            ['action' => 'Counter Evidence Provided', 'user' => 'Property Manager', 'date' => '2026-10-08 11:00 AM'],
-            ['action' => 'Escalated to Mediator', 'user' => 'System', 'date' => '2026-10-08 14:00 PM'],
+        // If not found as dispute, check if this is a ListingFlag report
+        if (! $dbDispute) {
+            $flag = ListingFlag::with(['listing.property', 'reporter'])->find($id);
+            if (! $flag && str_starts_with((string) $id, 'REP-')) {
+                $short = strtolower(substr((string) $id, 4));
+                $flag = ListingFlag::with(['listing.property', 'reporter'])->where('id', 'like', $short.'%')->first();
+            }
+
+            if ($flag) {
+                $case = [
+                    'id' => $flag->id,
+                    'code' => 'REP-'.strtoupper(substr($flag->id, 0, 8)),
+                    'type' => 'User Marketplace Report',
+                    'subject' => 'Listing Flag: '.($flag->reason ?? 'Reported Content'),
+                    'status' => $flag->status ?? 'open',
+                    'priority' => $flag->severity ?? 'medium',
+                    'plaintiff' => ($flag->reporter?->name ?? 'Marketplace Reporter').' (Reporter)',
+                    'defendant' => ($flag->listing?->property?->title ?? 'Reported Property').' (Target Listing)',
+                    'amount_contested' => '0.00 ETB',
+                    'created_at' => $flag->created_at ? $flag->created_at->format('Y-m-d h:i A') : now()->format('Y-m-d h:i A'),
+                    'description' => $flag->description ?? ($flag->reason ?? 'Reported for review.'),
+                    'is_report' => true,
+                    'raw_id' => $flag->id,
+                    'resolution_notes' => $flag->moderator_notes,
+                ];
+
+                $evidence = [];
+                $timeline = [
+                    ['action' => 'Report Submitted', 'user' => $flag->reporter?->name ?? 'Reporter', 'date' => $case['created_at']],
+                    ['action' => 'Report Queue Registered', 'user' => 'Safety System', 'date' => $case['created_at']],
+                ];
+
+                return view('frontend.trust.case_show', compact('case', 'evidence', 'timeline'));
+            }
+
+            $dbDispute = Dispute::with(['complainant', 'respondent', 'evidence'])->findOrFail($id);
+        }
+
+        $case = [
+            'id' => $dbDispute->id,
+            'code' => 'DSP-'.strtoupper(substr($dbDispute->id, 0, 8)),
+            'type' => ucwords(str_replace('_', ' ', $dbDispute->type ?? 'Dispute')),
+            'subject' => $dbDispute->subject,
+            'status' => $dbDispute->status ?? 'open',
+            'priority' => $dbDispute->priority ?? 'medium',
+            'plaintiff' => ($dbDispute->complainant?->name ?? 'Complainant').' (Party A)',
+            'defendant' => ($dbDispute->respondent?->name ?? 'Respondent').' (Party B)',
+            'amount_contested' => number_format((float) ($dbDispute->amount_in_dispute ?? 0)).' '.($dbDispute->currency ?? 'ETB'),
+            'raw_amount' => $dbDispute->amount_in_dispute ?? 0,
+            'created_at' => $dbDispute->created_at ? $dbDispute->created_at->format('Y-m-d h:i A') : now()->format('Y-m-d h:i A'),
+            'description' => $dbDispute->description ?? 'No description provided.',
+            'resolution_notes' => $dbDispute->resolution_notes,
+            'resolved_at' => $dbDispute->resolved_at ? $dbDispute->resolved_at->format('Y-m-d h:i A') : null,
+            'is_report' => false,
+            'raw_id' => $dbDispute->id,
         ];
 
+        $evidence = $dbDispute->evidence ? $dbDispute->evidence->map(function ($ev) {
+            return [
+                'id' => $ev->id,
+                'type' => ucfirst($ev->type ?? 'document'),
+                'name' => $ev->title ?? 'evidence_document.pdf',
+                'submitted_by' => 'Party Member',
+                'date' => $ev->created_at ? $ev->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
+                'description' => $ev->description ?? 'Certified case submission.',
+            ];
+        })->toArray() : [];
+
+        $timeline = [
+            ['action' => 'Dispute Formally Filed', 'user' => $dbDispute->complainant?->name ?? 'Complainant', 'date' => $case['created_at']],
+        ];
+
+        if ($dbDispute->status === 'under_review') {
+            $timeline[] = ['action' => 'Case Under Mediation Review', 'user' => 'Trust Officer', 'date' => now()->format('Y-m-d H:i')];
+        }
+
+        if ($dbDispute->resolved_at) {
+            $timeline[] = ['action' => 'Case Resolved / Mediated', 'user' => 'Mediation Authority', 'date' => $case['resolved_at']];
+        }
+
         return view('frontend.trust.case_show', compact('case', 'evidence', 'timeline'));
+    }
+
+    public function resolveCase(Request $request, $id)
+    {
+        $dispute = Dispute::where('id', $id)->first();
+        if (! $dispute && (str_starts_with((string) $id, 'DSP-') || str_starts_with((string) $id, 'CAS-'))) {
+            $short = strtolower(substr((string) $id, 4));
+            $dispute = Dispute::where('id', 'like', $short.'%')->first();
+        }
+
+        if (! $dispute) {
+            $dispute = Dispute::findOrFail($id);
+        }
+
+        $validated = $request->validate([
+            'resolution_notes' => 'nullable|string|max:2000',
+            'status' => 'required|string|in:resolved,closed,dismissed,under_review,escalated',
+        ]);
+
+        $dispute->update([
+            'status' => $validated['status'],
+            'resolution_notes' => $validated['resolution_notes'] ?? 'Dispute case reviewed and status finalized by mediator.',
+            'resolved_at' => in_array($validated['status'], ['resolved', 'closed', 'dismissed']) ? now() : null,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'dispute' => $dispute->fresh(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', __('Dispute case status updated: :status.', ['status' => ucfirst($validated['status'])]));
+    }
+
+    public function uploadEvidence(Request $request, $id)
+    {
+        $dispute = Dispute::where('id', $id)->first();
+        if (! $dispute && (str_starts_with((string) $id, 'DSP-') || str_starts_with((string) $id, 'CAS-'))) {
+            $short = strtolower(substr((string) $id, 4));
+            $dispute = Dispute::where('id', 'like', $short.'%')->first();
+        }
+
+        if (! $dispute) {
+            $dispute = Dispute::findOrFail($id);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:document,image,contract,payment_slip,audio',
+            'description' => 'nullable|string|max:1000',
+            'file' => 'nullable|file|max:10240',
+        ]);
+
+        $filePath = 'evidence/manual_upload.pdf';
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('evidence', 'public');
+        }
+
+        DisputeEvidence::create([
+            'dispute_id' => $dispute->id,
+            'submitted_by' => auth()->id() ?? $dispute->complainant_id,
+            'type' => $validated['type'],
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? 'Submitted verification evidence',
+            'file_path' => $filePath,
+            'is_verified' => true,
+        ]);
+
+        return redirect()->back()->with('success', __('Evidence record attached to the dispute dossier.'));
+    }
+
+    public function updateReportStatus(Request $request, ListingFlag $flag)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:open,under_review,resolved,dismissed',
+            'moderator_notes' => 'nullable|string',
+        ]);
+
+        $flag->update([
+            'status' => $validated['status'],
+            'moderator_notes' => $validated['moderator_notes'] ?? $flag->moderator_notes,
+            'assigned_moderator_id' => auth()->id(),
+            'reviewed_at' => now(),
+            'resolved_at' => in_array($validated['status'], ['resolved', 'dismissed'], true) ? now() : null,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'flag' => $flag->fresh(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', __('User report status updated successfully.'));
+    }
+
+    public function verifications(Request $request)
+    {
+        $query = Verification::with(['user', 'reviewer'])->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('search')) {
+            $q = strtolower(trim((string) $request->search));
+            $query->where(function ($sub) use ($q) {
+                $sub->where('type', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%")
+                    ->orWhere('risk_score', 'like', "%{$q}%")
+                    ->orWhereHas('user', function ($uq) use ($q) {
+                        $uq->where('name', 'like', "%{$q}%")
+                            ->orWhere('email', 'like', "%{$q}%");
+                    });
+            });
+        }
+
+        $verifications = $query->paginate(20)->withQueryString();
+
+        $stats = [
+            'total' => Verification::count(),
+            'pending' => Verification::whereIn('status', ['pending', 'pending_review'])->count(),
+            'approved' => Verification::where('status', 'approved')->count(),
+            'rejected' => Verification::where('status', 'rejected')->count(),
+        ];
+
+        return view('frontend.trust.verifications', compact('verifications', 'stats'));
+    }
+
+    public function reviewVerification(Request $request, $id)
+    {
+        $verification = Verification::findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected,additional_info_required,pending_review',
+            'notes' => 'nullable|string|max:1000',
+            'risk_score' => 'nullable|in:low,medium,high',
+        ]);
+
+        $verification->update([
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? $verification->notes,
+            'risk_score' => $validated['risk_score'] ?? $verification->risk_score,
+            'reviewed_by' => auth()->id(),
+            'reviewed_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', __('Verification status updated to :status.', ['status' => ucfirst(str_replace('_', ' ', $validated['status']))]));
     }
 }

@@ -1,7 +1,7 @@
 <x-layouts.auth>
     <x-slot name="title">{{ __('Create Account') }}</x-slot>
 
-    <div class="card bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-3xl p-7 sm:p-9 shadow-xl shadow-slate-950/5">
+    <div class="card bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-3xl p-7 sm:p-9">
         {{-- Header --}}
         <div class="text-center mb-7">
             <div class="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-3 shadow-xs">
@@ -30,7 +30,7 @@
                            required 
                            autocomplete="name" 
                            placeholder="{{ __('Abebe Bikila') }}" 
-                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
                 </div>
                 @if($errors->has('name'))
                     <p class="text-rose-600 text-xs mt-1 font-bold">{{ $errors->first('name') }}</p>
@@ -53,7 +53,7 @@
                            required 
                            autocomplete="email" 
                            placeholder="you@example.com" 
-                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
                 </div>
                 @if($errors->has('email'))
                     <p class="text-rose-600 text-xs mt-1 font-bold">{{ $errors->first('email') }}</p>
@@ -75,7 +75,7 @@
                            value="{{ old('phone') }}" 
                            autocomplete="tel" 
                            placeholder="+251 91 123 4567" 
-                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
                 </div>
             </div>
 
@@ -95,7 +95,7 @@
                            required 
                            autocomplete="new-password" 
                            placeholder="{{ __('At least 8 characters') }}" 
-                           class="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
                     
                     <button type="button" @click="showPass = !showPass" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer" aria-label="Toggle password visibility">
                         <svg x-show="!showPass" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -122,7 +122,7 @@
                            required 
                            autocomplete="new-password" 
                            placeholder="{{ __('Repeat your password') }}" 
-                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
+                           class="w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-orange-500 outline-none transition-colors">
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
             </button>
         </form>
 
-        <div class="h-px bg-slate-200 dark:bg-slate-800 my-6"></div>
+        <div class="h-px bg-slate-200 dark:bg-slate-700 my-6"></div>
 
         <p class="text-center text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-bold">
             {{ __('Already have an account?') }}

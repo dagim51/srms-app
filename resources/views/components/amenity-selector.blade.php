@@ -263,7 +263,7 @@
 
         <div class="flex flex-wrap gap-2">
             <template x-for="item in selectedList" :key="item.id">
-                <div class="inline-flex items-center gap-1.5 bg-white dark:bg-[#111827] border border-orange-200 dark:border-orange-800/60 rounded-lg px-2.5 py-1 text-xs text-muted dark:text-muted shadow-2xs">
+                <div class="card inline-flex items-center gap-1.5 bg-white dark:bg-[#111827] border border-orange-200 dark:border-orange-800/60 rounded-lg px-2.5 py-1 text-xs text-muted dark:text-muted -2xs">
                     <span class="font-medium" x-text="item.name"></span>
                     
                     {{-- Optional quick value field --}}

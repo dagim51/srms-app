@@ -76,7 +76,7 @@
         @endif
 
         {{-- Actions & Filter Toolbar --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Bids & Acquisition Offers') }}</h2>
@@ -202,7 +202,7 @@
                                 </div>
                             </div>
 
-                            <div class="bg-surface dark:bg-surface/50 p-4 rounded-xl flex items-center justify-between border border-warm dark:border-warm mb-4">
+                            <div class="card bg-surface dark:bg-surface/50 p-4 rounded-xl flex items-center justify-between border border-warm dark:border-warm mb-4">
                                 <div>
                                     <p class="text-xs font-bold text-muted uppercase tracking-wider mb-1">{{ __('Current Offer') }}</p>
                                     <p class="text-lg font-bold text-muted dark:text-white">{{ number_format($current->amount) }} {{ $offer->listing->currency }}</p>

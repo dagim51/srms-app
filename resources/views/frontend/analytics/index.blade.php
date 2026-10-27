@@ -67,7 +67,7 @@
         </div>
 
         <!-- Market Intelligence -->
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm text-white mb-8">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-white mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold flex items-center gap-2">
                     <svg class="w-6 h-6 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
@@ -101,7 +101,7 @@
         </div>
 
         <!-- Chart Placeholder -->
-        <div class="cinematic-fade-up cinematic-stagger-3 bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm min-h-[16rem] flex items-center justify-center">
+        <div class="card cinematic-fade-up cinematic-stagger-3 bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 min-h-[16rem] flex items-center justify-center">
             <div class="text-center text-[#4B5563] dark:text-[#CBD5E1]">
                 <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
                 <p class="font-bold text-[#0F172A] dark:text-white">{{ __('Revenue & Occupancy Chart') }}</p>

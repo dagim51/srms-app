@@ -36,7 +36,7 @@
         </div>
 
         {{-- Filter Console (Aura Estates Style) --}}
-        <div class="card bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-900/5 space-y-5 cinematic-fade-up cinematic-stagger-1">
+        <div class="card bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 cinematic-fade-up cinematic-stagger-1">
             {{-- Mode Filter Tabs --}}
             @php
                 $currentPurpose = request('purpose', 'all');
@@ -134,7 +134,7 @@
             </div>
         @else
             {{-- Empty State --}}
-            <div class="card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-16 text-center shadow-sm max-w-2xl mx-auto">
+            <div class="card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-16 text-center max-w-2xl mx-auto">
                 <div class="w-16 h-16 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>

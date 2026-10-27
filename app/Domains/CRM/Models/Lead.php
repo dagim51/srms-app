@@ -9,6 +9,8 @@ use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
@@ -28,27 +30,27 @@ class Lead extends Model
         'notes',
     ];
 
-    public function organization()
+    public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
 
-    public function assignee()
+    public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    public function listing()
+    public function listing(): BelongsTo
     {
         return $this->belongsTo(Listing::class);
     }
 
-    public function activities()
+    public function activities(): HasMany
     {
         return $this->hasMany(CrmActivity::class);
     }
 
-    public function campaign()
+    public function campaign(): BelongsTo
     {
         return $this->belongsTo(MarketingCampaign::class, 'marketing_campaign_id');
     }

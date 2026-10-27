@@ -51,7 +51,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-6">
 
             {{-- SEARCH ENGINE TOP BAR (AURA ESTATES CONSOLE) --}}
-            <div class="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-900/5 space-y-4 cinematic-fade-up">
+            <div class="card bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 cinematic-fade-up">
                 
                 {{-- Breadcrumbs & Results Eyebrow --}}
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -266,7 +266,7 @@
             {{-- SEARCH RESULTS PRESENTATION --}}
             @if($listings->isEmpty())
                 {{-- NO RESULTS STATE --}}
-                <div class="bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-16 text-center shadow-sm max-w-2xl mx-auto">
+                <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-16 text-center max-w-2xl mx-auto">
                     <div class="w-16 h-16 rounded-2xl bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
@@ -325,7 +325,7 @@
                     </div>
 
                     {{-- Right column: Interactive Leaflet Map --}}
-                    <div class="lg:col-span-6 sticky top-28 bg-white dark:bg-[#111827] rounded-3xl overflow-hidden border border-[#EBDBC9] dark:border-[#273244] shadow-md h-full min-h-[26rem] lg:h-[calc(100vh-14rem)]">
+                    <div class="card lg:col-span-6 sticky top-28 bg-white dark:bg-[#111827] rounded-3xl overflow-hidden border border-[#EBDBC9] dark:border-[#273244] h-full min-h-[26rem] lg:h-[calc(100vh-14rem)]">
                         <div id="search-map-container" class="w-full h-full z-10"></div>
                     </div>
                 </div>
@@ -649,7 +649,7 @@
                             this.markers[item.id] = marker;
 
                             const popupContent = `
-                                <div class='w-64 bg-white dark:bg-[#111827] text-black dark:text-white rounded-2xl overflow-hidden font-sans border border-[#EBDBC9] dark:border-[#273244]'>
+                                <div class='card w-64 bg-white dark:bg-[#111827] text-black dark:text-white rounded-2xl overflow-hidden font-sans border border-[#EBDBC9] dark:border-[#273244]'>
                                     <img src='${item.image}' alt='${item.title}' class='w-full h-32 object-cover'>
                                     <div class='p-3.5 space-y-1.5'>
                                         <span class='inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400'>

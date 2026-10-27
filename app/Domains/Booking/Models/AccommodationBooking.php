@@ -3,6 +3,9 @@
 namespace App\Domains\Booking\Models;
 
 use App\Models\Accommodation;
+use App\Models\BookingGuest;
+use App\Models\CancellationRecord;
+use App\Models\CheckInOutRecord;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -37,5 +40,25 @@ class AccommodationBooking extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function bookingGuests()
+    {
+        return $this->hasMany(BookingGuest::class, 'booking_id');
+    }
+
+    public function guestsRoster()
+    {
+        return $this->hasMany(BookingGuest::class, 'booking_id');
+    }
+
+    public function checkInOutRecords()
+    {
+        return $this->hasMany(CheckInOutRecord::class, 'booking_id');
+    }
+
+    public function cancellationRecord()
+    {
+        return $this->hasOne(CancellationRecord::class, 'booking_id');
     }
 }

@@ -7,6 +7,7 @@ use App\Events\Offers\OfferCountered;
 use App\Events\Offers\OfferRejected;
 use App\Events\Offers\OfferSubmitted;
 use App\Events\Offers\OfferWithdrawn;
+use App\Models\Invoice;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,16 @@ class OfferNegotiationListener implements ShouldQueue
             Log::info("Offer submitted [{$event->offer->id}] on listing [{$event->offer->listing_id}] by buyer [{$event->offer->buyer_id}].");
         } elseif ($event instanceof OfferAccepted) {
             Log::info("Offer accepted [{$event->offer->id}] by actor [{$event->actorId}].");
+
+            // Automatically issue earnest deposit hold invoice (5%) for the buyer
+            $depositAmount = round(((float) $event->offer->amount) * 0.05, 2);
+            Invoice::create([
+                'user_id' => $event->offer->buyer_id,
+                'amount' => $depositAmount,
+                'due_date' => now()->addDays(3)->toDateString(),
+                'status' => 'pending',
+                'notes' => "Earnest money deposit (5%) for accepted offer [{$event->offer->id}].",
+            ]);
         } elseif ($event instanceof OfferRejected) {
             Log::info("Offer rejected [{$event->offer->id}] by actor [{$event->actorId}].");
         } elseif ($event instanceof OfferWithdrawn) {

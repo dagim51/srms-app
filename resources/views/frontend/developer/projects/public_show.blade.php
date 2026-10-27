@@ -41,7 +41,7 @@
                     </p>
                 </div>
                 <div>
-                    <div class="bg-white dark:bg-[#1E293B] rounded-3xl p-8 border border-warm dark:border-warm shadow-xl shadow-orange-950/5 dark:shadow-none">
+                    <div class="card bg-white dark:bg-[#1E293B] rounded-3xl p-8 border border-warm dark:border-warm dark:">
                         <h3 class="text-xl font-bold text-[#0F172A] dark:text-white mb-6">{{ __('Project Details') }}</h3>
                         <ul class="space-y-6">
                             <li>

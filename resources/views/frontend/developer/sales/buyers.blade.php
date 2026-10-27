@@ -1,22 +1,32 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Buyers List') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto page-enter">
+    <div class="max-w-7xl mx-auto page-enter space-y-6" x-data="{ showNewBuyer: false }">
         <x-page-header
             title="Buyers Directory"
             description="Manage registered unit buyers and their property portfolios."
             icon="user"
             badge="Buyers">
             <x-slot:actions>
-                <button class="btn btn-primary">{{ __('Add Buyer') }}</button>
+                <button @click="showNewBuyer = true" class="btn btn-primary text-xs shadow-sm shadow-orange-500/20">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    {{ __('Register Buyer') }}
+                </button>
             </x-slot:actions>
         </x-page-header>
 
+        @if(session('success'))
+            <div class="px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
+
         @include('frontend.developer.sales.partials.tabs')
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm">
-            <div class="p-6 border-b border-warm dark:border-warm">
-                <form method="GET" action="{{ route('dashboard.sales.buyers') }}" class="flex items-center gap-3 max-w-md">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden">
+            <div class="p-6 border-b border-warm dark:border-warm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <form method="GET" action="{{ route('dashboard.sales.buyers') }}" class="flex items-center gap-3 max-w-md w-full">
                     <div class="relative flex-1">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,6 +48,11 @@
                         <a href="{{ route('dashboard.sales.buyers') }}" class="text-xs text-orange-600 hover:text-orange-700 dark:text-orange-400 font-medium whitespace-nowrap">{{ __('Reset') }}</a>
                     @endif
                 </form>
+
+                <button @click="showNewBuyer = true" class="btn btn-primary btn-sm text-xs self-start sm:self-auto">
+                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    {{ __('New Buyer') }}
+                </button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -51,7 +66,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-warm dark:divide-dark-border">
-                        @foreach($buyers as $buyer)
+                        @forelse($buyers as $buyer)
                             <tr class="hover:bg-surface dark:hover:bg-surface/30 transition-colors">
                                 <td class="p-4 font-bold text-muted dark:text-white">
                                     <a href="{{ route('dashboard.sales.buyers.show', $buyer['id']) }}" class="hover:text-primary-600">{{ $buyer['name'] }}</a>
@@ -65,12 +80,61 @@
                                     <span class="badge {{ $buyer['status'] === 'active' ? 'badge-success' : 'badge-neutral' }} uppercase text-xs">{{ $buyer['status'] }}</span>
                                 </td>
                                 <td class="p-4 text-right">
-                                    <a href="{{ route('dashboard.sales.buyers.show', $buyer['id']) }}" class="text-primary-600 hover:text-primary-700 font-medium text-sm">{{ __('View Portfolio') }}</a>
+                                    <a href="{{ route('dashboard.sales.buyers.show', $buyer['id']) }}" class="btn btn-secondary btn-sm text-xs">{{ __('View Portfolio') }}</a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="p-8 text-center text-muted">
+                                    {{ __('No buyers found.') }}
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+            @if(method_exists($buyers, 'links'))
+                <div class="p-4 border-t border-warm dark:border-warm">
+                    {{ $buyers->links() }}
+                </div>
+            @endif
+        </div>
+
+        {{-- Register New Buyer Modal --}}
+        <div x-show="showNewBuyer" x-cloak
+             class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div class="absolute inset-0 bg-black/50" @click="showNewBuyer = false"></div>
+            <div class="relative bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md p-6 z-10">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-lg font-bold text-muted dark:text-white">{{ __('Register Prospective Buyer') }}</h3>
+                    <button @click="showNewBuyer = false" class="text-muted hover:text-muted/70">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('dashboard.sales.buyers.store') }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Full Name') }} <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" class="input w-full" placeholder="e.g. Dawit Bekele" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Email Address') }} <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" class="input w-full" placeholder="e.g. dawit@example.com" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Phone Number') }} <span class="text-red-500">*</span></label>
+                        <input type="text" name="phone" class="input w-full" placeholder="e.g. +251 91 122 3344" required>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-3">
+                        <button type="button" @click="showNewBuyer = false" class="btn btn-secondary">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Save Buyer') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
 

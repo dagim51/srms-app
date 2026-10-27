@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Domains\Transaction\Models;
+
+use App\Models\Document;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class DocumentAccessLog extends Model
+{
+    use HasUuids;
+
+    protected $fillable = [
+        'document_id',
+        'user_id',
+        'ip_address',
+        'action',
+    ];
+
+    public function document(): BelongsTo
+    {
+        return $this->belongsTo(Document::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+}

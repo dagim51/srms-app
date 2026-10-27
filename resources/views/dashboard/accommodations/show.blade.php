@@ -44,7 +44,7 @@
             <div class="lg:col-span-2 space-y-6">
                 
                 {{-- Accommodation Overview --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     @if($accommodation->property && $accommodation->property->media->count())
                         @php $primaryImg = $accommodation->property->media->first()->url ?? $accommodation->property->media->first()->storage_key; @endphp
                         <div class="h-64 w-full relative">
@@ -72,22 +72,22 @@
                     <div class="p-6 sm:p-8">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Room & Unit Configuration') }}</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                            <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
+                            <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
                                 <svg class="w-6 h-6 mx-auto mb-2 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                 <span class="block font-bold text-muted dark:text-white text-lg">{{ $accommodation->max_guests }}</span>
                                 <span class="text-xs text-muted">{{ __('Max Guests') }}</span>
                             </div>
-                            <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
+                            <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
                                 <svg class="w-6 h-6 mx-auto mb-2 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                                 <span class="block font-bold text-muted dark:text-white text-lg">{{ $accommodation->bedrooms }}</span>
                                 <span class="text-xs text-muted">{{ __('Bedrooms') }}</span>
                             </div>
-                            <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
+                            <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
                                 <svg class="w-6 h-6 mx-auto mb-2 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
                                 <span class="block font-bold text-muted dark:text-white text-lg">{{ $accommodation->beds }}</span>
                                 <span class="text-xs text-muted">{{ __('Beds') }}</span>
                             </div>
-                            <div class="p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
+                            <div class="card p-4 bg-surface dark:bg-surface/50 rounded-xl border border-warm dark:border-warm text-center">
                                 <svg class="w-6 h-6 mx-auto mb-2 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                                 <span class="block font-bold text-muted dark:text-white text-lg">{{ $accommodation->bathrooms }}</span>
                                 <span class="text-xs text-muted">{{ __('Baths') }}</span>
@@ -98,11 +98,11 @@
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Check-in / Check-out') }}</h3>
                                 <div class="space-y-3">
-                                    <div class="flex items-center justify-between p-3 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl">
+                                    <div class="card flex items-center justify-between p-3 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl">
                                         <span class="text-muted dark:text-muted text-sm">{{ __('Check-in Time') }}</span>
                                         <span class="font-bold text-muted dark:text-white">{{ date('h:i A', strtotime($accommodation->check_in_time)) }}</span>
                                     </div>
-                                    <div class="flex items-center justify-between p-3 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl">
+                                    <div class="card flex items-center justify-between p-3 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl">
                                         <span class="text-muted dark:text-muted text-sm">{{ __('Check-out Time') }}</span>
                                         <span class="font-bold text-muted dark:text-white">{{ date('h:i A', strtotime($accommodation->check_out_time)) }}</span>
                                     </div>
@@ -125,7 +125,7 @@
             <div class="space-y-6">
                 
                 {{-- Verification State --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Host Verification State') }}</h3>
                     
                     <div class="flex items-center gap-4 mb-4">
@@ -158,10 +158,10 @@
                 </div>
                 
                 {{-- Stay Listing Setup summary --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Pricing & Availability') }}</h3>
                     
-                    <div class="p-4 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl text-center mb-4">
+                    <div class="card p-4 bg-surface dark:bg-surface/30 border border-warm dark:border-warm rounded-xl text-center mb-4">
                         <span class="block text-muted text-xs font-bold uppercase tracking-wider mb-1">{{ __('Nightly Rate') }}</span>
                         <span class="block text-2xl font-bold text-muted dark:text-white">{{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}{{ number_format($accommodation->property->price / 30, 2) }}</span>
                     </div>

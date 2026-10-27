@@ -24,7 +24,7 @@
             badge="Preview" />
 
         {{-- Preview Banner & Actions Bar --}}
-        <div class="bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 md:p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="card bg-slate-900 border border-slate-800 text-white rounded-2xl p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-primary-400">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -59,7 +59,7 @@
             {{-- Main Column: Full Marketplace Detail Preview --}}
             <div class="lg:col-span-2 space-y-6">
                 {{-- Hero Gallery --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden">
                     <div class="relative aspect-video bg-surface-subtle dark:bg-surface">
                         <img src="{{ $primaryMedia }}" class="w-full h-full object-cover" alt="{{ $property->title ?? 'Property' }}">
                         
@@ -88,7 +88,7 @@
                 </div>
 
                 {{-- Property Details & Description --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-6">
                     <div>
                         <div class="flex items-start justify-between gap-4">
                             <div>
@@ -97,7 +97,7 @@
                                 </h1>
                                 <p class="text-sm text-[#4B5563] dark:text-[#CBD5E1] flex items-center gap-1.5 mt-1">
                                     <svg class="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                    Addis Ababa, Ethiopia
+                                    {{ ($property->location_summary && $property->location_summary !== 'Location not set') ? $property->location_summary : 'Addis Ababa, Ethiopia' }}
                                 </p>
                             </div>
                             <div class="text-right">
@@ -163,14 +163,28 @@
                         @if($property->amenities->count() > 0 || $property->features->count() > 0)
                             <div class="flex flex-wrap gap-2">
                                 @foreach($property->amenities as $am)
+                                    @php
+                                        $amName = match(app()->getLocale()) {
+                                            'am' => !empty($am->name_am) ? $am->name_am : ($am->name_en ?? $am->name ?? $am->code),
+                                            'om' => !empty($am->name_om) ? $am->name_om : ($am->name_en ?? $am->name ?? $am->code),
+                                            default => __($am->name_en ?? $am->name ?? $am->code),
+                                        };
+                                    @endphp
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800/40">
                                         <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                        {{ $am->name }}
+                                        {{ $amName }}
                                     </span>
                                 @endforeach
                                 @foreach($property->features as $ft)
+                                    @php
+                                        $ftName = match(app()->getLocale()) {
+                                            'am' => !empty($ft->name_am) ? $ft->name_am : ($ft->name_en ?? $ft->name ?? $ft->code),
+                                            'om' => !empty($ft->name_om) ? $ft->name_om : ($ft->name_en ?? $ft->name ?? $ft->code),
+                                            default => __($ft->name_en ?? $ft->name ?? $ft->code),
+                                        };
+                                    @endphp
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-subtle dark:bg-surface text-[#4B5563] dark:text-[#CBD5E1]">
-                                        {{ $ft->name }}
+                                        {{ $ftName }}
                                     </span>
                                 @endforeach
                             </div>
@@ -195,7 +209,7 @@
                     <h3 class="text-xs font-bold uppercase tracking-wider text-[#6B7280] dark:text-[#94A3B8] mb-3">{{ __('Search Result Card Simulation') }}</h3>
                     
                     {{-- Exact Search Card View --}}
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden shadow-md">
+                    <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl overflow-hidden">
                         <div class="relative aspect-video bg-surface-subtle dark:bg-surface">
                             <img src="{{ $primaryMedia }}" class="w-full h-full object-cover" alt="">
                             <div class="absolute top-3 left-3">
@@ -215,7 +229,7 @@
                             </h4>
                             <p class="text-xs text-[#6B7280] dark:text-[#94A3B8] mt-1 flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.242-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                Addis Ababa
+                                {{ ($property->location_summary && $property->location_summary !== 'Location not set') ? $property->location_summary : 'Addis Ababa, Ethiopia' }}
                             </p>
                             <div class="flex items-center gap-3 text-xs text-[#6B7280] dark:text-[#94A3B8] mt-3 pt-3 border-t border-warm dark:border-warm">
                                 <span>{{ $property->bedrooms ?? 0 }} Beds</span> •
@@ -227,7 +241,7 @@
                 </div>
 
                 {{-- Canonical Asset Info Box --}}
-                <div class="bg-surface dark:bg-surface/40 border border-warm dark:border-warm/60 rounded-2xl p-5 space-y-3 text-xs">
+                <div class="card bg-surface dark:bg-surface/40 border border-warm dark:border-warm/60 rounded-2xl p-5 space-y-3 text-xs">
                     <h4 class="font-bold text-muted dark:text-white">{{ __('Canonical Asset Relationship') }}</h4>
                     <p class="text-muted dark:text-muted leading-relaxed">
                         This listing does not duplicate the real estate asset. It references canonical property code <span class="font-mono font-bold text-muted dark:text-muted">{{ $property->property_code }}</span>.

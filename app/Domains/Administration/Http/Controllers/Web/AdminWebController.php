@@ -2,6 +2,7 @@
 
 namespace App\Domains\Administration\Http\Controllers\Web;
 
+use App\Domains\Administration\Models\SystemSetting;
 use App\Domains\Identity\Models\Role;
 use App\Domains\Identity\Models\User;
 use App\Http\Controllers\Controller;
@@ -50,24 +51,29 @@ class AdminWebController extends Controller
         }
 
         $dbUsers = $query->latest()->get()->map(function (User $u) {
-            $roleName = $u->roles()->first()?->name ?? 'User';
+            $roleNames = $u->roles()->pluck('name')->all();
+            if (empty($roleNames)) {
+                $roleNames = ['User'];
+            }
 
             return [
                 'id' => $u->id,
                 'name' => $u->name,
                 'email' => $u->email,
                 'phone' => '+251 911 234 567',
-                'role' => $roleName,
+                'role' => implode(', ', $roleNames),
+                'roles' => $roleNames,
                 'status' => 'active',
                 'joined' => $u->created_at ? $u->created_at->format('Y-m-d') : '2026-10-08',
             ];
         })->toArray();
 
         $mockUsers = [
-            ['id' => 'USR-901', 'name' => 'Abebe Kebede', 'email' => 'abebe@example.com', 'phone' => '+251 911 234 567', 'role' => 'Tenant', 'status' => 'active', 'joined' => '2026-10-08'],
-            ['id' => 'USR-902', 'name' => 'Sara Tadesse', 'email' => 'sara@example.com', 'phone' => '+251 922 456 789', 'role' => 'Property Manager', 'status' => 'active', 'joined' => '2026-10-08'],
-            ['id' => 'USR-904', 'name' => 'Meron Alemu', 'email' => 'meron@example.com', 'phone' => '+251 933 678 901', 'role' => 'Agent', 'status' => 'suspended', 'joined' => '2026-05-12'],
-            ['id' => 'USR-001', 'name' => 'Super Admin', 'email' => 'admin@srms.et', 'phone' => '+251 911 000 111', 'role' => 'Administrator', 'status' => 'active', 'joined' => '2025-01-01'],
+            ['id' => 'USR-901', 'name' => 'Abebe Kebede', 'email' => 'abebe@example.com', 'phone' => '+251 911 234 567', 'role' => 'Tenant', 'roles' => ['Tenant'], 'status' => 'active', 'joined' => '2026-10-08'],
+            ['id' => 'USR-902', 'name' => 'Sara Tadesse', 'email' => 'sara@example.com', 'phone' => '+251 922 456 789', 'role' => 'Property Manager, Landlord', 'roles' => ['Property Manager', 'Landlord'], 'status' => 'active', 'joined' => '2026-10-08'],
+            ['id' => 'USR-903', 'name' => 'Kenenisa Bekele', 'email' => 'kenenisa@example.com', 'phone' => '+251 911 888 999', 'role' => 'Property Owner, Host', 'roles' => ['Property Owner', 'Host'], 'status' => 'active', 'joined' => '2026-03-15'],
+            ['id' => 'USR-904', 'name' => 'Meron Alemu', 'email' => 'meron@example.com', 'phone' => '+251 933 678 901', 'role' => 'Agent', 'roles' => ['Agent'], 'status' => 'suspended', 'joined' => '2026-05-12'],
+            ['id' => 'USR-001', 'name' => 'Super Admin', 'email' => 'admin@srms.et', 'phone' => '+251 911 000 111', 'role' => 'Administrator', 'roles' => ['Administrator'], 'status' => 'active', 'joined' => '2025-01-01'],
         ];
 
         if ($search = $request->input('search')) {
@@ -121,7 +127,9 @@ class AdminWebController extends Controller
             'email' => 'required|email|max:255|unique:users,email',
             'phone' => 'nullable|string|max:30',
             'password' => 'required|string|min:6',
-            'role' => 'required|string',
+            'role' => 'nullable|string',
+            'roles' => 'nullable|array',
+            'roles.*' => 'string',
             'organization_id' => 'nullable|string',
             'status' => 'nullable|string',
         ]);
@@ -130,16 +138,27 @@ class AdminWebController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'locale' => 'en',
             ]);
 
-            // Assign role using HasRoles trait
-            if (! empty($validated['role'])) {
-                $user->assignRole($validated['role'], $validated['organization_id'] ?? null);
+            // Assign role(s) using HasRoles trait
+            $rolesToAssign = [];
+            if (! empty($validated['roles'])) {
+                $rolesToAssign = (array) $validated['roles'];
+            } elseif (! empty($validated['role'])) {
+                $rolesToAssign = [$validated['role']];
+            } else {
+                $rolesToAssign = ['Buyer'];
             }
 
-            return redirect()->route('dashboard.admin.users')->with('success', "User '{$user->name}' was successfully created with role '{$validated['role']}'.");
+            foreach ($rolesToAssign as $roleName) {
+                $user->assignRole($roleName, $validated['organization_id'] ?? null);
+            }
+
+            $rolesSummary = implode(', ', $rolesToAssign);
+            return redirect()->route('dashboard.admin.users')->with('success', "User '{$user->name}' was successfully created with role(s): {$rolesSummary}.");
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Could not create user: '.$e->getMessage());
         }
@@ -148,14 +167,24 @@ class AdminWebController extends Controller
     public function updateUserRole(Request $request, $id)
     {
         $validated = $request->validate([
-            'role' => 'required|string',
+            'role' => 'nullable|string',
+            'roles' => 'nullable|array',
+            'roles.*' => 'string',
             'organization_id' => 'nullable|string',
         ]);
 
-        $user = User::findOrFail($id);
-        $user->syncRoles([$validated['role']], $validated['organization_id'] ?? null);
+        $rolesToSync = [];
+        if (! empty($validated['roles'])) {
+            $rolesToSync = (array) $validated['roles'];
+        } elseif (! empty($validated['role'])) {
+            $rolesToSync = [$validated['role']];
+        }
 
-        return redirect()->back()->with('success', "User '{$user->name}' role successfully updated to '{$validated['role']}'.");
+        $user = User::findOrFail($id);
+        $user->syncRoles($rolesToSync, $validated['organization_id'] ?? null);
+
+        $rolesSummary = ! empty($rolesToSync) ? implode(', ', $rolesToSync) : 'None';
+        return redirect()->back()->with('success', "User '{$user->name}' role(s) successfully updated to: {$rolesSummary}.");
     }
 
     public function userShow($id)
@@ -211,6 +240,7 @@ class AdminWebController extends Controller
                     ['code' => 'properties.edit', 'name' => 'Edit Properties', 'desc' => 'Modify property specifications, media, and features.'],
                     ['code' => 'properties.delete', 'name' => 'Delete / Archive', 'desc' => 'Archive or permanently delete property inventory.'],
                     ['code' => 'properties.gis', 'name' => 'GIS & Geocoding', 'desc' => 'Edit spatial boundaries, polygons, and coordinates.'],
+                    ['code' => 'units.manage', 'name' => 'Manage Units & Inventory', 'desc' => 'Manage individual development units, phases, and floorplans.'],
                 ],
             ],
             'listings' => [
@@ -224,6 +254,69 @@ class AdminWebController extends Controller
                     ['code' => 'listings.expire', 'name' => 'Delist / Expire', 'desc' => 'Manually delist properties or mark them sold/rented.'],
                 ],
             ],
+            'stays' => [
+                'name' => 'Short-Stay Hospitality & Booking',
+                'icon' => 'home',
+                'description' => 'Accommodations, guest reservations, booking calendars, and check-in/out.',
+                'permissions' => [
+                    ['code' => 'accommodations.manage', 'name' => 'Manage Accommodations', 'desc' => 'Manage short-stay units, rates, rules, and amenities.'],
+                    ['code' => 'bookings.create', 'name' => 'Book Accommodations', 'desc' => 'Reserve vacation stays and short-term accommodations.'],
+                    ['code' => 'bookings.manage', 'name' => 'Manage Guest Bookings', 'desc' => 'Manage reservations, guest check-ins, check-outs, and calendar.'],
+                ],
+            ],
+            'tenancy' => [
+                'name' => 'Leases, Tenancy & Maintenance',
+                'icon' => 'document-text',
+                'description' => 'Drafting tenancy agreements, digital signing, and maintenance dispatch.',
+                'permissions' => [
+                    ['code' => 'leases.view', 'name' => 'View Leases', 'desc' => 'Inspect active and historical tenancy lease contracts.'],
+                    ['code' => 'leases.create', 'name' => 'Draft Leases', 'desc' => 'Create residential and commercial lease agreements.'],
+                    ['code' => 'leases.sign', 'name' => 'Digital Signatures', 'desc' => 'Execute legal digital signatures on contracts.'],
+                    ['code' => 'leases.terminate', 'name' => 'Terminate Leases', 'desc' => 'Conclude tenancies, conduct checkouts, and process deposits.'],
+                    ['code' => 'maintenance.request', 'name' => 'Submit Repair Requests', 'desc' => 'Submit unit maintenance tickets and issue reports.'],
+                    ['code' => 'maintenance.manage', 'name' => 'Dispatch Maintenance', 'desc' => 'Assign work orders and contractors for unit repairs.'],
+                ],
+            ],
+            'developments' => [
+                'name' => 'Real Estate Developments & Off-Plan',
+                'icon' => 'office-building',
+                'description' => 'Off-plan developments, phase milestones, and unit handover management.',
+                'permissions' => [
+                    ['code' => 'developments.manage', 'name' => 'Manage Projects', 'desc' => 'Create and configure off-plan real estate projects.'],
+                    ['code' => 'handovers.manage', 'name' => 'Milestones & Handover', 'desc' => 'Track construction progress and buyer handover records.'],
+                ],
+            ],
+            'agency' => [
+                'name' => 'Agency, Brokerage & CRM',
+                'icon' => 'user-group',
+                'description' => 'Agency branch management, broker leads, deal pipelines, and commission audits.',
+                'permissions' => [
+                    ['code' => 'agency.manage', 'name' => 'Agency Management', 'desc' => 'Manage company branches, agent roster, and brand settings.'],
+                    ['code' => 'crm.leads.manage', 'name' => 'CRM Leads & Pipeline', 'desc' => 'Manage client leads, inquiries, and viewing appointments.'],
+                    ['code' => 'commissions.view', 'name' => 'Commission Tracking', 'desc' => 'Audit commission splits, payouts, and deal ledger.'],
+                ],
+            ],
+            'services' => [
+                'name' => 'Professional Real Estate Services',
+                'icon' => 'briefcase',
+                'description' => 'Legal conveyancing, surveying, architectural review, and physical inspections.',
+                'permissions' => [
+                    ['code' => 'services.provide', 'name' => 'Offer Pro Services', 'desc' => 'Provide legal, surveying, architectural, or valuation services.'],
+                    ['code' => 'inspections.manage', 'name' => 'Conduct Inspections', 'desc' => 'Conduct property inspections and upload certified condition reports.'],
+                ],
+            ],
+            'trust' => [
+                'name' => 'Trust, KYC & Document Verification',
+                'icon' => 'shield-check',
+                'description' => 'Title deed verification, national ID review, dispute arbitration, and anti-fraud.',
+                'permissions' => [
+                    ['code' => 'kyc.verify', 'name' => 'Verify KYC & Identities', 'desc' => 'Review national IDs, TINs, and municipal certificates.'],
+                    ['code' => 'documents.verify', 'name' => 'Verify Title Deeds', 'desc' => 'Verify digital title deeds, ownership documents, and licenses.'],
+                    ['code' => 'support.tickets', 'name' => 'Customer Support', 'desc' => 'Handle customer support tickets and help requests.'],
+                    ['code' => 'disputes.arbitrate', 'name' => 'Arbitrate Disputes', 'desc' => 'Intervene and resolve buyer-seller transaction claims.'],
+                    ['code' => 'fraud.flag', 'name' => 'Anti-Fraud Enforcement', 'desc' => 'Freeze compromised accounts and blacklist bad actors.'],
+                ],
+            ],
             'finance' => [
                 'name' => 'Escrow, Ledger & Financial Payouts',
                 'icon' => 'banknotes',
@@ -235,27 +328,6 @@ class AdminWebController extends Controller
                     ['code' => 'finance.payouts.manage', 'name' => 'Execute Disbursements', 'desc' => 'Disburse payments via Telebirr, CBE Birr, or bank wires.'],
                 ],
             ],
-            'tenancy' => [
-                'name' => 'Leases, Tenancy & Maintenance',
-                'icon' => 'document-text',
-                'description' => 'Drafting tenancy agreements, digital signing, and maintenance dispatch.',
-                'permissions' => [
-                    ['code' => 'leases.create', 'name' => 'Draft Leases', 'desc' => 'Create residential and commercial lease agreements.'],
-                    ['code' => 'leases.sign', 'name' => 'Digital Signatures', 'desc' => 'Execute legal digital signatures on contracts.'],
-                    ['code' => 'leases.terminate', 'name' => 'Terminate Leases', 'desc' => 'Conclude tenancies, conduct checkouts, and process deposits.'],
-                    ['code' => 'maintenance.manage', 'name' => 'Dispatch Maintenance', 'desc' => 'Assign work orders and contractors for unit repairs.'],
-                ],
-            ],
-            'trust' => [
-                'name' => 'Trust, KYC & Dispute Resolution',
-                'icon' => 'shield-check',
-                'description' => 'Title deed verification, dispute arbitration, and anti-fraud controls.',
-                'permissions' => [
-                    ['code' => 'kyc.verify', 'name' => 'Verify KYC & Deeds', 'desc' => 'Review national IDs, TINs, and municipal land titles.'],
-                    ['code' => 'disputes.arbitrate', 'name' => 'Arbitrate Disputes', 'desc' => 'Intervene and resolve buyer-seller transaction claims.'],
-                    ['code' => 'fraud.flag', 'name' => 'Anti-Fraud Enforcement', 'desc' => 'Freeze compromised accounts and blacklist bad actors.'],
-                ],
-            ],
             'admin' => [
                 'name' => 'System & User Administration',
                 'icon' => 'cog',
@@ -265,6 +337,8 @@ class AdminWebController extends Controller
                     ['code' => 'roles.assign', 'name' => 'Configure Permissions', 'desc' => 'Modify role capabilities and custom user overrides.'],
                     ['code' => 'settings.update', 'name' => 'Platform Configuration', 'desc' => 'Configure fee structures, tax rates, and integrations.'],
                     ['code' => 'audit.view', 'name' => 'Security Audit Logs', 'desc' => 'Inspect administrative audit trails and security events.'],
+                    ['code' => 'manage_locations', 'name' => 'Manage Geographic Regions', 'desc' => 'Create and modify administrative geographical regions.'],
+                    ['code' => 'admin', 'name' => 'Super Administrator', 'desc' => 'Full administrative access and platform-wide capabilities.'],
                 ],
             ],
         ];
@@ -290,7 +364,7 @@ class AdminWebController extends Controller
                 'id' => $u->id,
                 'name' => $u->name,
                 'email' => $u->email,
-                'role' => $u->roles()->first()?->name ?? 'User',
+                'role' => $u->roles()->pluck('name')->join(', ') ?: 'User',
             ];
         })->toArray();
 
@@ -330,25 +404,52 @@ class AdminWebController extends Controller
             'properties.edit' => 'Modify property specifications, media, and features',
             'properties.delete' => 'Archive or remove properties from catalog',
             'properties.gis' => 'Edit spatial boundaries, polygons, and coordinates',
+            'units.manage' => 'Manage individual development units, phases, and inventory',
+
             'listings.submit' => 'Publish listings for sale, rent, or lease',
             'listings.moderate' => 'Approve, reject, or request revisions on pending listings',
             'listings.feature' => 'Assign premium promotional badges on marketplace',
             'listings.expire' => 'Manually delist properties or mark them sold/rented',
+
+            'accommodations.manage' => 'Manage short-stay units, rates, rules, and amenities',
+            'bookings.create' => 'Book accommodations and short-stay properties',
+            'bookings.manage' => 'Manage bookings, check-in, check-out, and guest reservations',
+
+            'leases.view' => 'View residential and commercial lease agreements',
+            'leases.create' => 'Create residential and commercial lease agreements',
+            'leases.sign' => 'Execute legal digital signatures on contracts',
+            'leases.terminate' => 'Conclude tenancies, conduct checkouts, and process deposits',
+            'maintenance.request' => 'Submit maintenance and repair requests for occupied units',
+            'maintenance.manage' => 'Assign work orders and contractors for unit repairs',
+
+            'developments.manage' => 'Create and configure off-plan real estate development projects',
+            'handovers.manage' => 'Track construction milestones and buyer handover records',
+
+            'agency.manage' => 'Manage real estate company branches, agent roster, and brand settings',
+            'crm.leads.manage' => 'Manage client leads, deal pipelines, and client inquiries',
+            'commissions.view' => 'View and audit commission splits and deal payouts',
+
+            'services.provide' => 'Offer legal conveyancing, surveying, architectural, valuation, or inspection services',
+            'inspections.manage' => 'Conduct physical inspections, upload condition reports, and certify compliance',
+
+            'kyc.verify' => 'Review national IDs, TINs, and municipal land titles',
+            'documents.verify' => 'Verify digital title deeds, ownership documents, and developer licenses',
+
             'finance.ledger.view' => 'Audit ledger account balances and journal entries',
             'finance.invoices.create' => 'Issue tax-compliant invoices and payment demands',
             'finance.escrow.release' => 'Authorize release of held escrow funds upon verified handover',
             'finance.payouts.manage' => 'Disburse payments via Telebirr, CBE Birr, or bank wires',
-            'leases.create' => 'Create residential and commercial lease agreements',
-            'leases.sign' => 'Execute legal digital signatures on contracts',
-            'leases.terminate' => 'Conclude tenancies, conduct checkouts, and process deposits',
-            'maintenance.manage' => 'Assign work orders and contractors for unit repairs',
-            'kyc.verify' => 'Review national IDs, TINs, and municipal land titles',
+
+            'support.tickets' => 'Handle customer support tickets, inquiries, and technical issues',
             'disputes.arbitrate' => 'Intervene and resolve buyer-seller transaction claims',
             'fraud.flag' => 'Freeze compromised accounts and blacklist bad actors',
+
             'users.manage' => 'Provision accounts, invite members, and reset passwords',
             'roles.assign' => 'Modify role capabilities and custom user overrides',
             'settings.update' => 'Configure fee structures, tax rates, and integrations',
             'audit.view' => 'Inspect administrative audit trails and security events',
+            'manage_locations' => 'Create and modify administrative geographical regions',
+            'admin' => 'Full administrative access and disputes arbitration',
         ];
 
         foreach ($allCodes as $code => $desc) {
@@ -364,35 +465,51 @@ class AdminWebController extends Controller
         switch ($roleName) {
             case 'Administrator':
                 return [
-                    'properties.view', 'properties.create', 'properties.edit', 'properties.delete', 'properties.gis',
+                    'properties.view', 'properties.create', 'properties.edit', 'properties.delete', 'properties.gis', 'units.manage',
                     'listings.submit', 'listings.moderate', 'listings.feature', 'listings.expire',
+                    'accommodations.manage', 'bookings.create', 'bookings.manage',
+                    'leases.view', 'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.request', 'maintenance.manage',
+                    'developments.manage', 'handovers.manage',
+                    'agency.manage', 'crm.leads.manage', 'commissions.view',
+                    'services.provide', 'inspections.manage',
+                    'kyc.verify', 'documents.verify',
                     'finance.ledger.view', 'finance.invoices.create', 'finance.escrow.release', 'finance.payouts.manage',
-                    'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage',
-                    'kyc.verify', 'disputes.arbitrate', 'fraud.flag',
-                    'users.manage', 'roles.assign', 'settings.update', 'audit.view',
+                    'support.tickets', 'disputes.arbitrate', 'fraud.flag',
+                    'users.manage', 'roles.assign', 'settings.update', 'audit.view', 'manage_locations', 'admin',
                 ];
-            case 'Property Manager':
-                return [
-                    'properties.view', 'properties.create', 'properties.edit',
-                    'listings.submit', 'listings.expire',
-                    'finance.invoices.create',
-                    'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage',
-                    'kyc.verify',
-                ];
+            case 'Buyer':
+                return ['properties.view', 'leases.view', 'bookings.create', 'maintenance.request'];
+            case 'Tenant':
+                return ['properties.view', 'leases.view', 'leases.sign', 'maintenance.request'];
+            case 'Guest / Traveler':
+                return ['properties.view', 'bookings.create'];
+            case 'Property Owner':
+                return ['properties.view', 'properties.create', 'properties.edit', 'properties.delete', 'listings.submit', 'leases.view'];
+            case 'Host':
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit', 'accommodations.manage', 'bookings.manage'];
+            case 'Landlord':
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit', 'leases.view', 'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage'];
             case 'Agent':
-            case 'Seller':
-                return [
-                    'properties.view', 'properties.create', 'properties.edit',
-                    'listings.submit',
-                    'leases.create',
-                ];
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit', 'leases.view', 'leases.create', 'crm.leads.manage', 'commissions.view'];
+            case 'Real Estate Company':
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit', 'agency.manage', 'crm.leads.manage', 'commissions.view', 'leases.create', 'finance.invoices.create'];
             case 'Developer':
-                return [
-                    'properties.view', 'properties.create', 'properties.edit',
-                    'listings.submit', 'listings.feature',
-                    'finance.invoices.create',
-                    'leases.create', 'leases.sign',
-                ];
+                return ['properties.view', 'properties.create', 'properties.edit', 'developments.manage', 'units.manage', 'handovers.manage', 'listings.submit', 'listings.feature', 'finance.invoices.create', 'leases.create', 'leases.sign'];
+            case 'Property Manager':
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit', 'listings.expire', 'finance.invoices.create', 'leases.view', 'leases.create', 'leases.sign', 'leases.terminate', 'maintenance.manage', 'kyc.verify'];
+            case 'Professional Service Provider':
+                return ['properties.view', 'services.provide', 'inspections.manage'];
+            case 'Moderator':
+                return ['properties.view', 'listings.moderate', 'listings.expire', 'fraud.flag'];
+            case 'Verification Officer':
+                return ['properties.view', 'kyc.verify', 'documents.verify'];
+            case 'Finance Officer':
+                return ['finance.ledger.view', 'finance.invoices.create', 'finance.escrow.release', 'finance.payouts.manage', 'audit.view'];
+            case 'Customer Support':
+                return ['properties.view', 'support.tickets', 'disputes.arbitrate', 'fraud.flag'];
+            case 'Seller':
+                return ['properties.view', 'properties.create', 'properties.edit', 'listings.submit'];
+            case 'User':
             default:
                 return ['properties.view'];
         }
@@ -400,49 +517,65 @@ class AdminWebController extends Controller
 
     public function audit(Request $request)
     {
+        if (AuditLog::count() === 0) {
+            AuditLog::log(
+                event: 'system_initialized',
+                auditable: null,
+                newValues: ['status' => 'operational'],
+                oldValues: [],
+                notes: 'System audit ledger initialized',
+                actorId: auth()->id()
+            );
+        }
+
         $query = AuditLog::with('actor')->latest();
 
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('event', 'like', "%{$search}%")
                     ->orWhere('notes', 'like', "%{$search}%")
-                    ->orWhere('ip_address', 'like', "%{$search}%");
+                    ->orWhere('ip_address', 'like', "%{$search}%")
+                    ->orWhereHas('actor', function ($aq) use ($search) {
+                        $aq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
             });
         }
 
-        $dbLogs = $query->take(50)->get()->map(function ($l) {
-            $actorName = $l->actor ? "{$l->actor->name}" : 'System';
-            $action = ucfirst($l->event);
-            if ($l->auditable_type) {
-                $action .= ' '.class_basename($l->auditable_type);
-            }
-            if ($l->notes) {
-                $action .= " - {$l->notes}";
-            }
-
-            return [
-                'id' => 'AUD-'.strtoupper(substr(str_replace('-', '', $l->id), 0, 6)),
-                'user' => $actorName,
-                'action' => $action,
-                'ip' => $l->ip_address ?? '127.0.0.1',
-                'date' => $l->created_at ? $l->created_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
-            ];
-        })->toArray();
-
-        $mockLogs = [
-            ['id' => 'AUD-101', 'user' => 'Admin (USR-001)', 'action' => 'Suspended User USR-904', 'ip' => '10.0.0.5', 'date' => '2026-10-08 15:45:12'],
-            ['id' => 'AUD-102', 'user' => 'System', 'action' => 'Generated Monthly Invoices', 'ip' => 'localhost', 'date' => '2026-10-01 00:00:01'],
-            ['id' => 'AUD-103', 'user' => 'Admin (USR-001)', 'action' => 'Updated Platform Fee to 5%', 'ip' => '10.0.0.5', 'date' => '2026-09-15 11:20:00'],
-            ['id' => 'AUD-104', 'user' => 'Sara Tadesse (USR-902)', 'action' => 'Deleted Listing LST-405', 'ip' => '197.156.12.34', 'date' => '2026-10-07 09:15:22'],
-        ];
-
-        $logs = ! empty($dbLogs) ? $dbLogs : $mockLogs;
+        $logs = $query->paginate(25)->withQueryString();
 
         return view('frontend.admin.audit', compact('logs'));
     }
 
     public function settings()
     {
-        return view('frontend.admin.settings');
+        $settings = SystemSetting::all()->keyBy('key');
+
+        return view('frontend.admin.settings', compact('settings'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'settings' => 'required|array',
+        ]);
+
+        foreach ($validated['settings'] as $key => $value) {
+            $type = match (true) {
+                $value === 'true' || $value === 'false' || is_bool($value) => 'boolean',
+                is_int($value) || (is_string($value) && ctype_digit($value)) => 'integer',
+                is_array($value) => 'json',
+                default => 'string',
+            };
+
+            SystemSetting::set(
+                key: $key,
+                value: $value,
+                type: $type,
+                userId: auth()->id()
+            );
+        }
+
+        return redirect()->back()->with('success', 'System settings updated successfully.');
     }
 }

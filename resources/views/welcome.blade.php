@@ -84,7 +84,7 @@
                     </div>
 
                     <!-- Floating Animated Card 1: Live Yield -->
-                    <div class="hidden sm:flex items-center gap-3.5 absolute -left-8 top-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 animate-bounce duration-1000">
+                    <div class="card hidden sm:flex items-center gap-3.5 absolute -left-8 top-10 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 animate-bounce duration-1000">
                         <div class="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-600 dark:text-orange-400 flex items-center justify-center text-lg">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                         </div>
@@ -95,7 +95,7 @@
                     </div>
 
                     <!-- Floating Animated Card 2: 360 Tour Badge -->
-                    <a href="{{ route('properties.index') }}" class="cursor-pointer hidden sm:flex items-center gap-3 absolute -right-4 sm:-right-6 bottom-28 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 hover:scale-105 transition-transform">
+                    <a href="{{ route('properties.index') }}" class="card cursor-pointer hidden sm:flex items-center gap-3 absolute -right-4 sm:-right-6 bottom-28 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:scale-105 transition-transform">
                         <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
                         </div>
@@ -109,7 +109,7 @@
 
             <!-- ==================== INTERACTIVE SEARCH CONSOLE ==================== -->
             <div class="mt-14 lg:mt-16 relative z-20 max-w-6xl mx-auto cinematic-fade-up cinematic-stagger-2">
-                <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-900/10 border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6">
+                <div class="card bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-6">
                     
                     <!-- Status Tabs (All / For Sale / For Rent / Land / New Projects) -->
                     <div class="flex items-center justify-between flex-wrap gap-4 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
@@ -292,7 +292,7 @@
             <!-- Snap Carousel Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Spotlight Item 1 -->
-                <div class="bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors shadow-xl">
+                <div class="card card-hover bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors">
                     <div class="relative h-72 overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80" 
                              alt="Villa Celestia" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -321,7 +321,7 @@
                 </div>
 
                 <!-- Spotlight Item 2 -->
-                <div class="bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors shadow-xl">
+                <div class="card card-hover bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors">
                     <div class="relative h-72 overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80" 
                              alt="The Crown Triplex" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -350,7 +350,7 @@
                 </div>
 
                 <!-- Spotlight Item 3 -->
-                <div class="bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors shadow-xl">
+                <div class="card card-hover bg-slate-800/60 border border-slate-700/80 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between group transition-colors">
                     <div class="relative h-72 overflow-hidden">
                         <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" 
                              alt="Hawassa Sanctuary" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
@@ -392,7 +392,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 shadow-sm hover:shadow-xl transition-all duration-300 group cinematic-fade-up cinematic-stagger-1">
+                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 hover: transition-all duration-300 group cinematic-fade-up cinematic-stagger-1">
                     <div class="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
                     </div>
@@ -403,7 +403,7 @@
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 shadow-sm hover:shadow-xl transition-all duration-300 group cinematic-fade-up cinematic-stagger-2">
+                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 hover: transition-all duration-300 group cinematic-fade-up cinematic-stagger-2">
                     <div class="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-2.171-6.171a11.956 11.956 0 00-6.829 0l-.828.276a1.5 1.5 0 00-1.026 1.42v6.236c0 5.498 3.864 10.158 9.07 11.439a1.5 1.5 0 00.77 0c5.206-1.281 9.07-5.941 9.07-11.439V5.275a1.5 1.5 0 00-1.026-1.42l-.828-.276a11.956 11.956 0 00-6.829 0z" /></svg>
                     </div>
@@ -414,7 +414,7 @@
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 shadow-sm hover:shadow-xl transition-all duration-300 group cinematic-fade-up cinematic-stagger-3">
+                <div class="card p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 hover: transition-all duration-300 group cinematic-fade-up cinematic-stagger-3">
                     <div class="w-14 h-14 rounded-2xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
@@ -443,7 +443,7 @@
 
                 <!-- Right Column Testimonial Card -->
                 <div class="lg:col-span-7">
-                    <div class="card bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-200/80 dark:border-slate-800 relative">
+                    <div class="card bg-white dark:bg-slate-900 rounded-3xl p-8 sm:p-12 border border-slate-200/80 dark:border-slate-800 relative">
                         <div class="flex items-center gap-1 text-orange-500 text-sm mb-6">
                             <span>★★★★★</span>
                         </div>
@@ -475,7 +475,7 @@
     {{-- ==================== CONCIERGE & PRIVATE VIEWING BOOKING ==================== --}}
     <section id="contact" class="py-20 lg:py-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-            <div class="bg-slate-900 text-white rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+            <div class="card bg-slate-900 text-white rounded-3xl overflow-hidden border border-slate-800">
                 <div class="grid grid-cols-1 lg:grid-cols-12">
                     
                     <!-- Left Column: Advisory Info -->

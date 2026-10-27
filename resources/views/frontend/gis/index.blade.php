@@ -52,8 +52,8 @@
                 @foreach($properties as $prop)
                     @if(!$prop['cluster'])
                     <div x-show="!searchQuery || '{{ strtolower($prop['title']) }}'.includes(searchQuery.toLowerCase())"
-                         class="border border-warm dark:border-warm rounded-xl p-3 hover:shadow-md transition-shadow bg-surface dark:bg-surface/30 cursor-pointer">
-                        <div class="h-24 bg-surface-subtle dark:bg-surface rounded-lg mb-2 overflow-hidden">
+                         class="card card-hover border border-warm dark:border-warm rounded-xl p-3 hover: transition- bg-surface dark:bg-surface/30 cursor-pointer">
+                        <div class="card h-24 bg-surface-subtle dark:bg-surface rounded-lg mb-2 overflow-hidden">
                             <!-- Placeholder image -->
                         </div>
                         <h3 class="font-bold text-sm text-muted dark:text-white line-clamp-1">{{ $prop['title'] }}</h3>

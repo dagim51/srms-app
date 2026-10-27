@@ -21,7 +21,7 @@
 
         @include('frontend.developer.projects.partials.tabs')
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden">
             <div class="p-6 border-b border-warm dark:border-warm">
                 <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap items-center gap-3">
                     <div class="relative flex-1 min-w-56">

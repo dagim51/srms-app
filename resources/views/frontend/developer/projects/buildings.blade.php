@@ -23,18 +23,18 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @foreach($buildings as $building)
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6">
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold text-muted dark:text-white">{{ $building['name'] }}</h3>
                         <span class="badge {{ $building['status'] === 'under_construction' ? 'badge-primary' : 'badge-neutral' }} uppercase text-xs">{{ str_replace('_', ' ', $building['status']) }}</span>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-surface dark:bg-surface/50 rounded-xl p-4">
+                        <div class="card bg-surface dark:bg-surface/50 rounded-xl p-4">
                             <p class="text-xs font-bold text-muted uppercase">{{ __('Floors') }}</p>
                             <p class="text-2xl font-black text-muted dark:text-white mt-1">{{ $building['floors'] }}</p>
                         </div>
-                        <div class="bg-surface dark:bg-surface/50 rounded-xl p-4">
+                        <div class="card bg-surface dark:bg-surface/50 rounded-xl p-4">
                             <p class="text-xs font-bold text-muted uppercase">{{ __('Units') }}</p>
                             <p class="text-2xl font-black text-muted dark:text-white mt-1">{{ $building['units'] }}</p>
                         </div>

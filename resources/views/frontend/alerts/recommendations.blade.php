@@ -12,7 +12,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($recommendations as $rec)
-                <div class="bg-white dark:bg-[#1E293B] border border-primary-200 dark:border-primary-900/30 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group">
+                <div class="card bg-white dark:bg-[#1E293B] border border-primary-200 dark:border-primary-900/30 rounded-3xl overflow-hidden hover: transition-all group">
                     <div class="relative h-48 overflow-hidden bg-surface-subtle dark:bg-surface">
                         <!-- Simulated Image -->
                         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style="background-image: url('{{ $rec['image'] }}')"></div>

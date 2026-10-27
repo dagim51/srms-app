@@ -65,7 +65,7 @@ class AdminAuthorizationTest extends TestCase
             ->assertSee('Property & Inventory Management')
             ->assertSee('Marketplace Listings & Moderation')
             ->assertSee('Escrow, Ledger & Financial Payouts')
-            ->assertSee('Trust, KYC & Dispute Resolution')
+            ->assertSee('Trust, KYC & Document Verification')
             ->assertSee('System & User Administration');
     }
 

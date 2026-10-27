@@ -34,7 +34,7 @@
                 @csrf
 
                 {{-- Rating --}}
-                <section class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6">
+                <section class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6" x-data="{ rating: 5, hoverRating: 0 }">
                     <h2 class="text-xl font-bold text-muted dark:text-white mb-6 flex items-center gap-3">
                         <span class="flex items-center justify-center w-7 h-7 rounded-md bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 text-xs font-black">1</span>
                         {{ __('Your rating') }}
@@ -43,22 +43,25 @@
                     <div class="flex gap-3">
                         @for($i = 1; $i <= 5; $i++)
                             <button type="button" 
-                                    class="star-btn relative w-12 h-12 rounded-xl border-2 border-warm dark:border-warm bg-white dark:bg-surface flex items-center justify-center transition-all duration-200 hover:border-primary-300 dark:hover:border-primary-600"
-                                    data-rating="{{ $i }}"
-                                    wire:click="setRating({{ $i }})">
-                                <svg class="w-7 h-7 text-muted dark:text-muted" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-4.9-4.87L18.36 9.27l-4.9-4.87L10.91 3.09 12 0l1.09 3.09z"/></svg>
-                                <input type="hidden" name="rating" value="{{ $i }}">
+                                    class="star-btn relative w-12 h-12 rounded-xl border-2 border-warm dark:border-warm bg-white dark:bg-surface flex items-center justify-center transition-all duration-200"
+                                    :class="(hoverRating || rating) >= {{ $i }} ? 'border-amber-400 text-amber-400 shadow-md shadow-amber-500/10' : 'text-slate-400 hover:border-slate-500'"
+                                    @click="rating = {{ $i }}; document.getElementById('rating-input').value = {{ $i }}"
+                                    @mouseenter="hoverRating = {{ $i }}"
+                                    @mouseleave="hoverRating = 0">
+                                <svg class="w-7 h-7 transition-colors duration-150" :class="(hoverRating || rating) >= {{ $i }} ? 'text-amber-400' : 'text-slate-600'" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                             </button>
                         @endfor
                     </div>
                     
-                    <p class="text-sm text-muted dark:text-muted mt-4 text-center" id="rating-hint">{{ __('Click to rate') }}</p>
+                    <p class="text-sm text-muted dark:text-muted mt-4 text-center">
+                        <span x-text="rating === 5 ? '⭐⭐⭐⭐⭐ Exceptional (5/5)' : (rating === 4 ? '⭐⭐⭐⭐ Very Good (4/5)' : (rating === 3 ? '⭐⭐⭐ Average (3/5)' : (rating === 2 ? '⭐⭐ Poor (2/5)' : '⭐ Terrible (1/5)')))"></span>
+                    </p>
                     
-                    <input type="hidden" name="rating" id="rating-input" required>
+                    <input type="hidden" name="rating" id="rating-input" :value="rating" value="5" required>
                 </section>
 
                 {{-- Comment --}}
-                <section class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6">
+                <section class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6">
                     <label for="comment" class="block text-sm font-semibold text-muted dark:text-white mb-3">{{ __('Your review') }}</label>
                     <textarea name="comment" id="comment" rows="6" class="w-full px-4 py-4 rounded-xl border border-warm dark:border-warm bg-white dark:bg-surface text-muted dark:text-white focus:ring-2 focus:ring-primary-500 resize-none" placeholder="{{ __('Tell future guests about your experience...') }}" required></textarea>
                     <p class="text-sm text-muted dark:text-muted mt-2">{{ __('Be honest, helpful, and specific. Mention what you loved and what could be improved.') }}</p>

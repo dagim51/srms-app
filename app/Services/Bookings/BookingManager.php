@@ -133,37 +133,62 @@ class BookingManager
     }
 
     /**
-     * Calculate total price based on base price and pricing rules.
+     * Calculate total price based on base price and dynamic pricing rules.
      */
     public function calculatePrice(Accommodation $accommodation, string $checkIn, string $checkOut): float
     {
-        $basePrice = $accommodation->listing->price ?? $accommodation->property->price ?? 100;
-        $days = Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
-        $totalPrice = $basePrice * $days;
+        $start = Carbon::parse($checkIn);
+        $end = Carbon::parse($checkOut);
+        $basePrice = (float) ($accommodation->listing->price ?? $accommodation->property->price ?? 100);
 
-        $rules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
+        $candidateRules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
             ->where(function ($q) use ($checkIn, $checkOut) {
-                $q->where(function ($q2) use ($checkIn, $checkOut) {
-                    $q2->whereNull('start_date')
-                        ->orWhere(function ($q3) use ($checkIn, $checkOut) {
-                            $q3->where('start_date', '<', $checkOut)
-                                ->where('end_date', '>', $checkIn);
-                        });
-                });
+                $q->whereNull('start_date')
+                    ->orWhere(function ($q2) use ($checkIn, $checkOut) {
+                        $q2->where('start_date', '<', $checkOut)
+                            ->where('end_date', '>', $checkIn);
+                    });
             })
             ->orderByDesc('priority')
             ->get();
 
-        if ($rules->isNotEmpty()) {
-            $rule = $rules->first();
-            if ($rule->price_modifier_type === 'fixed') {
-                $totalPrice = $rule->price_modifier_value * $days;
-            } else {
-                $totalPrice = $totalPrice * (1 + ($rule->price_modifier_value / 100));
+        $totalPrice = 0.0;
+        $current = $start->copy();
+
+        while ($current->lt($end)) {
+            $dateStr = $current->toDateString();
+            $isWeekend = in_array($current->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY]);
+            $dayRate = $basePrice;
+
+            $matchingRule = $candidateRules->first(function ($rule) use ($dateStr, $isWeekend) {
+                if ($rule->start_date && $rule->end_date) {
+                    $ruleStart = Carbon::parse($rule->start_date)->toDateString();
+                    $ruleEnd = Carbon::parse($rule->end_date)->toDateString();
+                    if ($dateStr < $ruleStart || $dateStr >= $ruleEnd) {
+                        return false;
+                    }
+                }
+
+                if ($rule->type === 'weekend' && ! $isWeekend) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if ($matchingRule) {
+                if ($matchingRule->price_modifier_type === 'fixed') {
+                    $dayRate = (float) $matchingRule->price_modifier_value;
+                } else {
+                    $dayRate = $dayRate * (1 + ((float) $matchingRule->price_modifier_value / 100));
+                }
             }
+
+            $totalPrice += $dayRate;
+            $current->addDay();
         }
 
-        return $totalPrice;
+        return round($totalPrice, 2);
     }
 
     /**
@@ -179,65 +204,77 @@ class BookingManager
         $baseNightlyRate = (float) ($accommodation->listing->price ?? $accommodation->property->price ?? 100);
         $baseSubtotal = $baseNightlyRate * $nights;
 
-        // Day by day breakdown to analyze weekends
-        $dailyBreakdown = [];
-        $weekendNights = 0;
-        $current = $start->copy();
-
-        while ($current->lt($end)) {
-            // Friday (5) and Saturday (6) considered weekend nights
-            $isWeekend = in_array($current->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY]);
-            if ($isWeekend) {
-                $weekendNights++;
-            }
-            $dailyBreakdown[] = [
-                'date' => $current->toDateString(),
-                'day_of_week' => $current->format('l'),
-                'is_weekend' => $isWeekend,
-                'rate' => $baseNightlyRate,
-            ];
-            $current->addDay();
-        }
-
-        // Weekend surcharge (default 10% on weekend nights if option enabled or rules dictate)
-        $weekendMultiplier = $options['weekend_multiplier'] ?? 0.10;
-        $weekendSurcharge = round($weekendNights * $baseNightlyRate * $weekendMultiplier, 2);
-
-        // Fetch applicable accommodation pricing rules
-        $rules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
+        $candidateRules = AccommodationPricingRule::where('accommodation_id', $accommodation->id)
             ->where(function ($q) use ($checkIn, $checkOut) {
-                $q->where(function ($q2) use ($checkIn, $checkOut) {
-                    $q2->whereNull('start_date')
-                        ->orWhere(function ($q3) use ($checkIn, $checkOut) {
-                            $q3->where('start_date', '<', $checkOut)
-                                ->where('end_date', '>', $checkIn);
-                        });
-                });
+                $q->whereNull('start_date')
+                    ->orWhere(function ($q2) use ($checkIn, $checkOut) {
+                        $q2->where('start_date', '<', $checkOut)
+                            ->where('end_date', '>', $checkIn);
+                    });
             })
             ->orderByDesc('priority')
             ->get();
 
+        $dailyBreakdown = [];
+        $weekendNights = 0;
+        $staySubtotal = 0.0;
         $pricingAdjustments = [];
-        $ruleAdjustmentTotal = 0.0;
+        $current = $start->copy();
 
-        foreach ($rules as $rule) {
-            $adjAmount = 0.0;
-            if ($rule->price_modifier_type === 'fixed') {
-                $adjAmount = ($rule->price_modifier_value * $nights) - $baseSubtotal;
-            } else {
-                $adjAmount = $baseSubtotal * ($rule->price_modifier_value / 100);
+        while ($current->lt($end)) {
+            $dateStr = $current->toDateString();
+            $isWeekend = in_array($current->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY]);
+            if ($isWeekend) {
+                $weekendNights++;
             }
-            $ruleAdjustmentTotal += $adjAmount;
-            $pricingAdjustments[] = [
-                'rule_id' => $rule->id,
-                'type' => $rule->type,
-                'modifier_type' => $rule->price_modifier_type,
-                'modifier_value' => (float) $rule->price_modifier_value,
-                'adjustment_amount' => round($adjAmount, 2),
+
+            $effectiveRate = $baseNightlyRate;
+            $appliedRule = $candidateRules->first(function ($rule) use ($dateStr, $isWeekend) {
+                if ($rule->start_date && $rule->end_date) {
+                    $ruleStart = Carbon::parse($rule->start_date)->toDateString();
+                    $ruleEnd = Carbon::parse($rule->end_date)->toDateString();
+                    if ($dateStr < $ruleStart || $dateStr >= $ruleEnd) {
+                        return false;
+                    }
+                }
+
+                if ($rule->type === 'weekend' && ! $isWeekend) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if ($appliedRule) {
+                if ($appliedRule->price_modifier_type === 'fixed') {
+                    $effectiveRate = (float) $appliedRule->price_modifier_value;
+                } else {
+                    $effectiveRate = $effectiveRate * (1 + ((float) $appliedRule->price_modifier_value / 100));
+                }
+
+                $pricingAdjustments[$appliedRule->id] = [
+                    'rule_id' => $appliedRule->id,
+                    'type' => $appliedRule->type,
+                    'modifier_type' => $appliedRule->price_modifier_type,
+                    'modifier_value' => (float) $appliedRule->price_modifier_value,
+                ];
+            }
+
+            $dailyBreakdown[] = [
+                'date' => $dateStr,
+                'day_of_week' => $current->format('l'),
+                'is_weekend' => $isWeekend,
+                'rate' => round($effectiveRate, 2),
+                'rule_applied' => $appliedRule ? $appliedRule->type : null,
             ];
+
+            $staySubtotal += $effectiveRate;
+            $current->addDay();
         }
 
-        $staySubtotal = round($baseSubtotal + $weekendSurcharge + $ruleAdjustmentTotal, 2);
+        $weekendMultiplier = (float) ($options['weekend_multiplier'] ?? 0.10);
+        $weekendSurcharge = round($weekendNights * $baseNightlyRate * $weekendMultiplier, 2);
+        $staySubtotal = round($staySubtotal + $weekendSurcharge, 2);
 
         // Mandatory fees
         $cleaningFee = (float) ($options['cleaning_fee'] ?? 50.00);

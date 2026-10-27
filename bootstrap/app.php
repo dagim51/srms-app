@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\CheckFeatureFlag;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnforceSubscriptionLimits;
 use App\Http\Middleware\IdempotencyMiddleware;
 use App\Http\Middleware\OrganizationScope;
 use App\Http\Middleware\SetLocale;
@@ -16,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
+        channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -31,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'idempotency' => IdempotencyMiddleware::class,
             'role' => CheckRole::class,
             'permission' => CheckPermission::class,
+            'subscription.limits' => EnforceSubscriptionLimits::class,
+            'feature' => CheckFeatureFlag::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

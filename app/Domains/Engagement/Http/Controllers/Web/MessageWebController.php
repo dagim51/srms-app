@@ -2,11 +2,13 @@
 
 namespace App\Domains\Engagement\Http\Controllers\Web;
 
+use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Inquiry;
 use App\Models\Listing;
 use App\Models\Message;
+use App\Models\UserFlag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,7 +54,7 @@ class MessageWebController extends Controller
             $participant->update(['last_read_at' => now()]);
         }
 
-        $conversation->load(['messages.sender', 'participants.user', 'property']);
+        $conversation->load(['messages.sender', 'messages.attachments', 'participants.user', 'property']);
 
         return view('dashboard.messages.show', compact('conversation'));
     }
@@ -66,17 +68,58 @@ class MessageWebController extends Controller
         }
 
         $request->validate([
-            'body' => 'required|string',
+            'body' => 'nullable|string',
+            'attachment' => 'nullable|file|max:10240|mimes:jpeg,png,jpg,pdf,doc,docx,webp',
         ]);
 
-        $conversation->messages()->create([
+        if (empty($request->body) && ! $request->hasFile('attachment')) {
+            return back()->withErrors(['body' => 'Message body or attachment is required.']);
+        }
+
+        $message = $conversation->messages()->create([
             'sender_id' => $user->id,
-            'body' => $request->body,
+            'body' => $request->body ?? '',
         ]);
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $path = $file->store('attachments/messages', 'public');
+            $message->attachments()->create([
+                'file_path' => $path,
+                'file_type' => $file->getClientMimeType(),
+                'file_name' => $file->getClientOriginalName(),
+            ]);
+        }
 
         $conversation->touch(); // Update updated_at for sorting
 
+        broadcast(new MessageSent($message->load('attachments', 'sender')))->toOthers();
+
         return back()->with('success', 'Message sent.');
+    }
+
+    public function reportMessage(Request $request, Message $message)
+    {
+        $user = $this->getActiveUser();
+
+        $request->validate([
+            'reason' => 'required|string',
+            'description' => 'nullable|string',
+        ]);
+
+        UserFlag::create([
+            'user_id' => $message->sender_id,
+            'reporter_id' => $user->id,
+            'reason' => $request->reason,
+            'description' => $request->description ?? 'Reported offensive in-message content.',
+            'severity' => 'medium',
+            'status' => 'pending',
+            'context_type' => Message::class,
+            'context_id' => $message->id,
+            'reported_at' => now(),
+        ]);
+
+        return back()->with('success', 'Message reported to moderation team.');
     }
 
     public function storeInquiry(Request $request)

@@ -75,7 +75,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-orange-600 selection:text-white transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-orange-600 selection:text-white transition-colors duration-300">
 
     {{-- PUBLIC STICKY NAV (AURA ESTATES FLOATING PILL) --}}
     <header id="site-header" class="fixed top-0 inset-x-0 z-50 pt-3 sm:pt-4 px-3 sm:px-6 pointer-events-none transition-all duration-300"
@@ -83,8 +83,8 @@
         x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 20)">
         <div class="max-w-7xl mx-auto pointer-events-auto relative z-50">
             <div x-bind:class="scrolled 
-                    ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-900/5 dark:shadow-black/60' 
-                    : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/80 dark:border-slate-800/80 shadow-lg shadow-slate-900/5 dark:shadow-black/40'"
+                    ? 'bg-white/95 dark:bg-slate-900/95 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-900/5 dark:shadow-black/25' 
+                    : 'bg-white/85 dark:bg-slate-900/85 border-slate-200/80 dark:border-slate-800/80 shadow-lg shadow-slate-900/5 dark:shadow-black/20'"
                  class="backdrop-blur-md border rounded-2xl px-4 sm:px-6 py-2.5 transition-all duration-300">
                 <div class="flex items-center justify-between h-12 md:h-13">
                     {{-- Aura Brand Logo --}}
@@ -170,7 +170,7 @@
              x-transition:leave-end="opacity-0 -translate-y-2"
              class="max-w-7xl mx-auto px-4 mt-2 md:hidden relative z-50 pointer-events-auto"
              x-cloak>
-            <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-2xl pointer-events-auto space-y-3">
+            <div class="card bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 pointer-events-auto space-y-3">
                 <nav class="flex flex-col gap-1 text-sm font-medium" aria-label="Mobile navigation">
                     <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-orange-600 transition-colors {{ request()->routeIs('home') ? 'bg-orange-50 dark:bg-slate-800 text-orange-600 font-bold' : '' }}" id="mobile-nav-home">
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>

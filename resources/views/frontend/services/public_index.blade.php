@@ -58,7 +58,7 @@
         {{-- Professionals Grid (Aura Estates Style) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($professionals as $pro)
-                <div class="card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 rounded-3xl p-6 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group cinematic-fade-up cinematic-stagger-{{ ($loop->index % 3) + 1 }}">
+                <div class="card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 rounded-3xl p-6 hover: transition-all duration-500 flex flex-col justify-between group cinematic-fade-up cinematic-stagger-{{ ($loop->index % 3) + 1 }}">
                     <div class="space-y-4">
                         {{-- Top Header with Avatar & Badge --}}
                         <div class="flex items-start gap-4">
@@ -110,7 +110,7 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-3 text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                <div class="card col-span-3 text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
                     <p class="text-base text-slate-500">{{ __('No service professionals found matching your query.') }}</p>
                     <a href="{{ route('services.index') }}" class="btn btn-primary btn-sm mt-4 px-4 py-2 rounded-xl bg-orange-600 text-white font-semibold">{{ __('Clear Filters') }}</a>
                 </div>
@@ -118,7 +118,7 @@
         </div>
 
         {{-- Verification Assurance Card (Obsidian Card) --}}
-        <div class="bg-slate-900 dark:bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl cinematic-fade-up cinematic-stagger-2">
+        <div class="card bg-slate-900 dark:bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 cinematic-fade-up cinematic-stagger-2">
             <div class="space-y-1">
                 <h3 class="text-lg font-serif font-bold text-white">{{ __('Are you a licensed attorney, surveyor, or architectural firm?') }}</h3>
                 <p class="text-xs text-slate-300">{{ __('Join the Aura Estates verified network to receive high-net-worth client requests and cadastral escrow assignments.') }}</p>

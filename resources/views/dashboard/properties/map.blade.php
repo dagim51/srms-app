@@ -71,7 +71,7 @@
             class="mb-0 flex-shrink-0" />
 
         {{-- Top Header & Preset Filters --}}
-        <div class="cinematic-fade-up cinematic-stagger-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-[#111827] p-3.5 rounded-2xl border border-warm dark:border-[#273244] shadow-xs flex-shrink-0">
+        <div class="card cinematic-fade-up cinematic-stagger-1 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-[#111827] p-3.5 rounded-2xl border border-warm dark:border-[#273244] flex-shrink-0">
             {{-- Quick Presets --}}
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-thin">
                 <span class="text-xs font-semibold text-muted dark:text-muted mr-1 flex-shrink-0">Urban Areas:</span>
@@ -89,7 +89,7 @@
             {{-- Radius Slider & View Toggle --}}
             <div class="flex flex-wrap items-center gap-3">
                 {{-- Interactive Radius Slider --}}
-                <div class="flex items-center gap-2 bg-surface dark:bg-surface px-3 py-1 rounded-xl border border-warm dark:border-warm">
+                <div class="card flex items-center gap-2 bg-surface dark:bg-surface px-3 py-1 rounded-xl border border-warm dark:border-warm">
                     <span class="text-xs font-medium text-muted dark:text-muted">Radius:</span>
                     <input 
                         type="range" 
@@ -153,7 +153,7 @@
                 </div>
 
                 {{-- Map Floating Info Overlay --}}
-                <div class="absolute top-3 left-3 z-20 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-warm dark:border-warm shadow-md text-xs font-mono text-muted dark:text-muted flex items-center gap-2">
+                <div class="card absolute top-3 left-3 z-20 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-warm dark:border-warm text-xs font-mono text-muted dark:text-muted flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
                     <span>Center: <span x-text="centerLat.toFixed(4)"></span>° N, <span x-text="centerLng.toFixed(4)"></span>° E</span>
                     <span class="text-muted">·</span>
@@ -169,7 +169,7 @@
             {{-- Right: Property Cards List with Distance --}}
             <div 
                 x-show="viewMode === 'list' || viewMode === 'split'" 
-                class="flex flex-col bg-white dark:bg-[#111827] rounded-2xl border border-warm dark:border-[#273244] shadow-xs overflow-hidden"
+                class="card flex flex-col bg-white dark:bg-[#111827] rounded-2xl border border-warm dark:border-[#273244] overflow-hidden"
                 :class="viewMode === 'split' ? 'lg:w-2/5' : 'w-full'"
             >
                 <div class="p-3.5 border-b border-warm dark:border-[#273244] flex items-center justify-between bg-surface/50 dark:bg-[#172033]/50">

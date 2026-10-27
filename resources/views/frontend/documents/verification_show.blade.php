@@ -13,8 +13,16 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         {{ __('Back to Verifications') }}
                     </a>
-                    <button class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20 text-xs">{{ __('Reject') }}</button>
-                    <button class="btn btn-primary bg-success-600 hover:bg-success-700 border-success-600 text-xs">{{ __('Approve') }}</button>
+                    <form method="POST" action="{{ route('dashboard.verifications.review', $verification['id']) }}" class="inline">
+                        @csrf
+                        <input type="hidden" name="decision" value="reject">
+                        <button type="submit" class="btn btn-secondary text-error-600 border-error-200 hover:bg-error-50 dark:hover:bg-error-900/20 text-xs">{{ __('Reject') }}</button>
+                    </form>
+                    <form method="POST" action="{{ route('dashboard.verifications.review', $verification['id']) }}" class="inline">
+                        @csrf
+                        <input type="hidden" name="decision" value="approve">
+                        <button type="submit" class="btn btn-primary bg-success-600 hover:bg-success-700 border-success-600 text-xs">{{ __('Approve') }}</button>
+                    </form>
                 </div>
             </x-slot:actions>
         </x-page-header>
@@ -67,8 +75,12 @@
 
                 <div class="card p-6">
                     <h3 class="card-title text-base mb-4">{{ __('Review Notes') }}</h3>
-                    <textarea class="input w-full h-32 mb-4" placeholder="{{ __('Enter notes regarding this verification case...') }}">{{ $verification['notes'] }}</textarea>
-                    <button class="btn btn-secondary w-full justify-center">{{ __('Save Notes') }}</button>
+                    <form method="POST" action="{{ route('dashboard.verifications.review', $verification['id']) }}">
+                        @csrf
+                        <input type="hidden" name="decision" value="{{ $verification['status'] === 'approved' ? 'approve' : 'reject' }}">
+                        <textarea name="notes" class="input w-full h-32 mb-4" placeholder="{{ __('Enter notes regarding this verification case...') }}">{{ $verification['notes'] }}</textarea>
+                        <button type="submit" class="btn btn-secondary w-full justify-center">{{ __('Save Notes') }}</button>
+                    </form>
                 </div>
             </div>
         </div>

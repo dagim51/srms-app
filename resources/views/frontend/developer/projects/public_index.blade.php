@@ -49,7 +49,7 @@
         {{-- Projects Grid (Aura Estates Cards) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
             @forelse($projects as $project)
-                <div class="card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between cinematic-fade-up cinematic-stagger-{{ ($loop->index % 3) + 1 }}">
+                <div class="card bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 rounded-3xl overflow-hidden hover: transition-all duration-500 group flex flex-col justify-between cinematic-fade-up cinematic-stagger-{{ ($loop->index % 3) + 1 }}">
                     <div>
                         {{-- Project Media Preview --}}
                         <div class="relative aspect-[16/9] overflow-hidden bg-slate-900">
@@ -118,7 +118,7 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-2 text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
+                <div class="card col-span-2 text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
                     <p class="text-base text-slate-500">{{ __('No projects match the selected filter.') }}</p>
                     <a href="{{ route('developers.index') }}" class="btn btn-primary btn-sm mt-4 px-4 py-2 rounded-xl bg-orange-600 text-white font-semibold">{{ __('View All Developments') }}</a>
                 </div>
@@ -126,7 +126,7 @@
         </div>
 
         {{-- Off-Plan Trust Protections Banner (Obsidian Luxury Card) --}}
-        <div class="bg-slate-900 dark:bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 shadow-xl cinematic-fade-up cinematic-stagger-2">
+        <div class="card bg-slate-900 dark:bg-slate-950 text-white border border-slate-800 rounded-3xl p-8 sm:p-10 cinematic-fade-up cinematic-stagger-2">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="flex items-start gap-4">
                     <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center flex-shrink-0 font-serif font-bold text-lg">1</div>

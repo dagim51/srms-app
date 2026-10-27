@@ -57,7 +57,7 @@
     $area = $targetProperty ? ($targetProperty->building_area ?? $targetProperty->land_area ?? null) : null;
 @endphp
 
-<article class="property-card card card-hover bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group h-full relative"
+<article class="property-card card card-hover bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800 hover:border-orange-500/40 transition-all duration-300 flex flex-col justify-between group h-full relative"
          x-data="{ favorited: false, loading: false }">
 
     <div>

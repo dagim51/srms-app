@@ -247,4 +247,89 @@ class RoleBasedAccessControlTest extends TestCase
 
         $this->assertTrue($targetUser->fresh()->hasRole('Property Manager'));
     }
+
+    // ──────────────────────────────────────────────────────────────────────────
+    // Multi-Role Composition Tests (SRS requirement: users may hold many roles)
+    // ──────────────────────────────────────────────────────────────────────────
+
+    public function test_user_with_multiple_roles_has_union_of_permissions(): void
+    {
+        $user = User::factory()->create();
+        // Landlord: leases.create, leases.terminate, maintenance.manage, ...
+        // Agent:    crm.leads.manage, commissions.view, ...
+        $user->syncRoles(['Landlord', 'Agent']);
+
+        $this->assertTrue($user->hasRole('Landlord'));
+        $this->assertTrue($user->hasRole('Agent'));
+
+        // Permissions from Landlord role
+        $this->assertTrue($user->hasPermissionTo('leases.create'));
+        $this->assertTrue($user->hasPermissionTo('leases.terminate'));
+        $this->assertTrue($user->hasPermissionTo('maintenance.manage'));
+
+        // Permissions from Agent role
+        $this->assertTrue($user->hasPermissionTo('crm.leads.manage'));
+        $this->assertTrue($user->hasPermissionTo('commissions.view'));
+
+        // Permission not in either role
+        $this->assertFalse($user->hasPermissionTo('finance.escrow.release'));
+    }
+
+    public function test_property_owner_and_host_dual_role_realistic_scenario(): void
+    {
+        // A property owner who also manages short-stay accommodation (very common in Ethiopia)
+        $owner = User::factory()->create(['email' => 'owner-host@srms.et']);
+        $owner->syncRoles(['Property Owner', 'Host']);
+
+        // Property Owner capabilities
+        $this->assertTrue($owner->hasPermissionTo('properties.create'));
+        $this->assertTrue($owner->hasPermissionTo('properties.edit'));
+        $this->assertTrue($owner->hasPermissionTo('listings.submit'));
+
+        // Host capabilities (added by second role)
+        $this->assertTrue($owner->hasPermissionTo('accommodations.manage'));
+        $this->assertTrue($owner->hasPermissionTo('bookings.manage'));
+
+        // NOT a tenant (cannot sign leases as tenant)
+        $this->assertFalse($owner->hasPermissionTo('leases.sign'));
+    }
+
+    public function test_sync_roles_replaces_all_existing_roles(): void
+    {
+        $user = User::factory()->create();
+        $user->assignRole('Tenant');
+        $user->assignRole('Buyer');
+
+        $this->assertTrue($user->hasRole('Tenant'));
+        $this->assertTrue($user->hasRole('Buyer'));
+
+        // syncRoles replaces — now only Agent
+        $user->syncRoles(['Agent']);
+
+        $this->assertTrue($user->hasRole('Agent'));
+        $this->assertFalse($user->hasRole('Tenant'));
+        $this->assertFalse($user->hasRole('Buyer'));
+    }
+
+    public function test_multi_role_with_org_scope_remains_isolated(): void
+    {
+        $developer = User::factory()->create();
+        // Developer in org1, Agent in org2
+        $developer->assignRole('Developer', $this->org1->id);
+        $developer->assignRole('Agent', $this->org2->id);
+
+        // Org1: has Developer permissions
+        $this->assertTrue($developer->hasRole('Developer', $this->org1->id));
+        $this->assertTrue($developer->hasPermissionTo('developments.manage', $this->org1->id));
+        $this->assertFalse($developer->hasPermissionTo('crm.leads.manage', $this->org1->id));
+
+        // Org2: has Agent permissions
+        $this->assertTrue($developer->hasRole('Agent', $this->org2->id));
+        $this->assertTrue($developer->hasPermissionTo('crm.leads.manage', $this->org2->id));
+        $this->assertFalse($developer->hasPermissionTo('developments.manage', $this->org2->id));
+
+        // Cross-org isolation: org1 role not visible in org2 and vice versa
+        $this->assertFalse($developer->hasRole('Developer', $this->org2->id));
+        $this->assertFalse($developer->hasRole('Agent', $this->org1->id));
+    }
 }

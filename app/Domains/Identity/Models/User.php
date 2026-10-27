@@ -2,6 +2,9 @@
 
 namespace App\Domains\Identity\Models;
 
+use App\Domains\CRM\Models\Lead;
+use App\Domains\Organization\Models\OrganizationMember;
+use App\Models\HandoverRecord;
 use App\Traits\HasRoles;
 use Database\Factories\Domains\Identity\Models\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -46,5 +49,20 @@ class User extends Authenticatable
     public function apiTokens(): HasMany
     {
         return $this->hasMany(ApiToken::class);
+    }
+
+    public function handoverRecords(): HasMany
+    {
+        return $this->hasMany(HandoverRecord::class, 'buyer_id');
+    }
+
+    public function assignedLeads(): HasMany
+    {
+        return $this->hasMany(Lead::class, 'assigned_to');
+    }
+
+    public function organizationMemberships(): HasMany
+    {
+        return $this->hasMany(OrganizationMember::class, 'user_id');
     }
 }

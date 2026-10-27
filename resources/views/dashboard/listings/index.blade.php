@@ -90,7 +90,7 @@
         </div>
 
         {{-- Actions & Filter Toolbar --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('Commercial Listings') }}</h2>
@@ -172,7 +172,7 @@
                                 ? ($property->media->first()->url ?? $property->media->first()->storage_key) 
                                 : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
                         @endphp
-                        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+                        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl overflow-hidden hover: transition-all flex flex-col group">
                             {{-- Image Banner & Badges --}}
                             <div class="relative aspect-video bg-surface-subtle dark:bg-surface overflow-hidden">
                                 <img src="{{ $coverImg }}" alt="{{ $property->title ?? 'Property' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

@@ -20,7 +20,7 @@
             </div>
 
             {{-- Search Form --}}
-            <div class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden shadow-xl">
+            <div class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden">
                 <form action="{{ route('accommodations.search') }}" method="GET" class="p-6 space-y-6">
                     
                     {{-- Location & Dates --}}

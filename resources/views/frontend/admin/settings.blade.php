@@ -20,7 +20,7 @@
                 <p class="text-sm text-muted mt-1">{{ __('Set platform fees, tax rates, and payout schedules.') }}</p>
             </div>
             <div class="md:col-span-2">
-                <div class="bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-6 shadow-xs space-y-6">
+                <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl p-6 space-y-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-bold text-muted dark:text-dark-subtle mb-2">Platform Fee (%)</label>
@@ -51,7 +51,7 @@
                 <p class="text-sm text-muted mt-1">{{ __('Configure MFA requirements and session limits.') }}</p>
             </div>
             <div class="md:col-span-2">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm space-y-6">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 space-y-6">
                     <label class="flex items-start gap-3">
                         <input type="checkbox" checked class="mt-1 w-4 h-4 text-primary-600 rounded border-warm">
                         <div>

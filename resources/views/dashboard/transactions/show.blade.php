@@ -35,7 +35,7 @@
         </div>
 
         {{-- Deal Main Banner --}}
-        <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div class="card bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800/80">
                 <div>
                     <div class="flex items-center flex-wrap gap-2.5 mb-2">
@@ -62,7 +62,7 @@
                     </p>
                 </div>
 
-                <div class="text-left md:text-right bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+                <div class="text-left md:text-right bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
                     <p class="text-[11px] font-black uppercase tracking-wider text-slate-400">{{ __('Total Transaction Value') }}</p>
                     <p class="text-2xl sm:text-3xl font-black font-display text-slate-950 dark:text-white tracking-tight mt-0.5">
                         {{ $deal['total_amount_formatted'] }}
@@ -82,7 +82,7 @@
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
                         <span>{{ __('Bank Escrow Custody') }}</span>
                     </p>
-                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5 text-xs">
                         <div class="flex justify-between">
                             <span class="text-slate-500">{{ __('Partner Bank:') }}</span>
                             <span class="font-bold text-slate-900 dark:text-white">{{ $deal['bank_partner'] }}</span>
@@ -104,7 +104,7 @@
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                         <span>{{ __('Cadastral Registry Info') }}</span>
                     </p>
-                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 space-y-1.5 text-xs">
                         <div class="flex justify-between">
                             <span class="text-slate-500">{{ __('Deed Cert #:') }}</span>
                             <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $deal['title_deed_no'] }}</span>
@@ -126,7 +126,7 @@
                         <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
                         <span>{{ __('Contractual Parties') }}</span>
                     </p>
-                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 space-y-2 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2 text-xs">
                         <div class="flex items-center gap-2">
                             <img src="{{ $deal['buyer_avatar'] }}" alt="" class="w-5 h-5 rounded-full object-cover">
                             <span class="text-slate-500">{{ __('Buyer:') }}</span>
@@ -143,7 +143,7 @@
         </div>
 
         {{-- Detailed Milestone Progress Log --}}
-        <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="card bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-3xl p-6 sm:p-8 space-y-6">
             <h2 class="text-lg font-display font-extrabold text-slate-950 dark:text-white">
                 {{ __('Official Deal Milestones & Escrow Release Sequence') }}
             </h2>
@@ -164,7 +164,7 @@
                             @endif
                         </div>
 
-                        <div class="flex-1 bg-slate-50 dark:bg-slate-950/70 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80">
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
                                 <h3 class="text-sm font-bold text-slate-950 dark:text-white">{{ $m['title'] }}</h3>
                                 <span class="text-xs font-mono text-slate-400 font-semibold">{{ $m['date'] }}</span>

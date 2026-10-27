@@ -38,7 +38,27 @@ class PaymentPolicy extends BasePolicy
 
     public function update(User $user, $payment): bool
     {
-        return $user->hasRole('Administrator');
+        if ($user->hasRole('Administrator')) {
+            return true;
+        }
+
+        if ($user->hasAnyRole(['Finance Officer', 'Property Manager', 'Agent'])) {
+            return true;
+        }
+
+        if (method_exists($user, 'hasPermissionTo') && (
+            $user->hasPermissionTo('finance.payouts.manage') ||
+            $user->hasPermissionTo('finance.escrow.release')
+        )) {
+            return true;
+        }
+
+        // Payee/owner if payable has user_id
+        if ($payment->payable && isset($payment->payable->user_id) && $payment->payable->user_id === $user->id) {
+            return true;
+        }
+
+        return false;
     }
 
     public function delete(User $user, $payment): bool

@@ -14,7 +14,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- Input Form -->
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-8 shadow-sm">
+            <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-8">
                 <h2 class="text-xl font-bold text-muted dark:text-white mb-6">{{ __('Property Details') }}</h2>
                 <form action="{{ route('dashboard.ai.assistant') }}" method="POST">
                     @csrf
@@ -50,7 +50,7 @@
             </div>
 
             <!-- Output / Draft -->
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-8 shadow-sm flex flex-col">
+            <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-8 flex flex-col">
                 <h2 class="text-xl font-bold text-muted dark:text-white mb-6 flex items-center justify-between">
                     Generated Draft
                     @if($draft)
@@ -69,7 +69,7 @@
                         <p class="text-xs text-muted mt-4 text-center">{{ __('You can edit the AI draft manually before saving to ensure it meets your requirements.') }}</p>
                     </div>
                 @else
-                    <div class="flex-1 flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-warm dark:border-warm rounded-2xl bg-surface dark:bg-surface/50">
+                    <div class="card flex-1 flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-warm dark:border-warm rounded-2xl bg-surface dark:bg-surface/50">
                         <div class="w-16 h-16 bg-surface-subtle dark:bg-surface rounded-full flex items-center justify-center text-muted mb-4">
                             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </div>

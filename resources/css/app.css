@@ -62,12 +62,12 @@
     --color-cat-service-subtle:  #FDF2F8;
     --color-cat-service-border:  #FBCFE8;
 
-    /* Dark mode surfaces */
-    --color-dark-bg:       #090D16;
-    --color-dark-surface:  #0F172A;
-    --color-dark-elevated: #1E293B;
+    /* Dark mode surfaces — softened, premium slate charcoal (no harsh pitch black) */
+    --color-dark-bg:       #0F172A;
+    --color-dark-surface:  #1E293B;
+    --color-dark-elevated: #283548;
     --color-dark-border:   #334155;
-    --color-dark-text:     #F8FAFC;
+    --color-dark-text:     #F1F5F9;
     --color-dark-muted:    #94A3B8;
     --color-dark-subtle:   #64748B;
 
@@ -90,7 +90,7 @@
     --color-divide-warm:   #E2E8F0;
     
     /* Dark mode semantic mappings */
-    --color-dark-surface-subtle: #1E293B;
+    --color-dark-surface-subtle: #243042;
     --color-dark-border-warm: #334155;
     --color-dark-border-hover: #475569;
     --color-dark-ring-warm: #334155;
@@ -102,20 +102,61 @@
     --color-error:   #EF4444;
     --color-info:    #0EA5E9;
 
-    /* Shadow Tokens (Elevated, high-contrast modern system with subtle multi-glow) */
-    --shadow-card:        0 1px 3px 0 rgb(0 0 0 / 0.04), 0 4px 20px -2px rgb(15 23 42 / 0.06);
-    --shadow-card-hover:  0 12px 32px -4px rgb(15 23 42 / 0.12), 0 4px 12px -2px rgb(249 115 22 / 0.08);
-    --shadow-card-dark:   0 4px 24px -2px rgb(0 0 0 / 0.6), 0 2px 8px -1px rgb(0 0 0 / 0.4);
-    --shadow-card-hover-dark: 0 16px 40px -6px rgb(0 0 0 / 0.75), 0 4px 16px -2px rgb(249 115 22 / 0.15);
-    --shadow-card-interactive: 0 16px 36px -6px rgb(249 115 22 / 0.22), 0 6px 14px -2px rgb(0 0 0 / 0.08);
+    /* Shadow Tokens — 2.0x Visible Soft Elevation System */
+    --shadow-card:        0 3px 10px -1px rgb(15 23 42 / 0.08), 0 12px 28px -3px rgb(15 23 42 / 0.10), 0 22px 44px -5px rgb(15 23 42 / 0.08);
+    --shadow-card-hover:  0 6px 18px -2px rgb(15 23 42 / 0.10), 0 22px 48px -4px rgb(15 23 42 / 0.18), 0 32px 64px -6px rgb(249 115 22 / 0.15);
+
+    /* Dark floating — base idle state (2.0x visible soft elevation on dark canvas) */
+    --shadow-card-dark:
+        0 4px 12px -2px rgb(0 0 0 / 0.38),
+        0 12px 30px -4px rgb(0 0 0 / 0.40),
+        0 24px 50px -8px rgb(0 0 0 / 0.35),
+        inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+
+    /* Dark floating — hover / active lifted state (2.0x visible lift + warm orange halo) */
+    --shadow-card-hover-dark:
+        0 6px 18px -2px rgb(0 0 0 / 0.46),
+        0 20px 45px -6px rgb(0 0 0 / 0.46),
+        0 36px 70px -10px rgb(0 0 0 / 0.38),
+        0 0 0 1px rgb(249 115 22 / 0.35),
+        0 0 20px -3px rgb(249 115 22 / 0.20),
+        inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+
+    /* Interactive card with orange glow halo */
+    --shadow-card-interactive:
+        0 8px 24px -3px  rgb(249 115 22 / 0.25),
+        0 24px 50px -8px rgb(249 115 22 / 0.32),
+        0 4px 12px -2px  rgb(0 0 0 / 0.10);
+
     --shadow-modal:       0 25px 50px -12px rgb(0 0 0 / 0.35);
     --shadow-dropdown:    0 10px 25px -5px rgb(0 0 0 / 0.08), 0 4px 12px -2px rgb(0 0 0 / 0.04);
-    --shadow-dropdown-dark: 0 10px 25px -5px rgb(0 0 0 / 0.6);
+    --shadow-dropdown-dark: 0 14px 36px -6px rgb(0 0 0 / 0.48), 0 6px 16px -2px rgb(0 0 0 / 0.30), inset 0 1px 0 0 rgb(255 255 255 / 0.08);
     --shadow-toast:       0 10px 25px -5px rgb(0 0 0 / 0.1);
-    --shadow-toast-dark:  0 10px 25px -5px rgb(0 0 0 / 0.6);
-    --shadow-property-card: 0 4px 20px -2px rgb(15 23 42 / 0.06);
-    --shadow-property-card-hover: 0 4px 8px -2px rgba(194, 65, 12, 0.15), 0 0 0 1px rgba(194, 65, 12, 0.05);
-    --shadow-property-card-dark: 0 4px 8px -2px rgba(194, 65, 12, 0.15), 0 0 0 1px rgba(194, 65, 12, 0.05);
+    --shadow-toast-dark:  0 14px 36px -6px rgb(0 0 0 / 0.48), 0 6px 16px -2px rgb(0 0 0 / 0.30), inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+
+    /* Property card — standardized 2.0x visible soft shadow system */
+    --shadow-property-card: 0 3px 10px -1px rgb(15 23 42 / 0.08), 0 12px 28px -3px rgb(15 23 42 / 0.10), 0 22px 44px -5px rgb(15 23 42 / 0.08);
+    --shadow-property-card-hover: 0 6px 20px -3px rgba(194, 65, 12, 0.25), 0 22px 48px -4px rgb(15 23 42 / 0.16), 0 0 0 1px rgba(194, 65, 12, 0.18);
+    --shadow-property-card-dark:
+        0 4px 12px -2px rgb(0 0 0 / 0.38),
+        0 12px 30px -4px rgb(0 0 0 / 0.40),
+        0 24px 50px -8px rgb(0 0 0 / 0.35),
+        inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+    --shadow-property-card-hover-dark:
+        0 6px 18px -2px rgb(0 0 0 / 0.46),
+        0 20px 45px -6px rgb(0 0 0 / 0.46),
+        0 36px 70px -10px rgb(0 0 0 / 0.38),
+        0 0 0 1px rgb(249 115 22 / 0.35),
+        0 0 20px -3px rgb(249 115 22 / 0.20),
+        inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+
+    /* Standardized Tailwind Utility Shadow Overrides (Floating Effect on ALL Cards) */
+    --shadow-xs:  0 1px 3px 0 rgb(15 23 42 / 0.04);
+    --shadow-sm:  0 2px 6px -1px rgb(15 23 42 / 0.04), 0 4px 12px -2px rgb(15 23 42 / 0.04);
+    --shadow-md:  0 2px 8px -1px rgb(15 23 42 / 0.04), 0 8px 24px -2px rgb(15 23 42 / 0.07), 0 16px 32px -4px rgb(15 23 42 / 0.05);
+    --shadow-lg:  0 4px 14px -2px rgb(15 23 42 / 0.05), 0 12px 28px -3px rgb(15 23 42 / 0.08), 0 20px 36px -6px rgb(15 23 42 / 0.05);
+    --shadow-xl:  0 2px 8px -1px rgb(15 23 42 / 0.04), 0 8px 24px -2px rgb(15 23 42 / 0.07), 0 16px 32px -4px rgb(15 23 42 / 0.05);
+    --shadow-2xl: 0 4px 12px -2px rgb(15 23 42 / 0.05), 0 16px 40px -4px rgb(15 23 42 / 0.12), 0 24px 48px -6px rgb(249 115 22 / 0.09);
 }
 
 /* ─── CSS Custom Props ─────────────────────────────────────── */
@@ -165,8 +206,18 @@ body {
 .dark body,
 body.dark,
 :where(.dark) body {
-    background-color: var(--color-dark-bg, #090D16);
-    color: var(--color-dark-text, #F8FAFC);
+    background-color: var(--color-dark-bg, #0F172A);
+    color: var(--color-dark-text, #F1F5F9);
+}
+
+/* ─── Dark Mode: 2.0x Visible Elevation Shadow Utilities ─────────────────────── */
+:where(.dark) {
+    --shadow-xs:  0 2px 5px 0 rgb(0 0 0 / 0.28), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+    --shadow-sm:  0 3px 8px -1px rgb(0 0 0 / 0.32), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+    --shadow-md:  0 4px 14px -2px rgb(0 0 0 / 0.36), 0 10px 24px -4px rgb(0 0 0 / 0.32), inset 0 1px 0 0 rgb(255 255 255 / 0.07);
+    --shadow-lg:  0 8px 24px -3px rgb(0 0 0 / 0.40), 0 18px 36px -6px rgb(0 0 0 / 0.34), inset 0 1px 0 0 rgb(255 255 255 / 0.08);
+    --shadow-xl:  0 12px 32px -4px rgb(0 0 0 / 0.44), 0 24px 48px -8px rgb(0 0 0 / 0.36), inset 0 1px 0 0 rgb(255 255 255 / 0.09);
+    --shadow-2xl: 0 18px 45px -6px rgb(0 0 0 / 0.48), 0 32px 64px -10px rgb(0 0 0 / 0.40), 0 0 0 1px rgb(249 115 22 / 0.25), inset 0 1px 0 0 rgb(255 255 255 / 0.10);
 }
 
 /* ─── Cinematic Motion Keyframes & Stagger System ─────────── */
@@ -616,8 +667,8 @@ html[lang="am"] textarea {
     .dark .form-input:disabled,
     .dark .form-select:disabled,
     .dark .form-textarea:disabled {
-        background-color: #090D16;
-        border-color: #1E293B;
+        background-color: #1E293B;
+        border-color: #334155;
         color: #64748B;
     }
 
@@ -749,10 +800,10 @@ html[lang="am"] textarea {
                     transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .dark .card {
-        background-color: #0F172A;
+        background-color: #1E293B;
         border-color: #334155;
         box-shadow: var(--shadow-card-dark);
-        color: var(--color-dark-text, #F8FAFC);
+        color: var(--color-dark-text, #F1F5F9);
     }
     .card-hover:hover {
         box-shadow: var(--shadow-card-hover);
@@ -761,8 +812,8 @@ html[lang="am"] textarea {
     }
     .dark .card-hover:hover {
         box-shadow: var(--shadow-card-hover-dark);
-        border-color: rgba(194, 65, 12, 0.6) !important;
-        transform: translateY(-4px);
+        border-color: rgba(249, 115, 22, 0.35) !important;
+        transform: translateY(-5px);
     }
 
     .card-interactive:hover {
@@ -771,14 +822,43 @@ html[lang="am"] textarea {
         box-shadow: var(--shadow-card-interactive);
         transform: translateY(-4px);
     }
+    .dark .card-interactive:hover {
+        cursor: pointer;
+        border-color: rgba(249, 115, 22, 0.35);
+        box-shadow: var(--shadow-card-hover-dark);
+        transform: translateY(-5px);
+    }
 
-    /* Multicolored Card Glow Utilities - Controlled subtle glow & 3px lift */
-    .card-glow-orange:hover { border-color: #C2410C !important; box-shadow: 0 4px 14px -2px rgba(194, 65, 12, 0.16), 0 0 0 1px rgba(194, 65, 12, 0.08) !important; }
-    .card-glow-emerald:hover { border-color: #10B981 !important; box-shadow: 0 4px 14px -2px rgba(16, 185, 129, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.08) !important; }
-    .card-glow-violet:hover { border-color: #8B5CF6 !important; box-shadow: 0 4px 14px -2px rgba(139, 92, 246, 0.16), 0 0 0 1px rgba(139, 92, 246, 0.08) !important; }
-    .card-glow-amber:hover { border-color: #F59E0B !important; box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.16), 0 0 0 1px rgba(245, 158, 11, 0.08) !important; }
-    .card-glow-sky:hover { border-color: #0EA5E9 !important; box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.16), 0 0 0 1px rgba(14, 165, 233, 0.08) !important; }
-    .card-glow-rose:hover { border-color: #F43F5E !important; box-shadow: 0 4px 14px -2px rgba(244, 63, 94, 0.16), 0 0 0 1px rgba(244, 63, 94, 0.08) !important; }
+    /* Standardized 1.5× Floating Shadow Utilities */
+    .shadow-card {
+        box-shadow: var(--shadow-card) !important;
+    }
+    .dark .shadow-card {
+        box-shadow: var(--shadow-card-dark) !important;
+    }
+    .shadow-card-hover:hover {
+        box-shadow: var(--shadow-card-hover) !important;
+    }
+    .dark .shadow-card-hover:hover {
+        box-shadow: var(--shadow-card-hover-dark) !important;
+        transform: translateY(-5px);
+    }
+
+    /* Multicolored Card Glow Utilities — light mode: subtle glow, dark mode: full floating */
+    .card-glow-orange:hover { border-color: #C2410C !important; box-shadow: 0 4px 14px -2px rgba(194, 65, 12, 0.16), 0 0 0 1px rgba(194, 65, 12, 0.08) !important; transform: translateY(-3px); }
+    .card-glow-emerald:hover { border-color: #10B981 !important; box-shadow: 0 4px 14px -2px rgba(16, 185, 129, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.08) !important; transform: translateY(-3px); }
+    .card-glow-violet:hover { border-color: #8B5CF6 !important; box-shadow: 0 4px 14px -2px rgba(139, 92, 246, 0.16), 0 0 0 1px rgba(139, 92, 246, 0.08) !important; transform: translateY(-3px); }
+    .card-glow-amber:hover { border-color: #F59E0B !important; box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.16), 0 0 0 1px rgba(245, 158, 11, 0.08) !important; transform: translateY(-3px); }
+    .card-glow-sky:hover { border-color: #0EA5E9 !important; box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.16), 0 0 0 1px rgba(14, 165, 233, 0.08) !important; transform: translateY(-3px); }
+    .card-glow-rose:hover { border-color: #F43F5E !important; box-shadow: 0 4px 14px -2px rgba(244, 63, 94, 0.16), 0 0 0 1px rgba(244, 63, 94, 0.08) !important; transform: translateY(-3px); }
+
+    /* Dark mode glow variants — floating layer + colored ring + inset highlight */
+    .dark .card-glow-orange:hover { border-color: rgba(249,115,22,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(249,115,22,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
+    .dark .card-glow-emerald:hover { border-color: rgba(16,185,129,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(16,185,129,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
+    .dark .card-glow-violet:hover { border-color: rgba(139,92,246,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(139,92,246,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
+    .dark .card-glow-amber:hover { border-color: rgba(245,158,11,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(245,158,11,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
+    .dark .card-glow-sky:hover { border-color: rgba(14,165,233,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(14,165,233,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
+    .dark .card-glow-rose:hover { border-color: rgba(244,63,94,0.4) !important; box-shadow: 0 8px 28px -4px rgb(0 0 0 / 0.65), 0 20px 44px -8px rgb(0 0 0 / 0.55), 0 0 0 1px rgba(244,63,94,0.22), inset 0 1px 0 0 rgb(255 255 255 / 0.09) !important; transform: translateY(-5px); }
 
     /* Standardized Card Sub-structures */
     .card-header {
@@ -833,13 +913,13 @@ html[lang="am"] textarea {
     @media (hover: hover) {
         .card-stat:hover {
             border-color: #C2410C !important;
-            box-shadow: 0 4px 14px -2px rgba(194, 65, 12, 0.16), 0 0 0 1px rgba(194, 65, 12, 0.08) !important;
+            box-shadow: var(--shadow-card-hover) !important;
             transform: translateY(-3px);
         }
         .dark .card-stat:hover {
-            border-color: rgba(194, 65, 12, 0.6) !important;
-            box-shadow: 0 4px 16px -2px rgba(194, 65, 12, 0.22), 0 0 0 1px rgba(194, 65, 12, 0.12) !important;
-            transform: translateY(-3px);
+            border-color: rgba(249, 115, 22, 0.35) !important;
+            box-shadow: var(--shadow-card-hover-dark) !important;
+            transform: translateY(-4px);
         }
     }
 
@@ -866,10 +946,16 @@ html[lang="am"] textarea {
         border-radius: 0.75rem;
         padding: 1rem;
         color: #0F172A;
+        box-shadow: var(--shadow-card);
     }
     .dark .card-nested {
         background-color: #1E293B;
         border-color: #334155;
+        /* Nested cards 2.0x visible elevation */
+        box-shadow:
+            0 2px 8px -1px rgb(0 0 0 / 0.28),
+            0 8px 24px -4px rgb(0 0 0 / 0.30),
+            inset 0 1px 0 0 rgb(255 255 255 / 0.06);
         color: var(--color-dark-text, #F8FAFC);
     }
 
@@ -961,9 +1047,13 @@ html[lang="am"] textarea {
         animation: modal-pop 200ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .dark .modal-content, .dark .dialog-content {
-        background: #0D1322;
-        border-color: #1E293B;
-        box-shadow: var(--shadow-modal);
+        background: #1E293B;
+        border-color: #334155;
+        box-shadow:
+            0 4px 16px -3px rgb(0 0 0 / 0.25),
+            0 24px 60px -8px rgb(0 0 0 / 0.30),
+            0 48px 80px -16px rgb(0 0 0 / 0.20),
+            inset 0 1px 0 0 rgb(255 255 255 / 0.08);
     }
     @keyframes modal-pop {
         from { opacity: 0; transform: scale(0.96) translateY(8px); }
@@ -992,8 +1082,8 @@ html[lang="am"] textarea {
         border-top: 1px solid #F1F5F9;
     }
     .dark .modal-footer {
-        background-color: #090D16;
-        border-top-color: #1E293B;
+        background-color: #1E293B;
+        border-top-color: #334155;
     }
 
     /* PROPERTY CARD & PROPERTY LIST CARD */
@@ -1011,8 +1101,10 @@ html[lang="am"] textarea {
     .dark .property-card,
     .dark .property-list-card {
         background-color: #0F172A;
-        border-color: #334155;
+        border-color: #1E293B;
         color: var(--color-dark-text, #F8FAFC);
+        /* Apply idle floating shadow */
+        box-shadow: var(--shadow-property-card-dark);
     }
     .property-card:hover,
     .property-list-card:hover {
@@ -1021,10 +1113,10 @@ html[lang="am"] textarea {
         transform: translateY(-4px);
     }
     .dark .property-card:hover,
-    .dark .property-list-card:hover { 
-        box-shadow: var(--shadow-property-card-dark); 
-        border-color: #FB923C; 
-        transform: translateY(-4px);
+    .dark .property-list-card:hover {
+        box-shadow: var(--shadow-property-card-hover-dark);
+        border-color: rgba(251, 146, 60, 0.5);
+        transform: translateY(-5px);
     }
 
     /* BADGES (POLISHED & REFINED) */
@@ -1713,10 +1805,10 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
 }
 
 .dark .dashboard-shell {
-    background-color: #070B14;
+    background-color: #0F172A;
     background-image: radial-gradient(circle at 15% 15%, rgba(194, 65, 12, 0.08) 0%, transparent 40%),
                       radial-gradient(circle at 85% 85%, rgba(14, 165, 233, 0.04) 0%, transparent 40%);
-    color: #F8FAFC;
+    color: #F1F5F9;
 }
 
 .dashboard-shell .sidebar-link {
@@ -1764,19 +1856,25 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 1.25rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 6px 20px -4px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-card);
     transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dark .luxury-dashboard-card {
     background: linear-gradient(180deg, #0F172A 0%, #0B1120 100%);
     border: 1px solid #1E293B;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    box-shadow: var(--shadow-card-dark);
 }
 
 .luxury-dashboard-card:hover {
     border-color: rgba(194, 65, 12, 0.5);
-    box-shadow: 0 12px 30px -4px rgba(194, 65, 12, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-3px);
+}
+
+.dark .luxury-dashboard-card:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+    box-shadow: var(--shadow-card-hover-dark);
     transform: translateY(-3px);
 }
 
@@ -1789,13 +1887,13 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
     position: relative;
     overflow: hidden;
     transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 4px 14px -2px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-card);
 }
 
 .dark .stat-card-luxury {
     background: linear-gradient(180deg, #0D1527 0%, #090D18 100%);
     border: 1px solid rgba(51, 65, 85, 0.6);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: var(--shadow-card-dark);
 }
 
 .stat-card-luxury::before {
@@ -1812,12 +1910,12 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
 .stat-card-luxury:hover {
     transform: translateY(-3px);
     border-color: rgba(194, 65, 12, 0.4);
-    box-shadow: 0 12px 24px -4px rgba(194, 65, 12, 0.1), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-card-hover);
 }
 
 .dark .stat-card-luxury:hover {
     border-color: rgba(249, 115, 22, 0.4);
-    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 0 15px -2px rgba(194, 65, 12, 0.2);
+    box-shadow: var(--shadow-card-hover-dark);
 }
 
 .stat-card-luxury:hover::before {
@@ -1850,7 +1948,7 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
     border: 1px solid rgba(226, 232, 240, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 1.25rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 6px 20px -2px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-card);
     position: relative;
     overflow: hidden;
     transition: all 240ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -1860,20 +1958,76 @@ html[lang="am"] .font-display, html[lang="am"] .tracking-tight, html[lang="am"] 
     background: rgba(13, 21, 39, 0.88);
     border: 1px solid rgba(51, 65, 85, 0.7);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    box-shadow: var(--shadow-card-dark);
 }
 
 .luxury-dashboard-card:hover {
     border-color: rgba(194, 65, 12, 0.35);
-    box-shadow: 0 12px 28px -4px rgba(194, 65, 12, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-card-hover);
     transform: translateY(-2px);
 }
 
 .dark .luxury-dashboard-card:hover {
     border-color: rgba(249, 115, 22, 0.4);
-    box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.7), 0 0 20px -2px rgba(194, 65, 12, 0.25);
+    box-shadow: var(--shadow-card-hover-dark);
     transform: translateY(-2px);
 }
+
+/* Universal Floating Shadows for All Standard Cards */
+.card,
+.card-stat,
+.card-nested,
+.luxury-dashboard-card,
+.stat-card-luxury,
+.collection-item-card,
+.favorite-item-card,
+.page-header-card,
+.search-console-card,
+.filter-console-card {
+    box-shadow: var(--shadow-card) !important;
+}
+.dark .card,
+.dark .card-stat,
+.dark .card-nested,
+.dark .luxury-dashboard-card,
+.dark .stat-card-luxury,
+.dark .collection-item-card,
+.dark .favorite-item-card,
+.dark .page-header-card,
+.dark .search-console-card,
+.dark .filter-console-card {
+    box-shadow: var(--shadow-card-dark) !important;
+}
+
+.card-hover:hover,
+.card-interactive:hover,
+.card-stat:hover,
+.stat-card-luxury:hover,
+.luxury-dashboard-card:hover,
+.collection-item-card:hover,
+.favorite-item-card:hover {
+    box-shadow: var(--shadow-card-hover) !important;
+}
+.dark .card-hover:hover,
+.dark .card-interactive:hover,
+.dark .card-stat:hover,
+.dark .stat-card-luxury:hover,
+.dark .luxury-dashboard-card:hover,
+.dark .collection-item-card:hover,
+.dark .favorite-item-card:hover {
+    box-shadow: var(--shadow-card-hover-dark) !important;
+}
+
+/* Elevated Floating Search Inputs */
+.search-input-floating,
+#search-keyword-input {
+    box-shadow: 0 2px 8px -1px rgb(15 23 42 / 0.05), 0 4px 16px -2px rgb(15 23 42 / 0.06) !important;
+}
+.dark .search-input-floating,
+.dark #search-keyword-input {
+    box-shadow: 0 4px 14px -2px rgb(0 0 0 / 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04) !important;
+}
+
 
 
 

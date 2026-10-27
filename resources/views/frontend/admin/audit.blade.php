@@ -17,7 +17,7 @@
 
         @include('frontend.admin.partials.tabs')
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden">
             <form method="GET" action="{{ route('dashboard.admin.audit') }}" class="p-4 sm:p-5 border-b border-warm dark:border-warm flex gap-3 flex-wrap items-center">
                 <div class="relative flex-1 max-w-md">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
@@ -47,17 +47,30 @@
                     </thead>
                     <tbody class="divide-y divide-warm dark:divide-dark-border">
                         @foreach($logs as $log)
+                            @php
+                                $isModel = $log instanceof \App\Domains\Administration\Models\AuditLog || $log instanceof \App\Models\AuditLog;
+                                $logId = $isModel ? ('AUD-' . strtoupper(substr(str_replace('-', '', (string) $log->id), 0, 6))) : $log['id'];
+                                $logDate = $isModel ? ($log->created_at ? $log->created_at->format('Y-m-d H:i:s') : 'N/A') : $log['date'];
+                                $logUser = $isModel ? ($log->actor ? $log->actor->name : 'System') : $log['user'];
+                                $logAction = $isModel ? (ucfirst($log->event) . ($log->auditable_type ? ' ' . class_basename($log->auditable_type) : '') . ($log->notes ? ' - ' . $log->notes : '')) : $log['action'];
+                                $logIp = $isModel ? ($log->ip_address ?? '127.0.0.1') : $log['ip'];
+                            @endphp
                             <tr class="hover:bg-surface dark:hover:bg-surface/30 transition-colors">
-                                <td class="p-4 text-muted">{{ $log['id'] }}</td>
-                                <td class="p-4 text-muted dark:text-white">{{ $log['date'] }}</td>
-                                <td class="p-4 font-bold {{ $log['user'] === 'System' ? 'text-primary-600' : 'text-muted dark:text-white' }}">{{ $log['user'] }}</td>
-                                <td class="p-4 text-muted dark:text-dark-subtle">{{ $log['action'] }}</td>
-                                <td class="p-4 text-muted">{{ $log['ip'] }}</td>
+                                <td class="p-4 text-muted">{{ $logId }}</td>
+                                <td class="p-4 text-muted dark:text-white">{{ $logDate }}</td>
+                                <td class="p-4 font-bold {{ $logUser === 'System' ? 'text-primary-600' : 'text-muted dark:text-white' }}">{{ $logUser }}</td>
+                                <td class="p-4 text-muted dark:text-dark-subtle">{{ $logAction }}</td>
+                                <td class="p-4 text-muted">{{ $logIp }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($logs, 'hasPages') && $logs->hasPages())
+                <div class="p-4 border-t border-warm dark:border-warm">
+                    {{ $logs->links() }}
+                </div>
+            @endif
         </div>
 
     </div>

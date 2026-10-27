@@ -42,7 +42,7 @@
         @endif
 
         {{-- Top Summary Bar --}}
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <img src="{{ $cover }}" class="w-16 h-16 rounded-xl object-cover shadow-sm" alt="">
                 <div>
@@ -78,7 +78,7 @@
             @csrf
             @method('PUT')
 
-            <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm space-y-6">
+            <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 space-y-6">
                 <div class="border-b border-warm dark:border-warm pb-4">
                     <h3 class="font-display font-bold text-base text-muted dark:text-white">{{ __('Commercial Parameters') }}</h3>
                     <p class="text-xs text-muted dark:text-muted mt-0.5">{{ __('Update transaction mode, pricing, currency, and lifecycle state.') }}</p>

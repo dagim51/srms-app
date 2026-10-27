@@ -25,11 +25,11 @@ The project uses an intentional warm earth and sun palette rooted in Ethiopian t
 | **Brand Soft / Tint (50)** | `#FFF7ED` | `#1E1510` | `--brand-soft`, `--color-primary-50` |
 | **Primary Text (Foreground)** | `#0F172A` | `#F9FAFB` | `--color-foreground`, `--color-dark-text` |
 | **Muted Text** | `#475569` | `#94A3B8` | `--color-muted-foreground`, `--color-dark-subtle` |
-| **Border / Divider** | `#EBDBC9` | `#273244` | `--border-warm`, `--color-surface-border`, `--color-dark-border` |
-| **Page Background** | `#FFF5EB` | `#0B0F19` | `--bg-main`, `--color-page-bg`, `--color-dark-bg` |
-| **Subtle Background** | `#FFEFE0` | `#172033` | `--bg-subtle`, `--color-page-subtle`, `--color-dark-elevated` |
-| **Surface / Card Background** | `#FFFFFF` | `#111827` | `--surface`, `--color-surface`, `--color-dark-surface` |
-| **Elevated Surface** | `#FFFFFF` | `#172033` | `--surface`, `--color-dark-elevated` |
+| **Border / Divider** | `#EBDBC9` | `#334155` | `--border-warm`, `--color-surface-border`, `--color-dark-border` |
+| **Page Background** | `#FFF5EB` | `#0F172A` | `--bg-main`, `--color-page-bg`, `--color-dark-bg` |
+| **Subtle Background** | `#FFEFE0` | `#243042` | `--bg-subtle`, `--color-page-subtle`, `--color-dark-elevated` |
+| **Surface / Card Background** | `#FFFFFF` | `#1E293B` | `--surface`, `--color-surface`, `--color-dark-surface` |
+| **Elevated Surface** | `#FFFFFF` | `#283548` | `--surface`, `--color-dark-elevated` |
 | **Success / Verified** | `#16A34A` | `#22C55E` | `--color-success` |
 | **Warning** | `#F59E0B` | `#FBBF24` | `--color-warning` |
 | **Destructive / Error** | `#DC2626` | `#EF4444` | `--color-destructive`, `--color-error` |

@@ -63,4 +63,33 @@ class MarketingController extends Controller
 
         return response()->json(['data' => new LeadResource($lead)]);
     }
+
+    public function recordImpression(Request $request, string|MarketingCampaign $campaign)
+    {
+        $model = $campaign instanceof MarketingCampaign ? $campaign : MarketingCampaign::findOrFail($campaign);
+        $model->recordImpression();
+
+        return response()->json([
+            'status' => 'success',
+            'campaign_id' => $model->id,
+            'impressions_count' => (int) $model->impressions_count,
+        ]);
+    }
+
+    public function recordClick(Request $request, string|MarketingCampaign $campaign)
+    {
+        $model = $campaign instanceof MarketingCampaign ? $campaign : MarketingCampaign::findOrFail($campaign);
+        $model->recordClick();
+
+        if ($request->isMethod('POST')) {
+            return response()->json([
+                'status' => 'success',
+                'campaign_id' => $model->id,
+                'clicks_count' => (int) $model->clicks_count,
+                'target_url' => $model->target_url,
+            ]);
+        }
+
+        return redirect()->away($model->target_url ?? url('/'));
+    }
 }

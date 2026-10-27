@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\CleaningTask;
 use App\Models\MaintenanceTicket;
+use App\Models\Property;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -12,177 +13,225 @@ class OperationsWebController extends Controller
 {
     public function index()
     {
-        $openTickets = MaintenanceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count();
-        $overdueTasks = CleaningTask::where('status', 'pending')->count();
+        $openTickets     = MaintenanceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count();
+        $overdueTasks    = CleaningTask::where('status', 'pending')->count();
         $cleaningPending = CleaningTask::whereIn('status', ['pending', 'assigned'])->count();
-        $staffCount = User::count();
+        $staffCount      = User::count();
 
         $stats = [
-            'open_tickets' => $openTickets > 0 ? $openTickets : 12,
-            'overdue_tasks' => $overdueTasks > 0 ? $overdueTasks : 3,
-            'cleaning_pending' => $cleaningPending > 0 ? $cleaningPending : 8,
-            'staff_active' => $staffCount > 0 ? $staffCount : 15,
+            'open_tickets'     => $openTickets,
+            'overdue_tasks'    => $overdueTasks,
+            'cleaning_pending' => $cleaningPending,
+            'staff_active'     => $staffCount,
         ];
 
-        $dbTickets = MaintenanceTicket::with(['property', 'assignee'])->latest()->take(5)->get();
-        if ($dbTickets->isNotEmpty()) {
-            $recentTickets = $dbTickets->map(function ($t, $idx) {
+        $recentTickets = MaintenanceTicket::with(['property', 'assignee'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($t) {
                 return [
-                    'id' => 'TKT-'.(1000 + $idx),
-                    'unit' => $t->property?->title ?? 'Apartment Unit',
-                    'issue' => $t->title ?? 'Maintenance Issue',
+                    'id'       => $t->id,
+                    'label'    => 'TKT-' . strtoupper(substr($t->id, 0, 8)),
+                    'unit'     => $t->property?->title ?? 'Apartment Unit',
+                    'issue'    => $t->title ?? 'Maintenance Issue',
                     'priority' => $t->priority ?? 'medium',
-                    'status' => $t->status ?? 'open',
+                    'status'   => $t->status ?? 'open',
                     'assigned' => $t->assignee?->name ?? 'Unassigned',
                 ];
             })->toArray();
-        } else {
-            $recentTickets = [
-                ['id' => 'TKT-1050', 'unit' => 'Bole 405', 'issue' => 'Water Leak in Bathroom', 'priority' => 'high', 'status' => 'open', 'assigned' => null],
-                ['id' => 'TKT-1049', 'unit' => 'CMC 201', 'issue' => 'AC Not Cooling', 'priority' => 'medium', 'status' => 'in_progress', 'assigned' => 'Amanuel T.'],
-                ['id' => 'TKT-1048', 'unit' => 'Kazanchis V12', 'issue' => 'Broken Door Handle', 'priority' => 'low', 'status' => 'waiting', 'assigned' => 'John Doe'],
-            ];
-        }
 
-        return view('frontend.operations.index', compact('stats', 'recentTickets'));
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+
+        return view('frontend.operations.index', compact('stats', 'recentTickets', 'properties'));
     }
 
     public function tickets(Request $request)
     {
-        $dbTickets = MaintenanceTicket::with(['property', 'assignee'])->latest()->get();
-        if ($dbTickets->isNotEmpty()) {
-            $tickets = $dbTickets->map(function ($t, $idx) {
-                return [
-                    'id' => 'TKT-'.(1000 + $idx),
-                    'unit' => $t->property?->title ?? 'Unit',
-                    'issue' => $t->title ?? 'Issue',
-                    'priority' => $t->priority ?? 'medium',
-                    'status' => $t->status ?? 'open',
-                    'assigned' => $t->assignee?->name ?? 'Unassigned',
-                    'date' => $t->created_at ? $t->created_at->format('Y-m-d') : '2026-10-08',
-                ];
-            });
-        } else {
-            $tickets = collect([
-                ['id' => 'TKT-1050', 'unit' => 'Bole Apt 405', 'issue' => 'Water Leak in Bathroom', 'priority' => 'high', 'status' => 'open', 'assigned' => null, 'date' => '2026-10-08'],
-                ['id' => 'TKT-1049', 'unit' => 'CMC Condo 201', 'issue' => 'AC Not Cooling', 'priority' => 'medium', 'status' => 'in_progress', 'assigned' => 'Amanuel T.', 'date' => '2026-10-07'],
-                ['id' => 'TKT-1048', 'unit' => 'Kazanchis V12', 'issue' => 'Broken Door Handle', 'priority' => 'low', 'status' => 'waiting', 'assigned' => 'John Doe', 'date' => '2026-10-05'],
-                ['id' => 'TKT-1047', 'unit' => 'Bole Apt 201', 'issue' => 'Power Outlet Sparking', 'priority' => 'critical', 'status' => 'assigned', 'assigned' => 'Dawit M.', 'date' => '2026-10-08'],
-                ['id' => 'TKT-1045', 'unit' => 'CMC Condo 505', 'issue' => 'No Hot Water', 'priority' => 'high', 'status' => 'completed', 'assigned' => 'Amanuel T.', 'date' => '2026-10-02'],
-            ]);
+        $query = MaintenanceTicket::with(['property', 'assignee'])->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
         }
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $tickets = $tickets->filter(function ($t) use ($q) {
-                return str_contains(strtolower($t['id']), $q)
-                    || str_contains(strtolower($t['unit']), $q)
-                    || str_contains(strtolower($t['issue']), $q)
-                    || str_contains(strtolower($t['priority']), $q)
-                    || str_contains(strtolower($t['assigned'] ?? ''), $q)
-                    || str_contains(strtolower($t['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->where('title', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%")
+                    ->orWhereHas('property', fn ($p) => $p->where('title', 'like', "%{$q}%"))
+                    ->orWhereHas('assignee',  fn ($u) => $u->where('name',  'like', "%{$q}%"));
             });
         }
 
-        return view('frontend.operations.tickets', [
-            'tickets' => $tickets->values(),
-        ]);
+        $tickets = $query->paginate(20)->withQueryString()->through(function ($t) {
+            return [
+                'id'       => $t->id,
+                'label'    => 'TKT-' . strtoupper(substr($t->id, 0, 8)),
+                'unit'     => $t->property?->title ?? 'Unit',
+                'issue'    => $t->title ?? 'Issue',
+                'priority' => $t->priority ?? 'medium',
+                'status'   => $t->status ?? 'open',
+                'assigned' => $t->assignee?->name ?? 'Unassigned',
+                'date'     => $t->created_at ? $t->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+            ];
+        });
+
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+
+        return view('frontend.operations.tickets', compact('tickets', 'properties'));
     }
 
     public function ticketShow($id)
     {
-        $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->find($id);
-        if (! $dbTicket) {
-            $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->first();
-        }
+        $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->findOrFail($id);
 
-        if ($dbTicket) {
-            $ticket = [
-                'id' => $dbTicket->id,
-                'unit' => $dbTicket->property?->title ?? 'Bole Apt 405',
-                'issue' => $dbTicket->title,
-                'description' => $dbTicket->description ?? 'No description provided.',
-                'priority' => $dbTicket->priority ?? 'high',
-                'status' => $dbTicket->status ?? 'in_progress',
-                'assigned' => $dbTicket->assignee?->name ?? 'Unassigned',
-                'reporter' => $dbTicket->reporter?->name ?? 'Abebe Kebede',
-                'reporter_phone' => $dbTicket->reporter?->phone ?? '+251 911 234567',
-                'created_at' => $dbTicket->created_at ? $dbTicket->created_at->format('Y-m-d h:i A') : '2026-10-08 09:15 AM',
-            ];
-        } else {
-            $ticket = [
-                'id' => $id,
-                'unit' => 'Bole Apt 405',
-                'issue' => 'Water Leak in Bathroom',
-                'description' => 'The tenant reported a severe water leak under the master bathroom sink. It is causing damage to the cabinet.',
-                'priority' => 'high',
-                'status' => 'in_progress',
-                'assigned' => 'Amanuel T.',
-                'reporter' => 'Abebe Kebede',
-                'reporter_phone' => '+251 911 234567',
-                'created_at' => '2026-10-08 09:15 AM',
-            ];
-        }
-
-        $timeline = [
-            ['status' => 'Ticket Created', 'date' => '2026-10-08 09:15 AM', 'user' => 'System'],
-            ['status' => 'Assigned to Technician', 'date' => '2026-10-08 10:00 AM', 'user' => 'Operations Manager'],
-            ['status' => 'Work Started', 'date' => '2026-10-08 11:30 AM', 'user' => 'Field Staff'],
+        $ticket = [
+            'id'             => $dbTicket->id,
+            'label'          => 'TKT-' . strtoupper(substr($dbTicket->id, 0, 8)),
+            'unit'           => $dbTicket->property?->title ?? 'Apartment Unit',
+            'issue'          => $dbTicket->title,
+            'description'    => $dbTicket->description ?? 'No description provided.',
+            'priority'       => $dbTicket->priority ?? 'medium',
+            'status'         => $dbTicket->status ?? 'open',
+            'assigned'       => $dbTicket->assignee?->name ?? 'Unassigned',
+            'assigned_to'    => $dbTicket->assigned_to,
+            'reporter'       => $dbTicket->reporter?->name ?? 'Property Occupant',
+            'reporter_phone' => $dbTicket->reporter?->phone ?? 'N/A',
+            'created_at'     => $dbTicket->created_at
+                ? $dbTicket->created_at->format('Y-m-d h:i A')
+                : now()->format('Y-m-d h:i A'),
         ];
 
-        return view('frontend.operations.ticket_show', compact('ticket', 'timeline'));
+        $timeline = [
+            ['status' => 'Ticket Created', 'date' => $ticket['created_at'], 'user' => $ticket['reporter']],
+        ];
+
+        $staffUsers = User::orderBy('name')->get(['id', 'name']);
+
+        return view('frontend.operations.ticket_show', compact('ticket', 'timeline', 'staffUsers'));
     }
 
     public function cleaning()
     {
-        $dbTasks = CleaningTask::with(['property', 'cleaner'])->latest()->get();
-        if ($dbTasks->isNotEmpty()) {
-            $tasks = $dbTasks->map(function ($c, $idx) {
-                return [
-                    'id' => 'CLN-'.(200 + $idx),
-                    'unit' => $c->property?->title ?? 'Apartment Unit',
-                    'type' => 'Routine / Turnover Cleaning',
-                    'date' => $c->created_at ? $c->created_at->format('Y-m-d') : '2026-10-08',
-                    'status' => $c->status ?? 'pending',
-                    'assigned' => $c->cleaner?->name ?? 'Cleaning Crew',
-                ];
-            })->toArray();
-        } else {
-            $tasks = [
-                ['id' => 'CLN-201', 'unit' => 'Bole Apt 405', 'type' => 'Checkout Cleaning', 'date' => '2026-10-08', 'status' => 'pending', 'assigned' => 'Sara Cleaning Service'],
-                ['id' => 'CLN-202', 'unit' => 'CMC Condo 201', 'type' => 'Routine Maintenance', 'date' => '2026-10-09', 'status' => 'assigned', 'assigned' => 'Sara Cleaning Service'],
-                ['id' => 'CLN-203', 'unit' => 'Kazanchis V12', 'type' => 'Deep Clean', 'date' => '2026-10-07', 'status' => 'in_progress', 'assigned' => 'Selamawit T.'],
-                ['id' => 'CLN-204', 'unit' => 'Bole Apt 101', 'type' => 'Post-Construction', 'date' => '2026-10-05', 'status' => 'inspection', 'assigned' => 'Dawit M.'],
-                ['id' => 'CLN-205', 'unit' => 'CMC Condo 505', 'type' => 'Checkout Cleaning', 'date' => '2026-10-02', 'status' => 'ready', 'assigned' => 'Sara Cleaning Service'],
+        $tasks = CleaningTask::with(['property', 'cleaner'])->latest()->paginate(20)->through(function ($c) {
+            return [
+                'id'       => $c->id,
+                'label'    => 'CLN-' . strtoupper(substr($c->id, 0, 8)),
+                'unit'     => $c->property?->title ?? 'Apartment Unit',
+                'type'     => 'Turnover Cleaning',
+                'date'     => $c->created_at ? $c->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+                'status'   => $c->status ?? 'pending',
+                'assigned' => $c->cleaner?->name ?? 'Cleaning Crew',
             ];
-        }
+        });
 
-        return view('frontend.operations.cleaning', compact('tasks'));
+        $cleaningStats = [
+            'pending_checkouts'   => CleaningTask::where('status', 'pending')->count(),
+            'active_cleaning'     => CleaningTask::where('status', 'in_progress')->count(),
+            'awaiting_inspection' => CleaningTask::where('status', 'inspection')->count(),
+            'units_ready'         => CleaningTask::where('status', 'ready')->count(),
+        ];
+
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+        $staffUsers = User::orderBy('name')->get(['id', 'name']);
+
+        return view('frontend.operations.cleaning', compact('tasks', 'cleaningStats', 'properties', 'staffUsers'));
     }
 
     public function staff()
     {
-        $staffUsers = User::where('email', 'like', '%@srms.et')->get();
-        if ($staffUsers->isNotEmpty()) {
-            $staff = $staffUsers->map(function ($u, $idx) {
-                return [
-                    'id' => $u->id,
-                    'name' => $u->name,
-                    'role' => str_contains(strtolower($u->name), 'clean') ? 'Housekeeper' : (str_contains(strtolower($u->name), 'electric') ? 'Electrician' : 'Maintenance Tech'),
-                    'status' => 'active',
-                    'active_tasks' => rand(1, 4),
-                    'completed_today' => rand(1, 3),
-                ];
-            })->toArray();
-        } else {
-            $staff = [
-                ['id' => 1, 'name' => 'Amanuel Tadesse', 'role' => 'Maintenance Tech', 'status' => 'active', 'active_tasks' => 2, 'completed_today' => 1],
-                ['id' => 2, 'name' => 'Sara Cleaning Service', 'role' => 'Contractor', 'status' => 'active', 'active_tasks' => 4, 'completed_today' => 0],
-                ['id' => 3, 'name' => 'Dawit M.', 'role' => 'Electrician', 'status' => 'offline', 'active_tasks' => 1, 'completed_today' => 3],
-                ['id' => 4, 'name' => 'Selamawit T.', 'role' => 'Housekeeper', 'status' => 'active', 'active_tasks' => 1, 'completed_today' => 2],
+        $staffUsers = User::latest()->paginate(20);
+        $staff = $staffUsers->through(function ($u) {
+            $activeTasks = MaintenanceTicket::where('assigned_to', $u->id)
+                ->whereIn('status', ['assigned', 'in_progress'])
+                ->count();
+            $completedToday = MaintenanceTicket::where('assigned_to', $u->id)
+                ->where('status', 'completed')
+                ->whereDate('updated_at', today())
+                ->count();
+            return [
+                'id'              => $u->id,
+                'name'            => $u->name,
+                'role'            => 'Operations Staff',
+                'status'          => $u->status ?? 'active',
+                'active_tasks'    => $activeTasks,
+                'completed_today' => $completedToday,
             ];
-        }
+        });
 
         return view('frontend.operations.staff', compact('staff'));
+    }
+
+    // POST handlers
+
+    public function storeTicket(Request $request)
+    {
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'priority'    => 'required|in:low,medium,high,critical',
+            'property_id' => 'nullable|exists:properties,id',
+        ]);
+
+        $data['reported_by'] = auth()->id();
+        $data['status']      = 'open';
+
+        MaintenanceTicket::create($data);
+
+        return redirect()->route('dashboard.operations.tickets')
+            ->with('success', 'Maintenance ticket created.');
+    }
+
+    public function updateTicketStatus(Request $request, $id)
+    {
+        $ticket = MaintenanceTicket::findOrFail($id);
+
+        $data = $request->validate([
+            'status'      => 'required|in:open,assigned,in_progress,waiting,completed,closed',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $ticket->update($data);
+
+        return back()->with('success', 'Ticket status updated.');
+    }
+
+    public function postNote(Request $request, $id)
+    {
+        $ticket = MaintenanceTicket::findOrFail($id);
+
+        $request->validate([
+            'note'           => 'required|string|max:2000',
+            'visible_tenant' => 'nullable|boolean',
+        ]);
+
+        $existing = $ticket->description ?? '';
+        $stamp    = now()->format('Y-m-d H:i') . ' by ' . auth()->user()->name;
+        $ticket->update([
+            'description' => $existing . "\n\n[{$stamp}]\n" . $request->note,
+        ]);
+
+        return back()->with('success', 'Note posted.');
+    }
+
+    public function storeCleaning(Request $request)
+    {
+        $data = $request->validate([
+            'property_id'         => 'required|exists:properties,id',
+            'assigned_cleaner_id' => 'nullable|exists:users,id',
+            'notes'               => 'nullable|string|max:1000',
+        ]);
+
+        $data['status'] = 'pending';
+
+        CleaningTask::create($data);
+
+        return redirect()->route('dashboard.operations.cleaning')
+            ->with('success', 'Cleaning task scheduled.');
     }
 }

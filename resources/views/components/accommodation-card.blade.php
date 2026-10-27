@@ -1,7 +1,7 @@
 @props(['accommodation', 'showPrice' => true])
 
 <div 
-    class="group relative bg-white dark:bg-[#0D1322] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden rounded-xl shadow-sm transition-transform duration-220 hover:-translate-y-4"
+    class="card card-hover group relative bg-white dark:bg-[#0D1322] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-300 hover:-translate-y-2"
     x-data="{ favorite: false }"
     @click.outside="favorite = false"
     {{-- Image --}}

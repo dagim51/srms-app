@@ -31,7 +31,7 @@
                 </div>
             @endif
 
-            <div class="bg-white/80 dark:bg-[#1E293B]/80 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-3xl shadow-2xl shadow-orange-950/10 dark:shadow-black/50 overflow-hidden relative">
+            <div class="card bg-white/80 dark:bg-[#1E293B]/80 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-3xl dark: overflow-hidden relative">
                 
                 {{-- Header Status --}}
                 <div class="p-12 border-b border-warm dark:border-warm/50 text-center relative overflow-hidden">
@@ -88,13 +88,13 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 bg-surface/50 dark:bg-surface/30 p-2 rounded-2xl border border-warm/50 dark:border-warm/50">
-                            <div class="p-4 rounded-xl bg-white dark:bg-[#1E293B] shadow-sm border border-warm dark:border-warm">
+                        <div class="card grid grid-cols-2 gap-4 bg-surface/50 dark:bg-surface/30 p-2 rounded-2xl border border-warm/50 dark:border-warm/50">
+                            <div class="card p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-warm dark:border-warm">
                                 <p class="text-xs text-primary-500 font-black uppercase tracking-widest mb-1">{{ __('Check-in') }}</p>
                                 <p class="font-bold text-[#111827] dark:text-white text-lg">{{ $booking->check_in_date->format('M d, Y') }}</p>
                                 <p class="text-xs text-muted font-medium mt-0.5">{{ \Carbon\Carbon::parse($booking->accommodation->check_in_time)->format('g:i A') }}</p>
                             </div>
-                            <div class="p-4 rounded-xl bg-white dark:bg-[#1E293B] shadow-sm border border-warm dark:border-warm">
+                            <div class="card p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-warm dark:border-warm">
                                 <p class="text-xs text-primary-500 font-black uppercase tracking-widest mb-1">{{ __('Checkout') }}</p>
                                 <p class="font-bold text-[#111827] dark:text-white text-lg">{{ $booking->check_out_date->format('M d, Y') }}</p>
                                 <p class="text-xs text-muted font-medium mt-0.5">{{ \Carbon\Carbon::parse($booking->accommodation->check_out_time)->format('g:i A') }}</p>

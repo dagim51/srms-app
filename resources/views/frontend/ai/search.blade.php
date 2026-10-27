@@ -61,8 +61,8 @@
             <div class="space-y-4">
                 <h2 class="text-xl font-bold text-[#0F172A] dark:text-white mb-4">Results ({{ count($results) }})</h2>
                 @foreach($results as $item)
-                    <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 shadow-sm flex flex-col md:flex-row gap-6 items-center hover:shadow-md transition-shadow">
-                        <div class="w-full md:w-48 h-32 bg-surface-subtle dark:bg-surface rounded-xl flex-shrink-0 relative overflow-hidden">
+                    <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-center hover: transition-">
+                        <div class="card w-full md:w-48 h-32 bg-surface-subtle dark:bg-surface rounded-xl flex-shrink-0 relative overflow-hidden">
                             <!-- Placeholder image -->
                             <div class="absolute inset-0 bg-surface-subtle dark:bg-surface-subtle"></div>
                             <span class="absolute top-2 left-2 badge badge-neutral bg-white/90 backdrop-blur">{{ $parsed['type'] ?? 'Property' }}</span>

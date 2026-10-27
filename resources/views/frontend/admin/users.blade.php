@@ -59,7 +59,7 @@
         @include('frontend.admin.partials.tabs')
 
         {{-- Filter Bar & Table Card --}}
-        <div class="cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm shadow-sm space-y-4 mb-6">
+        <div class="card cinematic-fade-up cinematic-stagger-2 bg-white dark:bg-[#1E293B] rounded-xl p-4 border border-warm dark:border-warm space-y-4 mb-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-muted dark:text-white">{{ __('User Accounts & Access') }}</h2>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden shadow-xs">
+        <div class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-2xl overflow-hidden">
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -210,7 +210,7 @@
              x-cloak>
             
             <div @click.outside="showCreateModal = false"
-                 class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl w-full max-w-xl p-6 sm:p-8 shadow-2xl space-y-6 relative">
+                 class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] rounded-3xl w-full max-w-xl p-6 sm:p-8 space-y-6 relative">
                 
                 {{-- Modal Header --}}
                 <div class="flex items-start justify-between">

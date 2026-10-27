@@ -15,10 +15,10 @@
             icon="document"
             badge="Offers" />
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
             
             @if($listing)
-                <div class="flex items-start gap-4 p-4 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 mb-8">
+                <div class="card flex items-start gap-4 p-4 rounded-xl border border-warm dark:border-warm bg-surface/50 dark:bg-surface/30 mb-8">
                     @php $primaryImg = $listing->property->media->first() ? ($listing->property->media->first()->url ?? $listing->property->media->first()->storage_key) : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'; @endphp
                     <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                         <img src="{{ $primaryImg }}" alt="{{ $listing->property->title }}" class="w-full h-full object-cover">

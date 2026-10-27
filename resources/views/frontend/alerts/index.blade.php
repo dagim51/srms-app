@@ -20,7 +20,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($alerts as $alert)
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl p-6 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-4">
                             <span class="badge {{ $alert['type'] === 'Price Alert' ? 'badge-warning' : 'badge-neutral' }} uppercase text-xs">{{ $alert['type'] }}</span>
@@ -37,7 +37,7 @@
                     </div>
                     
                     <div>
-                        <div class="flex items-center justify-between text-sm text-muted dark:text-dark-subtle mb-4 bg-surface dark:bg-surface/50 p-3 rounded-xl border border-warm dark:border-warm">
+                        <div class="card flex items-center justify-between text-sm text-muted dark:text-dark-subtle mb-4 bg-surface dark:bg-surface/50 p-3 rounded-xl border border-warm dark:border-warm">
                             <div>
                                 <span class="block text-xs font-bold text-muted uppercase">{{ __('Frequency') }}</span>
                                 <span class="font-medium">{{ $alert['frequency'] }}</span>

@@ -36,7 +36,7 @@
         <span class="text-xs font-semibold {{ $colorClass }}">{{ $scoreVal }}%</span>
     </div>
 @else
-    <div x-data="{ expanded: false }" class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl p-4 shadow-sm transition-all">
+    <div x-data="{ expanded: false }" class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-xl p-4 transition-all">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="relative w-12 h-12 flex items-center justify-center">
@@ -86,7 +86,7 @@
                                         {{ $item['label'] }}
                                     </span>
                                     <span class="text-xs {{ $item['passed'] ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-muted' }}">
-                                        +{{ $item['points'] }}%
+                                        +{{ $item['awarded'] ?? $item['points'] ?? $item['max_points'] ?? 0 }}%
                                     </span>
                                 </div>
                                 @if(!$item['passed'] && !empty($item['tip']))

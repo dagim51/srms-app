@@ -68,7 +68,7 @@
             <div class="lg:col-span-2 space-y-6">
                 
                 {{-- Current Status Card --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 sm:p-8">
                         <div class="flex items-center justify-between mb-6">
                             <h2 class="text-xl font-bold font-display text-muted dark:text-white">{{ __('Current Offer Status') }}</h2>
@@ -77,7 +77,7 @@
                             </span>
                         </div>
                         
-                        <div class="bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                        <div class="card bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                             <div>
                                 <p class="text-sm font-bold text-muted uppercase tracking-wider mb-2">{{ __('Offer Amount') }}</p>
                                 <p class="text-3xl font-display font-extrabold text-muted dark:text-white">
@@ -125,7 +125,7 @@
                                     </div>
                                     
                                     {{-- Counter Offer Form --}}
-                                    <div x-show="showCounter" x-cloak class="mt-4 p-6 rounded-2xl bg-surface dark:bg-surface/30 border border-warm dark:border-warm">
+                                    <div x-show="showCounter" x-cloak class="card mt-4 p-6 rounded-2xl bg-surface dark:bg-surface/30 border border-warm dark:border-warm">
                                         <h4 class="font-bold text-muted dark:text-white mb-4">{{ __('Make a Counteroffer') }}</h4>
                                         <form action="{{ route('dashboard.offers.update', $latestOffer) }}" method="POST" class="space-y-4">
                                             @csrf @method('PUT')
@@ -166,7 +166,7 @@
                                 <a href="#" class="btn btn-primary btn-sm mt-4">{{ __('Proceed to Documents') }}</a>
                             </div>
                         @else
-                            <div class="p-4 rounded-xl bg-surface dark:bg-surface text-muted dark:text-dark-subtle text-sm border border-warm dark:border-warm text-center font-medium">
+                            <div class="card p-4 rounded-xl bg-surface dark:bg-surface text-muted dark:text-dark-subtle text-sm border border-warm dark:border-warm text-center font-medium">
                                 This offer has been closed ({{ $currentStatus }}).
                             </div>
                         @endif
@@ -174,7 +174,7 @@
                 </div>
 
                 {{-- Negotiation Timeline --}}
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden p-6 sm:p-8">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden p-6 sm:p-8">
                     <h2 class="text-xl font-bold font-display text-muted dark:text-white mb-6">{{ __('Negotiation Timeline') }}</h2>
                     
                     <div class="relative border-l-2 border-warm dark:border-warm ml-4 space-y-8">
@@ -187,7 +187,7 @@
                                 {{-- Timeline dot --}}
                                 <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-white dark:border-[#1E293B] {{ $index === 0 ? 'bg-primary-500' : 'bg-surface-subtle dark:bg-surface-subtle' }}"></div>
                                 
-                                <div class="bg-surface/50 dark:bg-surface/30 border border-warm dark:border-warm p-4 rounded-xl">
+                                <div class="card bg-surface/50 dark:bg-surface/30 border border-warm dark:border-warm p-4 rounded-xl">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-sm font-bold text-muted dark:text-white">
                                             {{ number_format($historyOffer->amount) }} {{ $rootOffer->listing->currency }}
@@ -215,7 +215,7 @@
             
             {{-- Right Column: Property & Details --}}
             <div class="space-y-6">
-                <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl shadow-sm overflow-hidden">
+                <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-[#273244] rounded-2xl overflow-hidden">
                     <div class="p-6 border-b border-warm dark:border-warm">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-muted mb-4">{{ __('Property Details') }}</h3>
                         

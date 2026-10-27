@@ -17,7 +17,7 @@
 
         @include('frontend.analytics.partials.tabs')
 
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden">
             <div class="p-6 border-b border-warm dark:border-warm">
                 <h2 class="text-xl font-bold text-muted dark:text-white">{{ __('Saved Reports') }}</h2>
             </div>

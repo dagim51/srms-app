@@ -3,6 +3,7 @@
 namespace App\Domains\Development\Models;
 
 use App\Models\DevelopmentBuilding;
+use App\Models\HandoverRecord;
 use App\Models\Property;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -28,5 +29,15 @@ class DevelopmentUnit extends Model
     public function property()
     {
         return $this->belongsTo(Property::class);
+    }
+
+    public function handoverRecord()
+    {
+        return $this->hasOne(HandoverRecord::class, 'unit_id');
+    }
+
+    public function handoverRecords()
+    {
+        return $this->hasMany(HandoverRecord::class, 'unit_id');
     }
 }

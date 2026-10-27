@@ -3,10 +3,13 @@
 namespace App\Domains\Rental\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\Property;
 use App\Models\RentSchedule;
 use App\Models\TenantProfile;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RentalWebController extends Controller
@@ -19,286 +22,429 @@ class RentalWebController extends Controller
         $overdueRentSum = RentSchedule::where('status', 'overdue')->sum('amount');
 
         $stats = [
-            'total_tenants' => $totalTenants > 0 ? $totalTenants : 85,
-            'active_leases' => $activeLeases > 0 ? $activeLeases : 82,
-            'pending_applications' => $pendingApps > 0 ? $pendingApps : 5,
-            'overdue_rent' => number_format($overdueRentSum > 0 ? $overdueRentSum : 120000).' ETB',
+            'total_tenants' => $totalTenants,
+            'active_leases' => $activeLeases,
+            'pending_applications' => $pendingApps,
+            'overdue_rent' => number_format($overdueRentSum) . ' ETB',
         ];
 
-        $dbLeases = Lease::with(['tenantProfile.user', 'property'])->latest()->take(5)->get();
-        if ($dbLeases->isNotEmpty()) {
-            $recentApplications = $dbLeases->map(function ($l, $idx) {
+        $recentApplications = Lease::with(['tenantProfile.user', 'property'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($l, $idx) {
                 return [
                     'id' => $l->id,
-                    'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #'.($idx + 1),
+                    'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #' . ($idx + 1),
                     'unit' => $l->property?->title ?? 'Apartment Unit',
-                    'date' => $l->created_at ? $l->created_at->format('Y-m-d') : '2026-10-07',
-                    'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : 'under_review'),
+                    'date' => $l->created_at ? $l->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+                    'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : ($l->status === 'rejected' ? 'rejected' : 'under_review')),
                 ];
             })->toArray();
-        } else {
-            $recentApplications = [
-                ['id' => 1, 'applicant' => 'Amanuel Tadesse', 'unit' => 'Bole Apartment 405', 'date' => '2026-10-07', 'status' => 'pending'],
-                ['id' => 2, 'applicant' => 'Sara Girma', 'unit' => 'Kazanchis Villa 12', 'date' => '2026-10-06', 'status' => 'approved'],
-                ['id' => 3, 'applicant' => 'Dawit Assefa', 'unit' => 'CMC Condo 201', 'date' => '2026-10-05', 'status' => 'rejected'],
-            ];
-        }
 
-        return view('frontend.rental.index', compact('stats', 'recentApplications'));
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+        $tenants = User::orderBy('name')->get(['id', 'name', 'phone']);
+
+        return view('frontend.rental.index', compact('stats', 'recentApplications', 'properties', 'tenants'));
     }
 
     public function applications(Request $request)
     {
-        $dbLeases = Lease::with(['tenantProfile.user', 'property'])->latest()->get();
-        if ($dbLeases->isNotEmpty()) {
-            $applications = $dbLeases->map(function ($l, $idx) {
-                return [
-                    'id' => $l->id,
-                    'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #'.($idx + 1),
-                    'unit' => $l->property?->title ?? 'Apartment Unit',
-                    'monthly_rent' => number_format($l->rent_amount ?? 25000).' ETB',
-                    'date' => $l->created_at ? $l->created_at->format('Y-m-d') : '2026-10-07',
-                    'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : 'under_review'),
-                ];
-            });
-        } else {
-            $applications = collect([
-                ['id' => 1, 'applicant' => 'Amanuel Tadesse', 'unit' => 'Bole Apartment 405', 'monthly_rent' => '25,000 ETB', 'date' => '2026-10-07', 'status' => 'pending'],
-                ['id' => 2, 'applicant' => 'Sara Girma', 'unit' => 'Kazanchis Villa 12', 'monthly_rent' => '65,000 ETB', 'date' => '2026-10-06', 'status' => 'approved'],
-                ['id' => 3, 'applicant' => 'Dawit Assefa', 'unit' => 'CMC Condo 201', 'monthly_rent' => '15,000 ETB', 'date' => '2026-10-05', 'status' => 'rejected'],
-                ['id' => 4, 'applicant' => 'Mekdes Hailu', 'unit' => 'Bole Apartment 202', 'monthly_rent' => '25,000 ETB', 'date' => '2026-10-01', 'status' => 'under_review'],
-            ]);
-        }
-
-        if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $applications = $applications->filter(function ($a) use ($q) {
-                return str_contains(strtolower($a['applicant']), $q)
-                    || str_contains(strtolower($a['unit']), $q)
-                    || str_contains(strtolower($a['status']), $q);
-            });
-        }
+        $query = Lease::with(['tenantProfile.user', 'property'])->latest();
 
         if ($request->filled('status')) {
             $status = strtolower($request->status);
-            $applications = $applications->filter(function ($a) use ($status) {
-                return strtolower($a['status']) === $status;
+            $query->where('status', $status);
+        }
+
+        if ($request->filled('search')) {
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('tenantProfile.user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%");
+                })->orWhereHas('property', function ($p) use ($q) {
+                    $p->where('title', 'like', "%{$q}%");
+                });
             });
         }
 
-        return view('frontend.rental.applications', [
-            'applications' => $applications->values(),
+        $applications = $query->paginate(20)->withQueryString()->through(function ($l, $idx) {
+            return [
+                'id' => $l->id,
+                'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #' . ($idx + 1),
+                'unit' => $l->property?->title ?? 'Apartment Unit',
+                'monthly_rent' => number_format($l->rent_amount ?? 0) . ' ETB',
+                'date' => $l->created_at ? $l->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+                'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : ($l->status === 'rejected' ? 'rejected' : 'under_review')),
+            ];
+        });
+
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+        $tenants = User::orderBy('name')->get(['id', 'name', 'phone']);
+
+        return view('frontend.rental.applications', compact('applications', 'properties', 'tenants'));
+    }
+
+    public function storeApplication(Request $request)
+    {
+        $data = $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'user_id' => 'required|exists:users,id',
+            'rent_amount' => 'required|numeric|min:0',
+            'deposit_amount' => 'nullable|numeric|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'employment_status' => 'nullable|string|max:100',
+            'annual_income' => 'nullable|numeric|min:0',
         ]);
+
+        $tenantProfile = TenantProfile::firstOrCreate(
+            ['user_id' => $data['user_id']],
+            [
+                'employment_status' => $data['employment_status'] ?? 'Employed',
+                'annual_income' => $data['annual_income'] ?? ($data['rent_amount'] * 12),
+                'background_check_status' => 'pending',
+            ]
+        );
+
+        $property = Property::findOrFail($data['property_id']);
+
+        Lease::create([
+            'property_id' => $property->id,
+            'tenant_profile_id' => $tenantProfile->id,
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'rent_amount' => $data['rent_amount'],
+            'deposit_amount' => $data['deposit_amount'] ?? ($data['rent_amount'] * 2),
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('dashboard.rental.applications')
+            ->with('success', __('Rental application submitted successfully.'));
+    }
+
+    public function updateApplicationStatus(Request $request, $id)
+    {
+        $lease = Lease::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:approved,rejected,under_review,pending',
+        ]);
+
+        $targetStatus = $request->status;
+
+        if ($targetStatus === 'approved') {
+            $lease->update(['status' => 'active']);
+
+            // Generate monthly rent schedules if not already generated
+            if ($lease->schedules()->count() === 0) {
+                $start = Carbon::parse($lease->start_date);
+                $end = Carbon::parse($lease->end_date);
+                $current = $start->copy();
+                while ($current->lte($end)) {
+                    RentSchedule::create([
+                        'lease_id' => $lease->id,
+                        'due_date' => $current->toDateString(),
+                        'amount' => $lease->rent_amount,
+                        'status' => 'unpaid',
+                    ]);
+                    $current->addMonth();
+                }
+            }
+        } elseif ($targetStatus === 'rejected') {
+            $lease->update(['status' => 'rejected']);
+        } else {
+            $lease->update(['status' => $targetStatus]);
+        }
+
+        return back()->with('success', __('Application status updated to :status.', ['status' => ucfirst(str_replace('_', ' ', $targetStatus))]));
     }
 
     public function tenants(Request $request)
     {
-        $dbLeases = Lease::with(['tenantProfile.user', 'property', 'schedules'])->latest()->get();
-        if ($dbLeases->isNotEmpty()) {
-            $tenants = $dbLeases->map(function ($l) {
-                $user = $l->tenantProfile?->user;
-                $unpaid = $l->schedules->where('status', 'overdue')->sum('amount');
+        $query = Lease::with(['tenantProfile.user', 'property', 'schedules'])->latest();
 
-                return [
-                    'id' => $user?->id ?? $l->id,
-                    'name' => $user?->name ?? 'Active Tenant',
-                    'unit' => $l->property?->title ?? 'Apartment Unit',
-                    'phone' => $user?->phone ?? '+251 911 000000',
-                    'lease_end' => $l->end_date ?? '2027-05-31',
-                    'status' => $l->status ?? 'active',
-                    'balance' => number_format($unpaid).' ETB',
-                ];
-            });
-        } else {
-            $tenants = collect([
-                ['id' => 1, 'name' => 'Abebe Kebede', 'unit' => 'Bole Apartment 101', 'phone' => '+251 911 234567', 'lease_end' => '2027-05-31', 'status' => 'active', 'balance' => '0 ETB'],
-                ['id' => 2, 'name' => 'Sara Tadesse', 'unit' => 'CMC Condo 505', 'phone' => '+251 912 345678', 'lease_end' => '2026-11-30', 'status' => 'active', 'balance' => '25,000 ETB'],
-                ['id' => 3, 'name' => 'Yonas Alemu', 'unit' => 'Kazanchis Villa 5', 'phone' => '+251 913 456789', 'lease_end' => '2027-01-15', 'status' => 'notice', 'balance' => '0 ETB'],
-            ]);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $tenants = $tenants->filter(function ($t) use ($q) {
-                return str_contains(strtolower($t['name']), $q)
-                    || str_contains(strtolower($t['unit']), $q)
-                    || str_contains(strtolower($t['phone']), $q)
-                    || str_contains(strtolower($t['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('tenantProfile.user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%")
+                        ->orWhere('phone', 'like', "%{$q}%");
+                })->orWhereHas('property', function ($p) use ($q) {
+                    $p->where('title', 'like', "%{$q}%");
+                });
             });
         }
 
-        if ($request->filled('status')) {
-            $status = strtolower($request->status);
-            $tenants = $tenants->filter(function ($t) use ($status) {
-                return strtolower($t['status']) === $status;
-            });
-        }
+        $tenants = $query->paginate(20)->withQueryString()->through(function ($l) {
+            $user = $l->tenantProfile?->user;
+            $unpaid = $l->schedules ? $l->schedules->where('status', 'overdue')->sum('amount') : 0;
+
+            return [
+                'id' => $user?->id ?? $l->id,
+                'name' => $user?->name ?? 'Active Tenant',
+                'unit' => $l->property?->title ?? 'Apartment Unit',
+                'phone' => $user?->phone ?? '—',
+                'lease_end' => $l->end_date ?? '—',
+                'status' => $l->status ?? 'active',
+                'balance' => number_format($unpaid) . ' ETB',
+            ];
+        });
 
         return view('frontend.rental.tenants', [
-            'tenants' => $tenants->values(),
+            'tenants' => $tenants,
         ]);
     }
 
     public function tenantShow($id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);
         $lease = Lease::with(['property', 'tenantProfile', 'schedules'])
             ->whereHas('tenantProfile', function ($q) use ($id) {
                 $q->where('user_id', $id);
-            })->first();
+            })->latest()->first();
 
-        if ($user && $lease) {
-            $unpaid = $lease->schedules->where('status', 'overdue')->sum('amount');
-            $tenant = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'unit' => $lease->property?->title ?? 'Apartment Unit',
-                'phone' => $user->phone ?? '+251 911 234567',
-                'email' => $user->email,
-                'lease_end' => $lease->end_date ?? '2027-05-31',
-                'status' => $lease->status ?? 'active',
-                'balance' => number_format($unpaid).' ETB',
+        $unpaid = ($lease && $lease->schedules) ? $lease->schedules->where('status', 'overdue')->sum('amount') : 0;
+        $tenant = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'unit' => $lease?->property?->title ?? 'No active unit',
+            'phone' => $user->phone ?? '—',
+            'email' => $user->email,
+            'lease_end' => $lease?->end_date ?? '—',
+            'status' => $lease?->status ?? 'inactive',
+            'balance' => number_format($unpaid) . ' ETB',
+        ];
+
+        $payments = ($lease && $lease->schedules) ? $lease->schedules->where('status', 'paid')->map(function ($s) {
+            return [
+                'id' => 'RCP-' . strtoupper(substr($s->id, 0, 8)),
+                'date' => $s->due_date,
+                'amount' => number_format($s->amount) . ' ETB',
+                'method' => 'Bank / Telebirr',
             ];
-        } else {
-            $tenant = [
-                'id' => $id,
-                'name' => 'Abebe Kebede',
-                'unit' => 'Bole Apartment 101',
-                'phone' => '+251 911 234567',
-                'email' => 'abebe@example.com',
-                'lease_end' => '2027-05-31',
-                'status' => 'active',
-                'balance' => '0 ETB',
-            ];
-        }
+        })->values()->toArray() : [];
 
         $documents = [
-            ['id' => 1, 'name' => 'Kebele ID Card', 'type' => 'PDF', 'status' => 'verified', 'date' => '2026-06-01'],
-            ['id' => 2, 'name' => 'Employment Letter', 'type' => 'PDF', 'status' => 'verified', 'date' => '2026-06-01'],
+            ['name' => 'National ID / Kebele Card Verification', 'date' => $user->created_at ? $user->created_at->format('Y-m-d') : now()->format('Y-m-d')],
+            ['name' => 'Proof of Employment / Income Slip', 'date' => $user->created_at ? $user->created_at->format('Y-m-d') : now()->format('Y-m-d')],
         ];
 
-        $payments = [
-            ['id' => 'REC-1001', 'amount' => '30,000 ETB', 'date' => '2026-10-01', 'method' => 'Bank Transfer', 'status' => 'completed'],
-            ['id' => 'REC-0901', 'amount' => '30,000 ETB', 'date' => '2026-09-01', 'method' => 'Bank Transfer', 'status' => 'completed'],
-            ['id' => 'REC-0801', 'amount' => '30,000 ETB', 'date' => '2026-08-01', 'method' => 'Cash', 'status' => 'completed'],
-        ];
-
-        return view('frontend.rental.tenant_show', compact('tenant', 'documents', 'payments'));
+        return view('frontend.rental.tenant_show', compact('tenant', 'documents', 'payments', 'lease'));
     }
 
     public function leases(Request $request)
     {
-        $dbLeases = Lease::with(['tenantProfile.user', 'property'])->latest()->get();
-        if ($dbLeases->isNotEmpty()) {
-            $leases = $dbLeases->map(function ($l) {
-                return [
-                    'id' => $l->id,
-                    'tenant' => $l->tenantProfile?->user?->name ?? 'Tenant',
-                    'unit' => $l->property?->title ?? 'Unit',
-                    'start_date' => $l->start_date ?? '2026-06-01',
-                    'end_date' => $l->end_date ?? '2027-05-31',
-                    'rent' => number_format($l->rent_amount ?? 30000).' ETB',
-                    'status' => $l->status ?? 'active',
-                ];
-            });
-        } else {
-            $leases = collect([
-                ['id' => 'LSE-2026-045', 'tenant' => 'Abebe Kebede', 'unit' => 'Bole Apartment 101', 'start_date' => '2026-06-01', 'end_date' => '2027-05-31', 'rent' => '30,000 ETB', 'status' => 'active'],
-                ['id' => 'LSE-2025-112', 'tenant' => 'Sara Tadesse', 'unit' => 'CMC Condo 505', 'start_date' => '2025-12-01', 'end_date' => '2026-11-30', 'rent' => '25,000 ETB', 'status' => 'expiring_soon'],
-                ['id' => 'LSE-2026-012', 'tenant' => 'Yonas Alemu', 'unit' => 'Kazanchis Villa 5', 'start_date' => '2026-01-15', 'end_date' => '2027-01-14', 'rent' => '85,000 ETB', 'status' => 'active'],
-            ]);
-        }
+        $query = Lease::with(['tenantProfile.user', 'property'])->latest();
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $leases = $leases->filter(function ($l) use ($q) {
-                return str_contains(strtolower((string) $l['id']), $q)
-                    || str_contains(strtolower($l['tenant']), $q)
-                    || str_contains(strtolower($l['unit']), $q)
-                    || str_contains(strtolower($l['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('tenantProfile.user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%");
+                })->orWhereHas('property', function ($p) use ($q) {
+                    $p->where('title', 'like', "%{$q}%");
+                });
             });
         }
 
-        return view('frontend.rental.leases', [
-            'leases' => $leases->values(),
+        $leases = $query->paginate(20)->withQueryString()->through(function ($l) {
+            return [
+                'id' => $l->id,
+                'tenant' => $l->tenantProfile?->user?->name ?? 'Tenant',
+                'unit' => $l->property?->title ?? 'Unit',
+                'start_date' => $l->start_date ?? '—',
+                'end_date' => $l->end_date ?? '—',
+                'rent' => number_format($l->rent_amount ?? 0) . ' ETB',
+                'status' => $l->status ?? 'active',
+            ];
+        });
+
+        $properties = Property::orderBy('title')->get(['id', 'title']);
+        $tenants = User::orderBy('name')->get(['id', 'name', 'phone']);
+
+        return view('frontend.rental.leases', compact('leases', 'properties', 'tenants'));
+    }
+
+    public function storeLease(Request $request)
+    {
+        $data = $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'user_id' => 'required|exists:users,id',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'rent_amount' => 'required|numeric|min:0',
+            'deposit_amount' => 'nullable|numeric|min:0',
         ]);
+
+        $tenantProfile = TenantProfile::firstOrCreate(['user_id' => $data['user_id']]);
+        $property = Property::findOrFail($data['property_id']);
+
+        $lease = Lease::create([
+            'property_id' => $property->id,
+            'tenant_profile_id' => $tenantProfile->id,
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'rent_amount' => $data['rent_amount'],
+            'deposit_amount' => $data['deposit_amount'] ?? 0,
+            'status' => 'active',
+        ]);
+
+        // Generate monthly rent schedules
+        $start = Carbon::parse($data['start_date']);
+        $end = Carbon::parse($data['end_date']);
+        $current = $start->copy();
+        while ($current->lte($end)) {
+            RentSchedule::create([
+                'lease_id' => $lease->id,
+                'due_date' => $current->toDateString(),
+                'amount' => $data['rent_amount'],
+                'status' => 'unpaid',
+            ]);
+            $current->addMonth();
+        }
+
+        return redirect()->route('dashboard.rental.leases.show', $lease->id)
+            ->with('success', __('Lease agreement executed successfully.'));
     }
 
     public function leaseShow($id)
     {
-        $dbLease = Lease::with(['tenantProfile.user', 'property', 'schedules'])->find($id);
-        if ($dbLease) {
-            $lease = [
-                'id' => $dbLease->id,
-                'tenant' => $dbLease->tenantProfile?->user?->name ?? 'Tenant',
-                'unit' => $dbLease->property?->title ?? 'Apartment Unit',
-                'start_date' => $dbLease->start_date ?? '2026-06-01',
-                'end_date' => $dbLease->end_date ?? '2027-05-31',
-                'rent' => number_format($dbLease->rent_amount ?? 30000).' ETB',
-                'deposit' => number_format($dbLease->deposit_amount ?? 60000).' ETB',
-                'status' => $dbLease->status ?? 'active',
-                'payment_frequency' => 'Monthly',
-            ];
+        $dbLease = Lease::with(['tenantProfile.user', 'property', 'schedules'])->findOrFail($id);
+        $lease = [
+            'id' => $dbLease->id,
+            'tenant' => $dbLease->tenantProfile?->user?->name ?? 'Tenant',
+            'tenant_user_id' => $dbLease->tenantProfile?->user?->id,
+            'unit' => $dbLease->property?->title ?? 'Apartment Unit',
+            'start_date' => $dbLease->start_date ?? '—',
+            'end_date' => $dbLease->end_date ?? '—',
+            'rent' => number_format($dbLease->rent_amount ?? 0) . ' ETB',
+            'deposit' => number_format($dbLease->deposit_amount ?? 0) . ' ETB',
+            'status' => $dbLease->status ?? 'active',
+            'payment_frequency' => 'Monthly',
+        ];
 
-            $schedule = $dbLease->schedules->map(function ($s) {
-                return [
-                    'month' => date('M Y', strtotime($s->due_date)),
-                    'due_date' => $s->due_date,
-                    'amount' => number_format($s->amount).' ETB',
-                    'status' => $s->status,
-                    'paid_date' => $s->status === 'paid' ? $s->due_date : null,
-                ];
-            })->toArray();
-        } else {
-            $lease = ['id' => $id, 'tenant' => 'Abebe Kebede', 'unit' => 'Bole Apartment 101', 'start_date' => '2026-06-01', 'end_date' => '2027-05-31', 'rent' => '30,000 ETB', 'deposit' => '60,000 ETB', 'status' => 'active', 'payment_frequency' => 'Monthly'];
-
-            $schedule = [
-                ['month' => 'Oct 2026', 'due_date' => '2026-10-01', 'amount' => '30,000 ETB', 'status' => 'paid', 'paid_date' => '2026-10-01'],
-                ['month' => 'Nov 2026', 'due_date' => '2026-11-01', 'amount' => '30,000 ETB', 'status' => 'pending', 'paid_date' => null],
-                ['month' => 'Dec 2026', 'due_date' => '2026-12-01', 'amount' => '30,000 ETB', 'status' => 'pending', 'paid_date' => null],
-                ['month' => 'Jan 2027', 'due_date' => '2027-01-01', 'amount' => '30,000 ETB', 'status' => 'pending', 'paid_date' => null],
+        $schedule = $dbLease->schedules ? $dbLease->schedules->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'month' => date('M Y', strtotime($s->due_date)),
+                'due_date' => $s->due_date,
+                'amount' => number_format($s->amount) . ' ETB',
+                'status' => $s->status,
+                'paid_date' => $s->status === 'paid' ? ($s->updated_at ? $s->updated_at->format('Y-m-d') : $s->due_date) : null,
             ];
+        })->toArray() : [];
+
+        return view('frontend.rental.lease_show', compact('dbLease', 'lease', 'schedule'));
+    }
+
+    public function renewLease(Request $request, $id)
+    {
+        $lease = Lease::findOrFail($id);
+
+        $data = $request->validate([
+            'new_end_date' => 'required|date|after:' . $lease->end_date,
+            'new_rent_amount' => 'nullable|numeric|min:0',
+        ]);
+
+        $oldEnd = Carbon::parse($lease->end_date);
+        $newEnd = Carbon::parse($data['new_end_date']);
+        $rentAmount = $data['new_rent_amount'] ?? $lease->rent_amount;
+
+        $lease->update([
+            'end_date' => $data['new_end_date'],
+            'rent_amount' => $rentAmount,
+            'status' => 'active',
+        ]);
+
+        // Generate schedule for renewal period
+        $current = $oldEnd->copy()->addMonth();
+        while ($current->lte($newEnd)) {
+            RentSchedule::create([
+                'lease_id' => $lease->id,
+                'due_date' => $current->toDateString(),
+                'amount' => $rentAmount,
+                'status' => 'unpaid',
+            ]);
+            $current->addMonth();
         }
 
-        return view('frontend.rental.lease_show', compact('lease', 'schedule'));
+        return back()->with('success', __('Lease renewed until :date.', ['date' => $data['new_end_date']]));
+    }
+
+    public function terminateLease(Request $request, $id)
+    {
+        $lease = Lease::findOrFail($id);
+        $lease->update(['status' => 'terminated']);
+
+        return redirect()->route('dashboard.rental.leases')
+            ->with('success', __('Lease agreement has been terminated.'));
+    }
+
+    public function recordPayment(Request $request, $id)
+    {
+        $lease = Lease::with('tenantProfile.user')->findOrFail($id);
+
+        $data = $request->validate([
+            'schedule_id' => 'required|exists:rent_schedules,id',
+            'payment_method' => 'required|string',
+            'reference_number' => 'nullable|string|max:100',
+        ]);
+
+        $schedule = RentSchedule::where('lease_id', $lease->id)->findOrFail($data['schedule_id']);
+        $schedule->update([
+            'status' => 'paid',
+        ]);
+
+        if ($lease->tenantProfile?->user_id) {
+            Invoice::create([
+                'user_id' => $lease->tenantProfile->user_id,
+                'amount' => $schedule->amount,
+                'due_date' => $schedule->due_date,
+                'status' => 'paid',
+                'notes' => 'Rent payment via ' . $data['payment_method'] . ($data['reference_number'] ? ' (Ref: ' . $data['reference_number'] . ')' : ''),
+            ]);
+        }
+
+        return back()->with('success', __('Rent payment of :amount ETB recorded successfully via :method.', [
+            'amount' => number_format($schedule->amount),
+            'method' => $data['payment_method'],
+        ]));
     }
 
     public function payments(Request $request)
     {
-        $schedules = RentSchedule::with(['lease.tenantProfile.user', 'lease.property'])->latest()->take(10)->get();
-        if ($schedules->isNotEmpty()) {
-            $payments = $schedules->map(function ($s, $idx) {
-                return [
-                    'id' => 'REC-'.(1000 + $idx),
-                    'tenant' => $s->lease?->tenantProfile?->user?->name ?? 'Tenant',
-                    'unit' => $s->lease?->property?->title ?? 'Apartment Unit',
-                    'amount' => number_format($s->amount).' ETB',
-                    'date' => $s->due_date,
-                    'method' => 'Bank Transfer',
-                    'status' => $s->status === 'paid' ? 'completed' : ($s->status === 'overdue' ? 'pending_verification' : 'pending'),
-                ];
-            });
-        } else {
-            $payments = collect([
-                ['id' => 'REC-1005', 'tenant' => 'Meron Bekele', 'unit' => 'Bole Apt 204', 'amount' => '28,000 ETB', 'date' => '2026-10-05', 'method' => 'Bank Transfer', 'status' => 'pending_verification'],
-                ['id' => 'REC-1004', 'tenant' => 'Dawit Girma', 'unit' => 'CMC Condo 105', 'amount' => '15,000 ETB', 'date' => '2026-10-04', 'method' => 'Telebirr', 'status' => 'completed'],
-                ['id' => 'REC-1001', 'tenant' => 'Abebe Kebede', 'unit' => 'Bole Apt 101', 'amount' => '30,000 ETB', 'date' => '2026-10-01', 'method' => 'Bank Transfer', 'status' => 'completed'],
-            ]);
-        }
+        $query = RentSchedule::with(['lease.tenantProfile.user', 'lease.property'])->latest();
 
         if ($request->filled('search')) {
-            $q = strtolower(trim($request->search));
-            $payments = $payments->filter(function ($p) use ($q) {
-                return str_contains(strtolower($p['id']), $q)
-                    || str_contains(strtolower($p['tenant']), $q)
-                    || str_contains(strtolower($p['unit']), $q)
-                    || str_contains(strtolower($p['method']), $q)
-                    || str_contains(strtolower($p['status']), $q);
+            $q = trim($request->search);
+            $query->where(function ($sub) use ($q) {
+                $sub->whereHas('lease.tenantProfile.user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%{$q}%");
+                })->orWhereHas('lease.property', function ($p) use ($q) {
+                    $p->where('title', 'like', "%{$q}%");
+                });
             });
         }
 
+        $payments = $query->paginate(20)->withQueryString()->through(function ($s) {
+            return [
+                'id' => 'REC-' . strtoupper(substr($s->id, 0, 8)),
+                'tenant' => $s->lease?->tenantProfile?->user?->name ?? 'Tenant',
+                'unit' => $s->lease?->property?->title ?? 'Apartment Unit',
+                'amount' => number_format($s->amount ?? 0) . ' ETB',
+                'date' => $s->due_date,
+                'method' => 'Bank Transfer / Telebirr',
+                'status' => $s->status === 'paid' ? 'completed' : ($s->status === 'overdue' ? 'overdue' : 'pending'),
+            ];
+        });
+
         return view('frontend.rental.payments', [
-            'payments' => $payments->values(),
+            'payments' => $payments,
         ]);
     }
 }

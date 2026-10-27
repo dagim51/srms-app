@@ -1,16 +1,19 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Unit Inventory') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto page-enter">
+    <div class="max-w-7xl mx-auto page-enter space-y-6">
         <x-page-header
             title="Sales & Inventory"
             description="Manage unit statuses, reservations, and sales."
             icon="building"
-            badge="Inventory">
-            <x-slot:actions>
-                <button class="btn btn-primary">{{ __('Export Report') }}</button>
-            </x-slot:actions>
-        </x-page-header>
+            badge="Inventory" />
+
+        @if(session('success'))
+            <div class="px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
 
         @include('frontend.developer.sales.partials.tabs')
 
@@ -64,7 +67,7 @@
                         @foreach($units as $unit)
                             <tr class="hover:bg-surface dark:hover:bg-surface/30 transition-colors">
                                 <td class="p-4 font-bold text-muted dark:text-white">
-                                    <a href="{{ route('dashboard.sales.units.show', $unit['id']) }}" class="hover:text-primary-600 dark:hover:text-primary-400">{{ $unit['number'] }}</a>
+                                    <a href="{{ route('dashboard.sales.units.show', $unit['id']) }}" class="hover:text-primary-600 dark:hover:text-primary-400 font-mono text-sm">{{ $unit['number'] }}</a>
                                 </td>
                                 <td class="p-4">
                                     <p class="text-sm font-medium text-muted dark:text-white">{{ $unit['project'] }}</p>
@@ -83,15 +86,25 @@
                                     @endphp
                                     <span class="badge {{ $badgeClass }} uppercase text-xs">{{ $unit['status'] }}</span>
                                 </td>
-                                <td class="p-4 text-muted dark:text-dark-subtle">{{ $unit['buyer'] ?? '-' }}</td>
+                                <td class="p-4 text-muted dark:text-dark-subtle">{{ $unit['buyer'] ?? '—' }}</td>
                                 <td class="p-4 text-right">
-                                    <a href="{{ route('dashboard.sales.units.show', $unit['id']) }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 font-medium text-sm">{{ __('View') }}</a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        @if($unit['status'] === 'available')
+                                            <a href="{{ route('dashboard.sales.reservation', $unit['id']) }}" class="btn btn-primary btn-sm text-xs">{{ __('Reserve') }}</a>
+                                        @endif
+                                        <a href="{{ route('dashboard.sales.units.show', $unit['id']) }}" class="btn btn-secondary btn-sm text-xs">{{ __('Details') }}</a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($units, 'links'))
+                <div class="p-4 border-t border-warm dark:border-warm">
+                    {{ $units->links() }}
+                </div>
+            @endif
         </div>
 
     </div>

@@ -332,7 +332,7 @@
     <div x-show="items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" x-cloak>
         <template x-for="(item, index) in items" :key="item.id">
             <div 
-                class="group relative bg-white dark:bg-[#111827] rounded-xl border overflow-hidden shadow-xs transition-all duration-200"
+                class="card group relative bg-white dark:bg-[#111827] rounded-xl border overflow-hidden transition-all duration-200"
                 :class="item.is_primary 
                     ? 'border-orange-500 ring-2 ring-orange-500/20' 
                     : 'border-warm dark:border-[#273244] hover:border-warm dark:hover:border-warm'"

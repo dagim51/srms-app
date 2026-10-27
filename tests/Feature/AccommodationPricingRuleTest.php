@@ -6,6 +6,8 @@ use App\Models\Accommodation;
 use App\Models\AccommodationPricingRule;
 use App\Models\Property;
 use App\Models\User;
+use App\Services\Bookings\BookingManager;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,6 +21,8 @@ class AccommodationPricingRuleTest extends TestCase
 
     protected $accommodation;
 
+    protected $bookingManager;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -26,8 +30,8 @@ class AccommodationPricingRuleTest extends TestCase
         $this->host = User::factory()->create();
 
         $this->property = Property::create([
-            'title' => 'Test Property for Pricing',
-            'property_code' => 'TEST-PRICE-001',
+            'title' => 'Luxury Bole Apartment',
+            'property_code' => 'BOLE-LUX-001',
             'owner_user_id' => $this->host->id,
             'status' => 'verified',
         ]);
@@ -37,66 +41,104 @@ class AccommodationPricingRuleTest extends TestCase
             'host_id' => $this->host->id,
             'max_guests' => 4,
         ]);
+
+        $this->bookingManager = app(BookingManager::class);
     }
 
-    public function test_host_can_create_pricing_rule()
+    public function test_evaluates_base_price_when_no_rules_exist(): void
     {
-        $response = $this->actingAs($this->host)->postJson('/api/v1/accommodation-pricing-rules', [
-            'accommodation_id' => $this->accommodation->id,
-            'type' => 'weekend',
-            'price_modifier_type' => 'percentage',
-            'price_modifier_value' => 15.00,
-            'priority' => 10,
-        ]);
+        // 3 nights at default 100 ETB/night
+        $checkIn = Carbon::now()->addDays(2)->toDateString();
+        $checkOut = Carbon::now()->addDays(5)->toDateString();
 
-        $response->assertStatus(201)
-            ->assertJsonPath('data.type', 'weekend')
-            ->assertJsonPath('data.price_modifier_value', 15);
+        $price = $this->bookingManager->calculatePrice($this->accommodation, $checkIn, $checkOut);
 
-        $this->assertDatabaseHas('accommodation_pricing_rules', [
-            'accommodation_id' => $this->accommodation->id,
-            'type' => 'weekend',
-        ]);
+        $this->assertEquals(300.0, $price);
     }
 
-    public function test_pricing_rules_are_returned_in_priority_order()
+    public function test_evaluates_seasonal_date_range_modifier(): void
     {
+        // Create a seasonal peak rule between Day 4 and Day 6 (fixed 250 ETB/night)
+        $seasonStart = Carbon::now()->addDays(4)->toDateString();
+        $seasonEnd = Carbon::now()->addDays(6)->toDateString();
+
         AccommodationPricingRule::create([
             'accommodation_id' => $this->accommodation->id,
             'type' => 'seasonal',
+            'start_date' => $seasonStart,
+            'end_date' => $seasonEnd,
             'price_modifier_type' => 'fixed',
-            'price_modifier_value' => 50,
-            'priority' => 5,
+            'price_modifier_value' => 250.00,
+            'priority' => 20,
         ]);
 
+        // Book 4 nights: Day 3, Day 4, Day 5, Day 6 (leaving on Day 7)
+        // Day 3: 100 ETB (outside season)
+        // Day 4: 250 ETB (inside season)
+        // Day 5: 250 ETB (inside season)
+        // Day 6: 100 ETB (season ended on Day 6 check)
+        $checkIn = Carbon::now()->addDays(3)->toDateString();
+        $checkOut = Carbon::now()->addDays(7)->toDateString();
+
+        $price = $this->bookingManager->calculatePrice($this->accommodation, $checkIn, $checkOut);
+
+        // 100 (Day 3) + 250 (Day 4) + 250 (Day 5) + 100 (Day 6) = 700 ETB
+        $this->assertEquals(700.0, $price);
+    }
+
+    public function test_evaluates_weekend_surcharge_rule(): void
+    {
+        // Find next Friday
+        $nextFriday = Carbon::now()->next(Carbon::FRIDAY);
+        $followingMonday = $nextFriday->copy()->addDays(3); // Fri, Sat, Sun nights
+
+        // Rule: 50% surcharge on weekend
         AccommodationPricingRule::create([
             'accommodation_id' => $this->accommodation->id,
             'type' => 'weekend',
             'price_modifier_type' => 'percentage',
-            'price_modifier_value' => 10,
-            'priority' => 20, // Higher priority should be first
+            'price_modifier_value' => 50.00,
+            'priority' => 10,
         ]);
 
-        $response = $this->actingAs($this->host)->getJson("/api/v1/accommodation-pricing-rules?accommodation_id={$this->accommodation->id}");
+        $price = $this->bookingManager->calculatePrice(
+            $this->accommodation,
+            $nextFriday->toDateString(),
+            $followingMonday->toDateString()
+        );
 
-        $response->assertStatus(200);
-
-        // Assert priority 20 is first
-        $this->assertEquals('weekend', $response->json('data.0.type'));
-        $this->assertEquals('seasonal', $response->json('data.1.type'));
+        // Friday night: 150 ETB
+        // Saturday night: 150 ETB
+        // Sunday night: 100 ETB
+        // Total = 400 ETB
+        $this->assertEquals(400.0, $price);
     }
 
-    public function test_non_host_cannot_create_pricing_rule()
+    public function test_detailed_price_breakdown_includes_fees_and_taxes(): void
     {
-        $otherUser = User::factory()->create();
+        // Weekday stay: Monday to Wednesday (2 nights)
+        $nextMonday = Carbon::now()->next(Carbon::MONDAY);
+        $checkIn = $nextMonday->toDateString();
+        $checkOut = $nextMonday->copy()->addDays(2)->toDateString(); // 2 nights
 
-        $response = $this->actingAs($otherUser)->postJson('/api/v1/accommodation-pricing-rules', [
-            'accommodation_id' => $this->accommodation->id,
-            'type' => 'special',
-            'price_modifier_type' => 'percentage',
-            'price_modifier_value' => 20,
-        ]);
+        $breakdown = $this->bookingManager->calculateDetailedPrice(
+            $this->accommodation,
+            $checkIn,
+            $checkOut,
+            [
+                'cleaning_fee' => 75.00,
+                'service_fee_rate' => 0.10, // 10%
+                'tax_rate' => 0.15, // 15% VAT
+            ]
+        );
 
-        $response->assertStatus(403);
+        $this->assertEquals(2, $breakdown['nights']);
+        $this->assertEquals(100.0, $breakdown['base_nightly_rate']);
+        $this->assertEquals(200.0, $breakdown['stay_subtotal']);
+        $this->assertEquals(75.0, $breakdown['cleaning_fee']);
+        $this->assertEquals(20.0, $breakdown['service_fee']); // 10% of 200
+        $this->assertEquals(33.0, $breakdown['tax_amount']); // 15% of (200 + 20)
+        $this->assertEquals(328.0, $breakdown['total_price']);
+        $this->assertCount(2, $breakdown['daily_breakdown']);
     }
 }

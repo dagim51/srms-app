@@ -1,16 +1,26 @@
 <x-layouts.dashboard>
     <x-slot name="page-title">{{ __('Rental Dashboard') }}</x-slot>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto space-y-6" x-data="{ showNewLease: false }">
         <x-page-header
             title="Rental & Lease Management"
             description="Oversee active tenant agreements, lease terms, payment schedules, and rental applications."
             icon="document"
             badge="Leases">
             <x-slot:actions>
-                <button class="btn btn-primary text-xs shadow-sm shadow-orange-500/20">{{ __('New Lease') }}</button>
+                <button @click="showNewLease = true" class="btn btn-primary text-xs shadow-sm shadow-orange-500/20">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    {{ __('New Lease') }}
+                </button>
             </x-slot:actions>
         </x-page-header>
+
+        @if(session('success'))
+            <div class="px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 text-sm border border-emerald-200 dark:border-emerald-800 flex items-center gap-2">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                {{ session('success') }}
+            </div>
+        @endif
 
         @include('frontend.rental.partials.tabs')
 
@@ -87,7 +97,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-warm dark:divide-dark-border">
-                        @foreach($recentApplications as $app)
+                        @forelse($recentApplications as $app)
                             <tr class="hover:bg-surface dark:hover:bg-surface/30 transition-colors">
                                 <td class="p-4 font-bold text-muted dark:text-white">{{ $app['applicant'] }}</td>
                                 <td class="p-4 text-muted dark:text-dark-subtle">{{ $app['unit'] }}</td>
@@ -96,12 +106,81 @@
                                     <span class="badge {{ $app['status'] === 'approved' ? 'badge-success' : ($app['status'] === 'rejected' ? 'badge-error' : 'badge-warning') }} uppercase text-xs">{{ __($app['status']) }}</span>
                                 </td>
                                 <td class="p-4 text-right">
-                                    <button class="btn btn-sm btn-secondary">{{ __('Review') }}</button>
+                                    <a href="{{ route('dashboard.rental.applications') }}" class="btn btn-sm btn-secondary">{{ __('Review') }}</a>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="5" class="p-8 text-center text-muted">{{ __('No recent applications.') }}</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        {{-- Create Lease Modal --}}
+        <div x-show="showNewLease" x-cloak
+             class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+            <div class="absolute inset-0 bg-black/50" @click="showNewLease = false"></div>
+            <div class="relative bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-lg p-6 z-10">
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-lg font-bold text-muted dark:text-white">{{ __('Execute New Lease Agreement') }}</h3>
+                    <button @click="showNewLease = false" class="text-muted hover:text-muted/70">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('dashboard.rental.leases.store') }}" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Property Unit') }} <span class="text-red-500">*</span></label>
+                        <select name="property_id" class="input w-full" required>
+                            <option value="">{{ __('— Select Rental Property —') }}</option>
+                            @foreach($properties as $prop)
+                                <option value="{{ $prop->id }}">{{ $prop->title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Tenant') }} <span class="text-red-500">*</span></label>
+                        <select name="user_id" class="input w-full" required>
+                            <option value="">{{ __('— Select Tenant —') }}</option>
+                            @foreach($tenants as $t)
+                                <option value="{{ $t->id }}">{{ $t->name }} ({{ $t->phone ?? 'No Phone' }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Start Date') }} <span class="text-red-500">*</span></label>
+                            <input type="date" name="start_date" value="{{ date('Y-m-d') }}" class="input w-full" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('End Date') }} <span class="text-red-500">*</span></label>
+                            <input type="date" name="end_date" value="{{ date('Y-m-d', strtotime('+1 year')) }}" class="input w-full" required>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Monthly Rent (ETB)') }} <span class="text-red-500">*</span></label>
+                            <input type="number" name="rent_amount" step="0.01" class="input w-full" placeholder="e.g. 25000" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-muted dark:text-dark-subtle mb-1">{{ __('Security Deposit (ETB)') }}</label>
+                            <input type="number" name="deposit_amount" step="0.01" class="input w-full" placeholder="e.g. 50000">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-3">
+                        <button type="button" @click="showNewLease = false" class="btn btn-secondary">{{ __('Cancel') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Execute Lease') }}</button>
+                    </div>
+                </form>
             </div>
         </div>
 

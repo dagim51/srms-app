@@ -21,7 +21,7 @@ class IdempotencyMiddleware
             return $next($request);
         }
 
-        $idempotencyKey = $request->header('X-Idempotency-Key') ?? $request->input('idempotency_key');
+        $idempotencyKey = $request->header('Idempotency-Key') ?? $request->header('X-Idempotency-Key') ?? $request->input('idempotency_key');
         if (! $idempotencyKey) {
             return $next($request);
         }

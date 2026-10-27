@@ -6,6 +6,7 @@ use App\Models\AccommodationAvailability;
 use App\Models\AccommodationBooking;
 use App\Models\AccommodationPricingRule;
 use App\Models\Amenity;
+use App\Models\ExternalCalendarSync;
 use App\Models\Listing;
 use App\Models\Property;
 use App\Models\PropertyFeature;
@@ -84,6 +85,16 @@ class Accommodation extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(AccommodationBooking::class);
+    }
+
+    public function calendarSyncs(): HasMany
+    {
+        return $this->hasMany(ExternalCalendarSync::class);
+    }
+
+    public function getIcalTokenAttribute(): string
+    {
+        return substr(hash_hmac('sha256', $this->id, config('app.key') ?: 'srms-secret'), 0, 32);
     }
 
     public function media(): HasMany

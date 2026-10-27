@@ -13,7 +13,7 @@
             <div class="lg:col-span-7 order-2 lg:order-1 space-y-8">
                 
                 {{-- Image Gallery --}}
-                <div class="relative aspect-[16/9] rounded-2xl overflow-hidden bg-surface-subtle dark:bg-surface">
+                <div class="card relative aspect-[16/9] rounded-2xl overflow-hidden bg-surface-subtle dark:bg-surface">
                     <div class="w-full h-full">
                         <img 
                             src="{{ $accommodation->property->cover_image 
@@ -58,7 +58,7 @@
                 @endif
 
                 {{-- ── 1. Your trip ── --}}
-                <section class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden divide-y divide-warm dark:divide-dark-border">
+                <section class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden divide-y divide-warm dark:divide-dark-border">
                     <div class="p-6 border-b border-warm dark:border-warm">
                         <h2 class="text-xl font-bold text-muted dark:text-white mb-5 flex items-center gap-3">
                             <span class="flex items-center justify-center w-7 h-7 rounded-md bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 text-xs font-black">1</span>
@@ -110,7 +110,7 @@
                         Cancellation policy
                     </h2>
 
-                    <div class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6">
+                    <div class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 p-6">
                         <div class="flex items-start gap-4">
                             <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -143,7 +143,7 @@
                     <p class="text-sm text-muted dark:text-muted mb-5">{{ __('We ask every guest to remember a few simple things about what makes a great guest.') }}</p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex gap-4 p-5 rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50">
+                        <div class="card flex gap-4 p-5 rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50">
                             <div class="w-9 h-9 rounded-full bg-surface-subtle dark:bg-surface flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4 text-muted dark:text-dark-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             </div>
@@ -152,7 +152,7 @@
                                 <p class="text-xs text-muted mt-1">{{ __('Check the listing description for specifics.') }}</p>
                             </div>
                         </div>
-                        <div class="flex gap-4 p-5 rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50">
+                        <div class="card flex gap-4 p-5 rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50">
                             <div class="w-9 h-9 rounded-full bg-surface-subtle dark:bg-surface flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4 text-muted dark:text-dark-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                             </div>
@@ -168,7 +168,7 @@
             {{-- ── RIGHT COLUMN – Price Summary ── --}}
             <div class="lg:col-span-5 order-1 lg:order-2">
                 <div class="sticky top-28">
-                    <div class="rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden shadow-sm">
+                    <div class="card rounded-2xl border border-warm dark:border-warm bg-white dark:bg-surface/50 overflow-hidden">
                         
                         {{-- Property thumbnail --}}
                         <div class="flex gap-4 p-6 border-b border-warm dark:border-warm">

@@ -190,7 +190,7 @@
     <input type="hidden" name="{{ $privacyName }}" :value="isApproximate ? '1' : '0'">
 
     {{-- Presets & Geolocation Toolbar --}}
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-surface dark:bg-[#172033] p-3 rounded-xl border border-warm dark:border-[#273244]">
+    <div class="card flex flex-wrap items-center justify-between gap-3 bg-surface dark:bg-[#172033] p-3 rounded-xl border border-warm dark:border-[#273244]">
         <div class="flex flex-wrap items-center gap-1.5">
             <span class="text-xs font-semibold text-muted dark:text-muted mr-1">Quick Presets:</span>
             <template x-for="p in presets" :key="p.name">
@@ -233,7 +233,7 @@
         </div>
 
         {{-- Live Pin Coordinate Floating Badge --}}
-        <div class="absolute bottom-3 left-3 z-20 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-warm dark:border-warm shadow-md text-xs font-mono text-muted dark:text-muted flex items-center gap-2">
+        <div class="card absolute bottom-3 left-3 z-20 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-warm dark:border-warm text-xs font-mono text-muted dark:text-muted flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
             <span><span x-text="lat"></span>° N, <span x-text="lng"></span>° E</span>
         </div>

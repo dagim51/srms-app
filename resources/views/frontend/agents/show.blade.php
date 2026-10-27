@@ -12,7 +12,7 @@
                 <button class="btn btn-primary">{{ __('Contact Agent') }}</button>
             </x-slot:actions>
         </x-page-header>
-        <div class="bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden shadow-sm mb-8">
+        <div class="card bg-white dark:bg-[#1E293B] border border-warm dark:border-warm rounded-3xl overflow-hidden mb-8">
             <div class="h-32 bg-primary-600 w-full relative">
                 <!-- Cover Image / Brand Color -->
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     
                     <div class="space-y-6">
-                        <div class="bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
+                        <div class="card bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
                             <h3 class="font-bold text-muted dark:text-white mb-4">{{ __('Contact Information') }}</h3>
                             <ul class="space-y-4">
                                 <li class="flex items-center gap-3 text-muted dark:text-dark-subtle">
@@ -81,7 +81,7 @@
                             </ul>
                         </div>
                         
-                        <div class="bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
+                        <div class="card bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
                             <h3 class="font-bold text-muted dark:text-white mb-4">{{ __('Service Areas') }}</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($agent['service_areas'] as $area)
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                         
-                        <div class="bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
+                        <div class="card bg-surface dark:bg-surface/50 p-6 rounded-2xl border border-warm dark:border-warm">
                             <h3 class="font-bold text-muted dark:text-white mb-4">{{ __('Agent Rating') }}</h3>
                             <div class="flex items-center gap-2">
                                 <span class="text-3xl font-black text-muted dark:text-white">{{ $agent['rating'] }}</span>
