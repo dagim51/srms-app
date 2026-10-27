@@ -48,7 +48,14 @@ class Listing extends Model
             ->where('status', 'active')
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
-            ->latestOfMany('amount_paid');
+            ->ofMany([
+                'amount_paid' => 'max',
+                'created_at' => 'max',
+            ], function ($query) {
+                $query->where('status', 'active')
+                    ->where('start_date', '<=', now())
+                    ->where('end_date', '>=', now());
+            });
     }
 
     /**

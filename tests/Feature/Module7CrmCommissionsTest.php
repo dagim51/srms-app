@@ -11,6 +11,7 @@ use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class Module7CrmCommissionsTest extends TestCase
@@ -40,7 +41,7 @@ class Module7CrmCommissionsTest extends TestCase
     {
         Commission::create([
             'agent_id' => $this->agent->id,
-            'deal_id' => 'deal-bole-penthouse',
+            'deal_id' => (string) Str::uuid(),
             'deal_type' => 'sale',
             'gross_amount' => 12000000.0,
             'rate_percentage' => 3.0,
@@ -51,7 +52,7 @@ class Module7CrmCommissionsTest extends TestCase
 
         Commission::create([
             'agent_id' => $this->agent->id,
-            'deal_id' => 'deal-sarbet-villa',
+            'deal_id' => (string) Str::uuid(),
             'deal_type' => 'lease',
             'gross_amount' => 150000.0,
             'rate_percentage' => 10.0,
@@ -97,7 +98,7 @@ class Module7CrmCommissionsTest extends TestCase
 
         // 4,000,000 ETB deal -> 3.5% (140,000) + 15,000 = 155,000 ETB
         $commission = $service->calculateAndRecord(
-            dealId: 'deal-tier-002',
+            dealId: (string) Str::uuid(),
             dealType: 'sale',
             grossAmount: 4000000.0,
             agentId: $this->agent->id,
@@ -238,7 +239,7 @@ class Module7CrmCommissionsTest extends TestCase
     {
         $commission = Commission::create([
             'agent_id' => $this->agent->id,
-            'deal_id' => 'deal-commercial-plaza',
+            'deal_id' => (string) Str::uuid(),
             'deal_type' => 'sale',
             'gross_amount' => 5000000.0,
             'rate_percentage' => 4.0,

@@ -58,12 +58,12 @@ class SearchController extends Controller
         }
 
         // Prioritize active promotions (sponsored boost)
-        $query->orderByRaw('CASE WHEN EXISTS (
+        $query->orderByRaw("CASE WHEN EXISTS (
             SELECT 1 FROM promotions 
             WHERE promotions.listing_id = listing_search_indices.listing_id 
-            AND promotions.status = "active" 
+            AND promotions.status = 'active' 
             AND promotions.end_date >= CURRENT_TIMESTAMP
-        ) THEN 1 ELSE 0 END DESC');
+        ) THEN 1 ELSE 0 END DESC");
 
         if (! empty($validated['sort'])) {
             $sort = $validated['sort'];

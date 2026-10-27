@@ -8,6 +8,7 @@ use App\Domains\CRM\Services\CommissionCalculatorService;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class CommissionEngineTest extends TestCase
@@ -18,10 +19,11 @@ class CommissionEngineTest extends TestCase
     {
         $agent = User::factory()->create();
         $service = app(CommissionCalculatorService::class);
+        $dealId = (string) Str::uuid();
 
         // 1,000,000 ETB deal with no rule -> 2.5% default rate = 25,000 ETB
         $commission = $service->calculateAndRecord(
-            dealId: 'deal-test-001',
+            dealId: $dealId,
             dealType: 'sale',
             grossAmount: 1000000.0,
             agentId: $agent->id,
@@ -35,7 +37,7 @@ class CommissionEngineTest extends TestCase
 
         $this->assertDatabaseHas('commissions', [
             'id' => $commission->id,
-            'deal_id' => 'deal-test-001',
+            'deal_id' => $dealId,
             'agent_id' => $agent->id,
             'commission_amount' => 25000.0,
         ]);
@@ -73,9 +75,11 @@ class CommissionEngineTest extends TestCase
 
         $service = app(CommissionCalculatorService::class);
 
+        $dealId = (string) Str::uuid();
+
         // Test Tier 2 deal: 8,000,000 ETB -> 4% (320,000) + 50,000 = 370,000 ETB
         $commission = $service->calculateAndRecord(
-            dealId: 'deal-high-tier',
+            dealId: $dealId,
             dealType: 'sale',
             grossAmount: 8000000.0,
             agentId: $agent->id,

@@ -78,13 +78,17 @@ class AdvancedGIS
 
         $connection = DB::connection()->getDriverName();
         if ($connection === 'pgsql' || $connection === 'testing-pgsql') {
-            // Build WKT polygon from coordinates
+            // Build WKT polygon from coordinates (In GIS WKT, X is longitude, Y is latitude)
             $points = [];
             foreach ($coordinates as $coord) {
-                $points[] = "{$coord[0]} {$coord[1]}";
+                $points[] = "{$coord[1]} {$coord[0]}";
             }
-            // Close the polygon
-            $points[] = $coordinates[0][0].' '.$coordinates[0][1];
+            // Close the polygon if not already closed
+            $first = $coordinates[0];
+            $last = end($coordinates);
+            if ($first[0] !== $last[0] || $first[1] !== $last[1]) {
+                $points[] = "{$first[1]} {$first[0]}";
+            }
             $wkt = 'POLYGON(('.implode(', ', $points).'))';
 
             $query->whereRaw('

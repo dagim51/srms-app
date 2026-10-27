@@ -95,12 +95,12 @@ class FinancialWebController extends Controller
     public function transactionShow($id)
     {
         $payment = Payment::with('user')->where('transaction_reference', $id)->first();
-        if (! $payment) {
+        if (! $payment && Str::isUuid($id)) {
             $payment = Payment::with('user')->where('id', $id)->first();
         }
         if (! $payment && str_starts_with($id, 'TRX-')) {
             $clean = str_replace('TRX-', '', $id);
-            $payment = Payment::with('user')->where('id', 'like', substr($clean, 0, 8).'%')->first();
+            $payment = Payment::with('user')->whereRaw('CAST(id AS TEXT) LIKE ?', [substr($clean, 0, 8).'%'])->first();
         }
 
         if ($payment) {
@@ -189,12 +189,12 @@ class FinancialWebController extends Controller
     public function processRefund(Request $request, $id, \App\Services\Payments\PaymentService $paymentService)
     {
         $payment = Payment::where('transaction_reference', $id)->first();
-        if (! $payment) {
+        if (! $payment && Str::isUuid($id)) {
             $payment = Payment::where('id', $id)->first();
         }
         if (! $payment && str_starts_with($id, 'TRX-')) {
             $clean = str_replace('TRX-', '', $id);
-            $payment = Payment::where('id', 'like', substr($clean, 0, 8).'%')->first();
+            $payment = Payment::whereRaw('CAST(id AS TEXT) LIKE ?', [substr($clean, 0, 8).'%'])->first();
         }
         if (! $payment) {
             $deal = TransactionWebController::getPipelineDeals()->firstWhere('id', $id);
@@ -209,8 +209,10 @@ class FinancialWebController extends Controller
                     'status' => 'completed',
                     'transaction_reference' => $deal['id'],
                 ]);
-            } else {
+            } elseif (Str::isUuid($id)) {
                 $payment = Payment::findOrFail($id);
+            } else {
+                abort(404, 'Transaction or financial receipt not found.');
             }
         }
 
@@ -313,12 +315,15 @@ class FinancialWebController extends Controller
 
     public function invoiceShow($id)
     {
-        $invoice = Invoice::with('user')->where('id', $id)->first();
+        $invoice = null;
+        if (Str::isUuid($id)) {
+            $invoice = Invoice::with('user')->where('id', $id)->first();
+        }
         if (! $invoice) {
             $cleanId = str_replace('INV-', '', strtoupper($id));
             $invoice = Invoice::with('user')
-                ->whereRaw('UPPER(SUBSTR(id, 1, 8)) = ?', [$cleanId])
-                ->orWhere('id', 'like', "%{$id}%")
+                ->whereRaw('UPPER(SUBSTR(CAST(id AS TEXT), 1, 8)) = ?', [$cleanId])
+                ->orWhereRaw('CAST(id AS TEXT) LIKE ?', ["%{$id}%"])
                 ->firstOrFail();
         }
 
@@ -353,11 +358,14 @@ class FinancialWebController extends Controller
 
     public function updateInvoiceDecision(Request $request, $id)
     {
-        $invoice = Invoice::where('id', $id)->first();
+        $invoice = null;
+        if (Str::isUuid($id)) {
+            $invoice = Invoice::where('id', $id)->first();
+        }
         if (! $invoice) {
             $cleanId = str_replace('INV-', '', strtoupper($id));
-            $invoice = Invoice::whereRaw('UPPER(SUBSTR(id, 1, 8)) = ?', [$cleanId])
-                ->orWhere('id', 'like', "%{$id}%")
+            $invoice = Invoice::whereRaw('UPPER(SUBSTR(CAST(id AS TEXT), 1, 8)) = ?', [$cleanId])
+                ->orWhereRaw('CAST(id AS TEXT) LIKE ?', ["%{$id}%"])
                 ->firstOrFail();
         }
 
