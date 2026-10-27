@@ -23,15 +23,15 @@ class CalendarSyncService
             if ($icsContent === null) {
                 $url = trim($sync->url);
                 if (str_starts_with($url, 'webcal://')) {
-                    $url = 'https://' . substr($url, 9);
+                    $url = 'https://'.substr($url, 9);
                 }
 
                 $response = Http::timeout(15)
                     ->withHeaders(['User-Agent' => 'SRMS-Calendar-Sync/1.0'])
                     ->get($url);
 
-                if (!$response->successful()) {
-                    throw new Exception("HTTP request failed with status: " . $response->status());
+                if (! $response->successful()) {
+                    throw new Exception('HTTP request failed with status: '.$response->status());
                 }
 
                 $icsContent = $response->body();
@@ -47,9 +47,9 @@ class CalendarSyncService
 
                 // Insert newly parsed events as external reservations
                 foreach ($events as $event) {
-                    $summary = !empty($event['summary']) ? $event['summary'] : 'External Reservation';
+                    $summary = ! empty($event['summary']) ? $event['summary'] : 'External Reservation';
                     $reason = "[Sync:{$sync->name} #{$sync->id}] {$summary}";
-                    if (!empty($event['uid'])) {
+                    if (! empty($event['uid'])) {
                         $reason .= " [UID:{$event['uid']}]";
                     }
 
@@ -72,7 +72,7 @@ class CalendarSyncService
 
             return count($events);
         } catch (Exception $e) {
-            Log::error("Failed to sync external calendar feed [{$sync->id}]: " . $e->getMessage());
+            Log::error("Failed to sync external calendar feed [{$sync->id}]: ".$e->getMessage());
 
             $sync->update([
                 'status' => 'failed',
@@ -139,7 +139,9 @@ class CalendarSyncService
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if (empty($line)) continue;
+            if (empty($line)) {
+                continue;
+            }
 
             if (preg_match('/^UID:(.+)$/i', $line, $m)) {
                 $data['uid'] = trim($m[1]);

@@ -11,6 +11,7 @@ use App\Domains\Transaction\Models\Payout;
 use App\Domains\Transaction\Models\PayoutAccount;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Payments\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -186,7 +187,7 @@ class FinancialWebController extends Controller
         abort(404, 'Transaction or financial receipt not found.');
     }
 
-    public function processRefund(Request $request, $id, \App\Services\Payments\PaymentService $paymentService)
+    public function processRefund(Request $request, $id, PaymentService $paymentService)
     {
         $payment = Payment::where('transaction_reference', $id)->first();
         if (! $payment && Str::isUuid($id)) {

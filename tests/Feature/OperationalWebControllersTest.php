@@ -2,6 +2,16 @@
 
 namespace Tests\Feature;
 
+use App\Domains\Transaction\Models\Invoice;
+use App\Domains\Transaction\Models\LedgerAccount;
+use App\Domains\Transaction\Models\Payment;
+use App\Domains\Transaction\Models\Payout;
+use App\Domains\Transaction\Models\PayoutAccount;
+use App\Models\DevelopmentUnit;
+use App\Models\HandoverRecord;
+use App\Models\Lease;
+use App\Models\MaintenanceTicket;
+use App\Models\Property;
 use App\Models\User;
 use Database\Seeders\AmenityAndFeatureSeeder;
 use Database\Seeders\AuthorizationSeeder;
@@ -15,6 +25,7 @@ use Database\Seeders\PublicDiscoverySeeder;
 use Database\Seeders\RentalSeeder;
 use Database\Seeders\TrustSafetySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class OperationalWebControllersTest extends TestCase
@@ -65,23 +76,23 @@ class OperationalWebControllersTest extends TestCase
 
     public function test_rental_application_and_lease_lifecycle(): void
     {
-        $property = \App\Models\Property::first();
+        $property = Property::first();
         $this->assertNotNull($property);
 
         // 1. Submit Application
         $appResponse = $this->actingAs($this->user)->post(route('dashboard.rental.applications.store'), [
-            'property_id'       => $property->id,
-            'user_id'           => $this->user->id,
-            'rent_amount'       => 28000,
-            'deposit_amount'    => 56000,
-            'start_date'        => now()->toDateString(),
-            'end_date'          => now()->addMonths(6)->toDateString(),
+            'property_id' => $property->id,
+            'user_id' => $this->user->id,
+            'rent_amount' => 28000,
+            'deposit_amount' => 56000,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addMonths(6)->toDateString(),
             'employment_status' => 'Software Engineer',
-            'annual_income'     => 600000,
+            'annual_income' => 600000,
         ]);
         $appResponse->assertRedirect(route('dashboard.rental.applications'));
 
-        $lease = \App\Models\Lease::where('property_id', $property->id)->where('status', 'pending')->first();
+        $lease = Lease::where('property_id', $property->id)->where('status', 'pending')->first();
         $this->assertNotNull($lease);
 
         // 2. Approve Application -> Should activate and create rent schedules
@@ -98,8 +109,8 @@ class OperationalWebControllersTest extends TestCase
 
         // 3. Record rent payment
         $payResponse = $this->actingAs($this->user)->post(route('dashboard.rental.leases.payments', $lease->id), [
-            'schedule_id'      => $firstSchedule->id,
-            'payment_method'   => 'Telebirr',
+            'schedule_id' => $firstSchedule->id,
+            'payment_method' => 'Telebirr',
             'reference_number' => 'TLB-2026-XYZ',
         ]);
         $payResponse->assertStatus(302);
@@ -108,12 +119,12 @@ class OperationalWebControllersTest extends TestCase
 
         // 4. Renew Lease
         $renewResponse = $this->actingAs($this->user)->post(route('dashboard.rental.leases.renew', $lease->id), [
-            'new_end_date'    => now()->addMonths(12)->toDateString(),
+            'new_end_date' => now()->addMonths(12)->toDateString(),
             'new_rent_amount' => 30000,
         ]);
         $renewResponse->assertStatus(302);
         $lease->refresh();
-        $this->assertEquals(30000, (float)$lease->rent_amount);
+        $this->assertEquals(30000, (float) $lease->rent_amount);
 
         // 5. View Lease Details Page
         $showResponse = $this->actingAs($this->user)->get(route('dashboard.rental.leases.show', $lease->id));
@@ -147,31 +158,31 @@ class OperationalWebControllersTest extends TestCase
     public function test_developer_sales_unit_reservation_and_handover_workflow(): void
     {
         // 1. Register buyer
-        $buyerEmail = 'test.buyer.' . uniqid() . '@example.com';
+        $buyerEmail = 'test.buyer.'.uniqid().'@example.com';
         $buyerResponse = $this->actingAs($this->user)->post(route('dashboard.sales.buyers.store'), [
-            'name'  => 'Tesfaye Alemu',
+            'name' => 'Tesfaye Alemu',
             'email' => $buyerEmail,
             'phone' => '+251912345678',
         ]);
         $buyerResponse->assertRedirect(route('dashboard.sales.buyers'));
-        $buyer = \App\Models\User::where('email', $buyerEmail)->first();
+        $buyer = User::where('email', $buyerEmail)->first();
         $this->assertNotNull($buyer);
 
         // 2. Find available unit
-        $unit = \App\Models\DevelopmentUnit::first();
+        $unit = DevelopmentUnit::first();
         $this->assertNotNull($unit);
 
         // 3. Make reservation
         $resResponse = $this->actingAs($this->user)->post(route('dashboard.sales.reservation.store', $unit->id), [
-            'buyer_id'       => $buyer->id,
+            'buyer_id' => $buyer->id,
             'deposit_amount' => 150000,
-            'notes'          => 'Client reserved 2BR on 4th floor.',
+            'notes' => 'Client reserved 2BR on 4th floor.',
         ]);
         $resResponse->assertRedirect(route('dashboard.sales.units.show', $unit->id));
         $unit->refresh();
         $this->assertEquals('reserved', $unit->status);
 
-        $handover = \App\Models\HandoverRecord::where('unit_id', $unit->id)->first();
+        $handover = HandoverRecord::where('unit_id', $unit->id)->first();
         $this->assertNotNull($handover);
 
         // 4. Update contract status to contracted
@@ -184,10 +195,10 @@ class OperationalWebControllersTest extends TestCase
 
         // 5. Complete Handover
         $handoverResponse = $this->actingAs($this->user)->post(route('dashboard.sales.handovers.complete', $handover->id), [
-            'plumbing'   => 1,
+            'plumbing' => 1,
             'electrical' => 1,
-            'finishes'   => 1,
-            'notes'      => 'All snagging items fixed. 3 master keys handed to buyer.',
+            'finishes' => 1,
+            'notes' => 'All snagging items fixed. 3 master keys handed to buyer.',
         ]);
         $handoverResponse->assertRedirect(route('dashboard.sales.handovers'));
 
@@ -198,7 +209,6 @@ class OperationalWebControllersTest extends TestCase
         $unit->refresh();
         $this->assertEquals('sold', $unit->status);
     }
-
 
     public function test_operations_pages_render_successfully(): void
     {
@@ -244,23 +254,23 @@ class OperationalWebControllersTest extends TestCase
 
     public function test_operations_ticket_lifecycle_and_actions(): void
     {
-        $property = \App\Models\Property::first();
+        $property = Property::first();
 
         // 1. Store ticket
         $createResponse = $this->actingAs($this->user)->post(route('dashboard.operations.tickets.store'), [
-            'title'       => 'Plumbing leak test',
+            'title' => 'Plumbing leak test',
             'description' => 'Water leaking beneath kitchen sink',
-            'priority'    => 'high',
+            'priority' => 'high',
             'property_id' => $property?->id,
         ]);
         $createResponse->assertRedirect(route('dashboard.operations.tickets'));
         $this->assertDatabaseHas('maintenance_tickets', [
-            'title'    => 'Plumbing leak test',
+            'title' => 'Plumbing leak test',
             'priority' => 'high',
-            'status'   => 'open',
+            'status' => 'open',
         ]);
 
-        $ticket = \App\Models\MaintenanceTicket::where('title', 'Plumbing leak test')->first();
+        $ticket = MaintenanceTicket::where('title', 'Plumbing leak test')->first();
         $this->assertNotNull($ticket);
 
         // 2. View ticket show page
@@ -270,13 +280,13 @@ class OperationalWebControllersTest extends TestCase
 
         // 3. Update status
         $statusResponse = $this->actingAs($this->user)->post(route('dashboard.operations.tickets.status', $ticket->id), [
-            'status'      => 'in_progress',
+            'status' => 'in_progress',
             'assigned_to' => $this->user->id,
         ]);
         $statusResponse->assertStatus(302);
         $this->assertDatabaseHas('maintenance_tickets', [
-            'id'          => $ticket->id,
-            'status'      => 'in_progress',
+            'id' => $ticket->id,
+            'status' => 'in_progress',
             'assigned_to' => $this->user->id,
         ]);
 
@@ -291,19 +301,19 @@ class OperationalWebControllersTest extends TestCase
 
     public function test_operations_cleaning_task_scheduling(): void
     {
-        $property = \App\Models\Property::first();
+        $property = Property::first();
 
         $response = $this->actingAs($this->user)->post(route('dashboard.operations.cleaning.store'), [
-            'property_id'         => $property->id,
+            'property_id' => $property->id,
             'assigned_cleaner_id' => $this->user->id,
-            'notes'               => 'Deep clean requested before guest arrival tomorrow.',
+            'notes' => 'Deep clean requested before guest arrival tomorrow.',
         ]);
 
         $response->assertRedirect(route('dashboard.operations.cleaning'));
         $this->assertDatabaseHas('cleaning_tasks', [
-            'property_id'         => $property->id,
+            'property_id' => $property->id,
             'assigned_cleaner_id' => $this->user->id,
-            'status'              => 'pending',
+            'status' => 'pending',
         ]);
     }
 
@@ -329,19 +339,19 @@ class OperationalWebControllersTest extends TestCase
     {
         // 1. Create an invoice
         $createInvoice = $this->actingAs($this->user)->post(route('dashboard.finance.invoices.store'), [
-            'user_id'  => $this->user->id,
-            'amount'   => 18500,
+            'user_id' => $this->user->id,
+            'amount' => 18500,
             'due_date' => now()->addDays(7)->toDateString(),
-            'notes'    => 'Commercial lease quarterly invoice',
+            'notes' => 'Commercial lease quarterly invoice',
         ]);
         $createInvoice->assertRedirect(route('dashboard.finance.invoices'));
         $this->assertDatabaseHas('invoices', [
             'user_id' => $this->user->id,
-            'amount'  => 18500,
-            'status'  => 'pending',
+            'amount' => 18500,
+            'status' => 'pending',
         ]);
 
-        $invoice = \App\Domains\Transaction\Models\Invoice::where('user_id', $this->user->id)
+        $invoice = Invoice::where('user_id', $this->user->id)
             ->where('amount', 18500)
             ->first();
         $this->assertNotNull($invoice);
@@ -349,41 +359,41 @@ class OperationalWebControllersTest extends TestCase
         // 2. Mark invoice paid
         $payInvoice = $this->actingAs($this->user)->post(route('dashboard.finance.invoices.pay', $invoice->id), [
             'payment_method' => 'bank_transfer',
-            'notes'          => 'Settled via CBE direct transfer',
+            'notes' => 'Settled via CBE direct transfer',
         ]);
         $payInvoice->assertRedirect(route('dashboard.finance.invoices'));
         $invoice->refresh();
         $this->assertEquals('paid', $invoice->status);
         $this->assertDatabaseHas('payments', [
             'user_id' => $this->user->id,
-            'amount'  => 18500,
-            'status'  => 'completed',
+            'amount' => 18500,
+            'status' => 'completed',
         ]);
 
         // 3. Request Payout
-        $payoutAccount = \App\Domains\Transaction\Models\PayoutAccount::firstOrCreate(
+        $payoutAccount = PayoutAccount::firstOrCreate(
             ['user_id' => $this->user->id],
             [
-                'bank_name'      => 'Commercial Bank of Ethiopia',
+                'bank_name' => 'Commercial Bank of Ethiopia',
                 'account_number' => '1000998877665',
-                'account_name'   => 'Abebe Tadesse',
-                'is_verified'    => true,
+                'account_name' => 'Abebe Tadesse',
+                'is_verified' => true,
             ]
         );
 
         $requestPayout = $this->actingAs($this->user)->post(route('dashboard.finance.payouts.store'), [
             'payout_account_id' => $payoutAccount->id,
-            'amount'            => 15000,
-            'notes'             => 'Landlord disbursement for Meskel Flower',
+            'amount' => 15000,
+            'notes' => 'Landlord disbursement for Meskel Flower',
         ]);
         $requestPayout->assertRedirect(route('dashboard.finance.payouts'));
         $this->assertDatabaseHas('payouts', [
             'payout_account_id' => $payoutAccount->id,
-            'amount'            => 15000,
-            'status'            => 'pending',
+            'amount' => 15000,
+            'status' => 'pending',
         ]);
 
-        $payout = \App\Domains\Transaction\Models\Payout::where('payout_account_id', $payoutAccount->id)
+        $payout = Payout::where('payout_account_id', $payoutAccount->id)
             ->where('amount', 15000)
             ->first();
         $this->assertNotNull($payout);
@@ -391,7 +401,7 @@ class OperationalWebControllersTest extends TestCase
         // 4. Process Payout
         $processPayout = $this->actingAs($this->user)->post(route('dashboard.finance.payouts.process', $payout->id), [
             'status' => 'completed',
-            'notes'  => 'Disbursement completed via core banking API',
+            'notes' => 'Disbursement completed via core banking API',
         ]);
         $processPayout->assertRedirect(route('dashboard.finance.payouts'));
         $payout->refresh();
@@ -399,15 +409,15 @@ class OperationalWebControllersTest extends TestCase
         $this->assertNotNull($payout->processed_at);
 
         // 5. Post double-entry manual ledger adjustment
-        $accounts = \App\Domains\Transaction\Models\LedgerAccount::take(2)->get();
+        $accounts = LedgerAccount::take(2)->get();
         $this->assertCount(2, $accounts);
 
         $storeLedger = $this->actingAs($this->user)->post(route('dashboard.finance.ledger.store'), [
-            'description'       => 'Manual escrow reclassification',
-            'debit_account_id'  => $accounts[0]->id,
+            'description' => 'Manual escrow reclassification',
+            'debit_account_id' => $accounts[0]->id,
             'credit_account_id' => $accounts[1]->id,
-            'amount'            => 8500,
-            'entry_date'        => now()->toDateString(),
+            'amount' => 8500,
+            'entry_date' => now()->toDateString(),
         ]);
         $storeLedger->assertRedirect(route('dashboard.finance.ledger'));
         $this->assertDatabaseHas('ledger_entries', [
@@ -415,26 +425,26 @@ class OperationalWebControllersTest extends TestCase
         ]);
         $this->assertDatabaseHas('ledger_entry_lines', [
             'ledger_account_id' => $accounts[0]->id,
-            'type'              => 'debit',
-            'amount'            => 8500,
+            'type' => 'debit',
+            'amount' => 8500,
         ]);
         $this->assertDatabaseHas('ledger_entry_lines', [
             'ledger_account_id' => $accounts[1]->id,
-            'type'              => 'credit',
-            'amount'            => 8500,
+            'type' => 'credit',
+            'amount' => 8500,
         ]);
     }
 
     public function test_transaction_refund_workflow(): void
     {
-        $payment = \App\Domains\Transaction\Models\Payment::create([
-            'user_id'               => $this->user->id,
-            'payable_type'          => \App\Domains\Transaction\Models\Invoice::class,
-            'payable_id'            => \Illuminate\Support\Str::uuid(),
-            'amount'                => 5000,
-            'currency'              => 'ETB',
-            'payment_method'        => 'bank_transfer',
-            'status'                => 'completed',
+        $payment = Payment::create([
+            'user_id' => $this->user->id,
+            'payable_type' => Invoice::class,
+            'payable_id' => Str::uuid(),
+            'amount' => 5000,
+            'currency' => 'ETB',
+            'payment_method' => 'bank_transfer',
+            'status' => 'completed',
             'transaction_reference' => 'PAY-TEST-REFUND',
         ]);
 
@@ -452,24 +462,24 @@ class OperationalWebControllersTest extends TestCase
 
     public function test_invoice_show_and_decision_workflow(): void
     {
-        $invoice = \App\Domains\Transaction\Models\Invoice::create([
-            'user_id'  => $this->user->id,
-            'amount'   => 12000,
+        $invoice = Invoice::create([
+            'user_id' => $this->user->id,
+            'amount' => 12000,
             'due_date' => now()->addDays(15)->format('Y-m-d'),
-            'status'   => 'pending',
-            'notes'    => 'Consulting & Escrow services for Property Alpha',
+            'status' => 'pending',
+            'notes' => 'Consulting & Escrow services for Property Alpha',
         ]);
 
         // 1. View Invoice Show details page
         $showResponse = $this->actingAs($this->user)->get(route('dashboard.finance.invoices.show', $invoice->id));
         $showResponse->assertStatus(200);
-        $showResponse->assertSee('INV-' . strtoupper(substr($invoice->id, 0, 8)));
+        $showResponse->assertSee('INV-'.strtoupper(substr($invoice->id, 0, 8)));
         $showResponse->assertSee('12,000.00 ETB');
         $showResponse->assertSee('Financial Decision Panel');
 
         // 2. Apply decision: Mark as PAID with payment settlement
         $decisionResponse = $this->actingAs($this->user)->post(route('dashboard.finance.invoices.decision', $invoice->id), [
-            'decision'       => 'pay',
+            'decision' => 'pay',
             'payment_method' => 'telebirr',
             'decision_notes' => 'Settled via Telebirr merchant transaction verified',
         ]);
@@ -481,24 +491,24 @@ class OperationalWebControllersTest extends TestCase
 
         // Verify payment record was created
         $this->assertDatabaseHas('payments', [
-            'payable_type'   => \App\Domains\Transaction\Models\Invoice::class,
-            'payable_id'     => $invoice->id,
-            'amount'         => 12000,
+            'payable_type' => Invoice::class,
+            'payable_id' => $invoice->id,
+            'amount' => 12000,
             'payment_method' => 'telebirr',
-            'status'         => 'completed',
+            'status' => 'completed',
         ]);
 
         // 3. Apply decision: Cancel / Void an invoice
-        $cancelInvoice = \App\Domains\Transaction\Models\Invoice::create([
-            'user_id'  => $this->user->id,
-            'amount'   => 4500,
+        $cancelInvoice = Invoice::create([
+            'user_id' => $this->user->id,
+            'amount' => 4500,
             'due_date' => now()->addDays(5)->format('Y-m-d'),
-            'status'   => 'pending',
-            'notes'    => 'Invoice to be voided',
+            'status' => 'pending',
+            'notes' => 'Invoice to be voided',
         ]);
 
         $cancelResponse = $this->actingAs($this->user)->post(route('dashboard.finance.invoices.decision', $cancelInvoice->id), [
-            'decision'       => 'cancel',
+            'decision' => 'cancel',
             'decision_notes' => 'Customer requested cancellation prior to processing',
         ]);
 
@@ -535,4 +545,3 @@ class OperationalWebControllersTest extends TestCase
         $dealShowResponse->assertSee(route('dashboard.finance.transactions.show', 'TRX-ADD-8821'));
     }
 }
-

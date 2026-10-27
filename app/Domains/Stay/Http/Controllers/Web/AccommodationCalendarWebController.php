@@ -69,7 +69,7 @@ class AccommodationCalendarWebController extends Controller
 
         return response($ics, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'inline; filename="listing-' . $accommodation->id . '.ics"',
+            'Content-Disposition' => 'inline; filename="listing-'.$accommodation->id.'.ics"',
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
         ]);
     }
@@ -136,7 +136,7 @@ class AccommodationCalendarWebController extends Controller
             abort(403);
         }
 
-        if (!$request->filled('url') && $request->filled('feed_url')) {
+        if (! $request->filled('url') && $request->filled('feed_url')) {
             $request->merge(['url' => $request->input('feed_url')]);
         }
 
@@ -147,7 +147,7 @@ class AccommodationCalendarWebController extends Controller
         ]);
 
         $url = trim($validated['url']);
-        if (!filter_var($url, FILTER_VALIDATE_URL) && !str_starts_with($url, 'webcal://')) {
+        if (! filter_var($url, FILTER_VALIDATE_URL) && ! str_starts_with($url, 'webcal://')) {
             return back()->withErrors(['url' => 'Please provide a valid webcal or https calendar feed URL.']);
         }
 
@@ -163,7 +163,7 @@ class AccommodationCalendarWebController extends Controller
             $count = $syncService->syncFeed($sync);
             $msg = "Connected '{$sync->name}' successfully. Imported {$count} external reservation(s).";
         } catch (\Exception $e) {
-            $msg = "Connected '{$sync->name}', but initial sync warning: " . $e->getMessage();
+            $msg = "Connected '{$sync->name}', but initial sync warning: ".$e->getMessage();
         }
 
         return back()->with('success', $msg);
@@ -179,9 +179,10 @@ class AccommodationCalendarWebController extends Controller
 
         try {
             $count = $syncService->syncFeed($sync);
+
             return back()->with('success', "Feed '{$sync->name}' synchronized successfully ({$count} reservations updated).");
         } catch (\Exception $e) {
-            return back()->withErrors(['sync' => "Sync error: " . $e->getMessage()]);
+            return back()->withErrors(['sync' => 'Sync error: '.$e->getMessage()]);
         }
     }
 

@@ -31,8 +31,9 @@ class SyncExternalCalendarsCommand extends Command
 
         if ($feedId) {
             $sync = ExternalCalendarSync::find($feedId);
-            if (!$sync) {
+            if (! $sync) {
                 $this->error("External calendar sync feed [{$feedId}] not found.");
+
                 return 1;
             }
 
@@ -40,14 +41,16 @@ class SyncExternalCalendarsCommand extends Command
             try {
                 $count = $service->syncFeed($sync);
                 $this->info("✓ Successfully synced {$count} events for {$sync->name}.");
+
                 return 0;
             } catch (\Exception $e) {
-                $this->error("✗ Failed to sync feed: " . $e->getMessage());
+                $this->error('✗ Failed to sync feed: '.$e->getMessage());
+
                 return 1;
             }
         }
 
-        $this->info("Synchronizing all active external calendar feeds...");
+        $this->info('Synchronizing all active external calendar feeds...');
         $total = $service->syncAllActive();
         $this->info("✓ Completed external calendar synchronization. Total events updated: {$total}.");
 

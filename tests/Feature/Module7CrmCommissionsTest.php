@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Domains\CRM\Models\Commission;
 use App\Domains\CRM\Models\CommissionRule;
+use App\Domains\CRM\Models\CrmActivity;
 use App\Domains\CRM\Models\Lead;
 use App\Domains\CRM\Services\CommissionCalculatorService;
 use App\Domains\CRM\Services\LeadAssignmentService;
@@ -225,7 +226,7 @@ class Module7CrmCommissionsTest extends TestCase
         $taskResponse->assertRedirect('/dashboard/crm/tasks');
         $taskResponse->assertSessionHas('success');
 
-        $activity = \App\Domains\CRM\Models\CrmActivity::where('lead_id', $lead->id)->first();
+        $activity = CrmActivity::where('lead_id', $lead->id)->first();
         $this->assertNotNull($activity);
         $this->assertNull($activity->completed_at);
 
@@ -318,4 +319,3 @@ class Module7CrmCommissionsTest extends TestCase
         $createClientResponse->assertSessionHas('success');
     }
 }
-

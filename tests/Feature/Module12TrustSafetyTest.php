@@ -10,6 +10,7 @@ use App\Domains\Property\Models\PropertyMedia;
 use App\Domains\Trust\Models\Dispute;
 use App\Domains\Trust\Models\DisputeEvidence;
 use App\Domains\Trust\Models\UserFlag;
+use App\Domains\Trust\Models\Verification;
 use App\Domains\Trust\Services\FraudDetectionService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -379,7 +380,7 @@ class Module12TrustSafetyTest extends TestCase
 
     public function test_trust_verifications_queue_renders_and_reviews_records(): void
     {
-        $verification = \App\Domains\Trust\Models\Verification::create([
+        $verification = Verification::create([
             'user_id' => $this->userA->id,
             'type' => 'identity',
             'status' => 'pending_review',

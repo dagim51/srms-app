@@ -31,6 +31,12 @@ parameters:
 			path: app/Console/Commands/GenerateRentInvoicesCommand.php
 
 		-
+			message: '#^Call to static method find\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Console/Commands/SyncExternalCalendarsCommand.php
+
+		-
 			message: '#^Relation ''actor'' is not found in App\\Domains\\Administration\\Models\\AuditLog model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
@@ -39,7 +45,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 3
+			count: 1
 			path: app/Domains/Administration/Http/Controllers/Web/AdminWebController.php
 
 		-
@@ -171,7 +177,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 5
 			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
 
 		-
@@ -181,7 +187,19 @@ parameters:
 			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Domains\\CRM\\Models\\Lead\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Domains\\CRM\\Models\\CrmActivity\>\:\:through\(\) contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 1
 			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
@@ -207,7 +225,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 6
+			count: 7
 			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
 
 		-
@@ -217,9 +235,21 @@ parameters:
 			path: app/Domains/CRM/Http/Controllers/Web/CrmWebController.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Development\\Models\\DevelopmentUnit\:\:\$handoverRecord\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
+			message: '#^Call to static method updateOrCreate\(\) on an unknown class App\\Models\\HandoverRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
+
+		-
 			message: '#^Call to static method with\(\) on an unknown class App\\Models\\HandoverRecord\.$#'
 			identifier: class.notFound
-			count: 2
+			count: 3
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
@@ -231,7 +261,7 @@ parameters:
 		-
 			message: '#^Relation ''handoverRecord'' is not found in App\\Domains\\Development\\Models\\DevelopmentUnit model\.$#'
 			identifier: larastan.relationExistence
-			count: 1
+			count: 3
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
@@ -255,7 +285,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 6
+			count: 7
 			path: app/Domains/Development/Http/Controllers/Web/DeveloperSalesWebController.php
 
 		-
@@ -789,7 +819,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$schedules\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 3
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -802,6 +832,12 @@ parameters:
 			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Rental\\Models\\Lease\>\:\:\$schedules\.$#'
 			identifier: property.notFound
 			count: 1
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Rental\\Models\\Lease\>\:\:\$tenantProfile\.$#'
+			identifier: property.notFound
+			count: 2
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -825,7 +861,7 @@ parameters:
 		-
 			message: '#^Relation ''tenantProfile'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
 			identifier: larastan.relationExistence
-			count: 10
+			count: 11
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -901,6 +937,54 @@ parameters:
 			path: app/Domains/Stay/Http/Controllers/Api/V1/ReservationController.php
 
 		-
+			message: '#^Access to property \$accommodation_id on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Access to property \$name on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Call to method delete\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Call to static method create\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Parameter \$sync of method App\\Domains\\Stay\\Http\\Controllers\\Web\\AccommodationCalendarWebController\:\:destroySync\(\) has invalid type App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
+			message: '#^Parameter \$sync of method App\\Domains\\Stay\\Http\\Controllers\\Web\\AccommodationCalendarWebController\:\:refreshSync\(\) has invalid type App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Http/Controllers/Web/AccommodationCalendarWebController.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$price\.$#'
 			identifier: property.notFound
 			count: 1
@@ -911,6 +995,72 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Domains/Stay/Models/Accommodation.php
+
+		-
+			message: '#^Class App\\Models\\ExternalCalendarSync not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Models/Accommodation.php
+
+		-
+			message: '#^Parameter \#1 \$related of method Illuminate\\Database\\Eloquent\\Model\:\:hasMany\(\) expects class\-string\<Illuminate\\Database\\Eloquent\\Model\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Stay/Models/Accommodation.php
+
+		-
+			message: '#^Access to property \$accommodation_id on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Access to property \$id on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 3
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Access to property \$name on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Access to property \$url on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Call to method update\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Parameter \$sync of method App\\Domains\\Stay\\Services\\CalendarSyncService\:\:syncFeed\(\) has invalid type App\\Models\\ExternalCalendarSync\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Stay/Services/ICalGeneratorService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Stay/Services/ICalGeneratorService.php
 
 		-
 			message: '#^Relation ''signatories'' is not found in App\\Domains\\Transaction\\Models\\Contract model\.$#'
@@ -1111,6 +1261,36 @@ parameters:
 			path: app/Domains/Transaction/Http/Controllers/Web/DocumentWebController.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$account_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$account_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$bank_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Pagination\\AbstractPaginator\<int,App\\Domains\\Transaction\\Models\\Payout\>\:\:through\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
 			message: '#^Relation ''account'' is not found in App\\Domains\\Transaction\\Models\\LedgerEntryLine model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
@@ -1125,17 +1305,41 @@ parameters:
 		-
 			message: '#^Relation ''user'' is not found in App\\Domains\\Transaction\\Models\\Invoice model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 4
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
 
 		-
 			message: '#^Relation ''user'' is not found in App\\Domains\\Transaction\\Models\\Payment model\.$#'
 			identifier: larastan.relationExistence
-			count: 5
+			count: 7
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>account_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>account_number" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>bank_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>description" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
@@ -1149,7 +1353,7 @@ parameters:
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 3
+			count: 5
 			path: app/Domains/Transaction/Http/Controllers/Web/FinancialWebController.php
 
 		-
@@ -1193,6 +1397,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Domains/Transaction/Models/DocumentVersion.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Domains\\Identity\\Models\\User and ''hasPermissionTo'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Domains/Transaction/Policies/PaymentPolicy.php
 
 		-
 			message: '#^Relation ''assignedModerator'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
@@ -1287,13 +1497,13 @@ parameters:
 		-
 			message: '#^Relation ''listing'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 4
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Relation ''reporter'' is not found in App\\Domains\\Listing\\Models\\ListingFlag model\.$#'
 			identifier: larastan.relationExistence
-			count: 2
+			count: 4
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
@@ -1303,15 +1513,21 @@ parameters:
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 6
+			count: 8
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 1
+			count: 2
 			path: app/Domains/Trust/Http/Controllers/Web/TrustWebController.php
 
 		-
@@ -6117,7 +6333,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\AccommodationCalendarWebController not found\.$#'
 			identifier: class.notFound
-			count: 3
+			count: 7
 			path: routes/web.php
 
 		-
@@ -6183,7 +6399,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\CrmWebController not found\.$#'
 			identifier: class.notFound
-			count: 7
+			count: 16
 			path: routes/web.php
 
 		-
@@ -6195,7 +6411,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\DeveloperSalesWebController not found\.$#'
 			identifier: class.notFound
-			count: 8
+			count: 12
 			path: routes/web.php
 
 		-
@@ -6219,7 +6435,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\FinancialWebController not found\.$#'
 			identifier: class.notFound
-			count: 5
+			count: 14
 			path: routes/web.php
 
 		-
@@ -6237,7 +6453,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\ListingController not found\.$#'
 			identifier: class.notFound
-			count: 8
+			count: 9
 			path: routes/web.php
 
 		-
@@ -6261,7 +6477,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\NotificationWebController not found\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 6
 			path: routes/web.php
 
 		-
@@ -6297,7 +6513,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\RentalWebController not found\.$#'
 			identifier: class.notFound
-			count: 7
+			count: 13
 			path: routes/web.php
 
 		-
@@ -6321,7 +6537,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\TrustWebController not found\.$#'
 			identifier: class.notFound
-			count: 6
+			count: 10
 			path: routes/web.php
 
 		-
@@ -6587,6 +6803,12 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: tests/Feature/Module5StayOperationsTest.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\HandoverRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/OperationalWebControllersTest.php
 
 		-
 			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Commission\.$#'

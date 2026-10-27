@@ -4,7 +4,6 @@ namespace App\Domains\Notification\Http\Controllers\Web;
 
 use App\Domains\Notification\Models\NotificationPreference;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Auth;
@@ -81,22 +80,22 @@ class NotificationWebController extends Controller
         } elseif ($currentFilter === 'deals') {
             $query->where(function ($q) {
                 $q->where('type', 'like', '%Milestone%')
-                  ->orWhere('type', 'like', '%Escrow%')
-                  ->orWhere('type', 'like', '%Deal%')
-                  ->orWhere('type', 'like', '%Listing%');
+                    ->orWhere('type', 'like', '%Escrow%')
+                    ->orWhere('type', 'like', '%Deal%')
+                    ->orWhere('type', 'like', '%Listing%');
             });
         } elseif ($currentFilter === 'inquiries') {
             $query->where(function ($q) {
                 $q->where('type', 'like', '%Inquiry%')
-                  ->orWhere('type', 'like', '%Message%')
-                  ->orWhere('type', 'like', '%Lead%');
+                    ->orWhere('type', 'like', '%Message%')
+                    ->orWhere('type', 'like', '%Lead%');
             });
         } elseif ($currentFilter === 'system') {
             $query->where(function ($q) {
                 $q->where('type', 'like', '%Security%')
-                  ->orWhere('type', 'like', '%Login%')
-                  ->orWhere('type', 'like', '%System%')
-                  ->orWhere('type', 'like', '%Password%');
+                    ->orWhere('type', 'like', '%Login%')
+                    ->orWhere('type', 'like', '%System%')
+                    ->orWhere('type', 'like', '%Password%');
             });
         }
 
@@ -107,20 +106,20 @@ class NotificationWebController extends Controller
             'unread' => $user->unreadNotifications()->count(),
             'deals' => $user->notifications()->where(function ($q) {
                 $q->where('type', 'like', '%Milestone%')
-                  ->orWhere('type', 'like', '%Escrow%')
-                  ->orWhere('type', 'like', '%Deal%')
-                  ->orWhere('type', 'like', '%Listing%');
+                    ->orWhere('type', 'like', '%Escrow%')
+                    ->orWhere('type', 'like', '%Deal%')
+                    ->orWhere('type', 'like', '%Listing%');
             })->count(),
             'inquiries' => $user->notifications()->where(function ($q) {
                 $q->where('type', 'like', '%Inquiry%')
-                  ->orWhere('type', 'like', '%Message%')
-                  ->orWhere('type', 'like', '%Lead%');
+                    ->orWhere('type', 'like', '%Message%')
+                    ->orWhere('type', 'like', '%Lead%');
             })->count(),
             'system' => $user->notifications()->where(function ($q) {
                 $q->where('type', 'like', '%Security%')
-                  ->orWhere('type', 'like', '%Login%')
-                  ->orWhere('type', 'like', '%System%')
-                  ->orWhere('type', 'like', '%Password%');
+                    ->orWhere('type', 'like', '%Login%')
+                    ->orWhere('type', 'like', '%System%')
+                    ->orWhere('type', 'like', '%Password%');
             })->count(),
         ];
 
@@ -213,4 +212,3 @@ class NotificationWebController extends Controller
         return redirect()->route('dashboard.preferences')->with('success', __('Notification preferences saved.'));
     }
 }
-

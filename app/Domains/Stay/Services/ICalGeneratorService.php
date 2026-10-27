@@ -16,7 +16,7 @@ class ICalGeneratorService
     {
         $accommodation->loadMissing(['property']);
 
-        $calName = 'SRMS - ' . ($accommodation->property?->title ?? 'Accommodation ' . substr($accommodation->id, 0, 8));
+        $calName = 'SRMS - '.($accommodation->property?->title ?? 'Accommodation '.substr($accommodation->id, 0, 8));
         $nowStamp = Carbon::now('UTC')->format('Ymd\THis\Z');
 
         $lines = [
@@ -25,7 +25,7 @@ class ICalGeneratorService
             'PRODID:-//SRMS//Accommodation Calendar 1.0//EN',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            'X-WR-CALNAME:' . $this->escapeString($calName),
+            'X-WR-CALNAME:'.$this->escapeString($calName),
             'X-WR-TIMEZONE:UTC',
         ];
 
@@ -37,16 +37,16 @@ class ICalGeneratorService
         foreach ($bookings as $booking) {
             $startDate = Carbon::parse($booking->check_in_date)->format('Ymd');
             $endDate = Carbon::parse($booking->check_out_date)->format('Ymd');
-            $uid = 'srms-booking-' . $booking->id . '@srms.et';
-            $summary = 'Reserved (SRMS-' . strtoupper(substr($booking->id, 0, 8)) . ')';
+            $uid = 'srms-booking-'.$booking->id.'@srms.et';
+            $summary = 'Reserved (SRMS-'.strtoupper(substr($booking->id, 0, 8)).')';
 
             $lines[] = 'BEGIN:VEVENT';
-            $lines[] = 'UID:' . $uid;
-            $lines[] = 'DTSTAMP:' . $nowStamp;
-            $lines[] = 'DTSTART;VALUE=DATE:' . $startDate;
-            $lines[] = 'DTEND;VALUE=DATE:' . $endDate;
-            $lines[] = 'SUMMARY:' . $this->escapeString($summary);
-            $lines[] = 'DESCRIPTION:' . $this->escapeString('Confirmed Accommodation Booking on SRMS Platform');
+            $lines[] = 'UID:'.$uid;
+            $lines[] = 'DTSTAMP:'.$nowStamp;
+            $lines[] = 'DTSTART;VALUE=DATE:'.$startDate;
+            $lines[] = 'DTEND;VALUE=DATE:'.$endDate;
+            $lines[] = 'SUMMARY:'.$this->escapeString($summary);
+            $lines[] = 'DESCRIPTION:'.$this->escapeString('Confirmed Accommodation Booking on SRMS Platform');
             $lines[] = 'STATUS:CONFIRMED';
             $lines[] = 'END:VEVENT';
         }
@@ -58,24 +58,24 @@ class ICalGeneratorService
             $startDate = Carbon::parse($avail->start_date)->format('Ymd');
             // In RFC 5545, DTEND with VALUE=DATE is non-inclusive, so add 1 day to end_date
             $endDate = Carbon::parse($avail->end_date)->addDay()->format('Ymd');
-            $uid = 'srms-avail-' . $avail->id . '@srms.et';
+            $uid = 'srms-avail-'.$avail->id.'@srms.et';
 
             $summary = $avail->reason ?: ($avail->type === 'external_reservation' ? 'External Reservation' : 'Blocked (Unavailable)');
 
             $lines[] = 'BEGIN:VEVENT';
-            $lines[] = 'UID:' . $uid;
-            $lines[] = 'DTSTAMP:' . $nowStamp;
-            $lines[] = 'DTSTART;VALUE=DATE:' . $startDate;
-            $lines[] = 'DTEND;VALUE=DATE:' . $endDate;
-            $lines[] = 'SUMMARY:' . $this->escapeString($summary);
-            $lines[] = 'DESCRIPTION:' . $this->escapeString('Dates unavailable on SRMS Platform');
+            $lines[] = 'UID:'.$uid;
+            $lines[] = 'DTSTAMP:'.$nowStamp;
+            $lines[] = 'DTSTART;VALUE=DATE:'.$startDate;
+            $lines[] = 'DTEND;VALUE=DATE:'.$endDate;
+            $lines[] = 'SUMMARY:'.$this->escapeString($summary);
+            $lines[] = 'DESCRIPTION:'.$this->escapeString('Dates unavailable on SRMS Platform');
             $lines[] = 'STATUS:CONFIRMED';
             $lines[] = 'END:VEVENT';
         }
 
         $lines[] = 'END:VCALENDAR';
 
-        return implode("\r\n", $lines) . "\r\n";
+        return implode("\r\n", $lines)."\r\n";
     }
 
     protected function escapeString(string $text): string

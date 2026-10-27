@@ -120,7 +120,7 @@ class ExternalCalendarSyncTest extends TestCase
 
     public function test_host_can_connect_and_sync_external_ical_feed(): void
     {
-        $sampleIcal = <<<ICAL
+        $sampleIcal = <<<'ICAL'
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Airbnb Inc//Hosting Calendar//EN
@@ -175,7 +175,7 @@ ICAL;
             'events_count' => 0,
         ]);
 
-        $sampleIcal = <<<ICAL
+        $sampleIcal = <<<'ICAL'
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
@@ -257,7 +257,7 @@ ICAL;
             'status' => 'active',
         ]);
 
-        $sampleIcal = <<<ICAL
+        $sampleIcal = <<<'ICAL'
 BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Airbnb Inc//Calendar//EN

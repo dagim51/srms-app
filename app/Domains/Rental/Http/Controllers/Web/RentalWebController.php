@@ -25,7 +25,7 @@ class RentalWebController extends Controller
             'total_tenants' => $totalTenants,
             'active_leases' => $activeLeases,
             'pending_applications' => $pendingApps,
-            'overdue_rent' => number_format($overdueRentSum) . ' ETB',
+            'overdue_rent' => number_format($overdueRentSum).' ETB',
         ];
 
         $recentApplications = Lease::with(['tenantProfile.user', 'property'])
@@ -35,7 +35,7 @@ class RentalWebController extends Controller
             ->map(function ($l, $idx) {
                 return [
                     'id' => $l->id,
-                    'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #' . ($idx + 1),
+                    'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #'.($idx + 1),
                     'unit' => $l->property?->title ?? 'Apartment Unit',
                     'date' => $l->created_at ? $l->created_at->format('Y-m-d') : now()->format('Y-m-d'),
                     'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : ($l->status === 'rejected' ? 'rejected' : 'under_review')),
@@ -71,9 +71,9 @@ class RentalWebController extends Controller
         $applications = $query->paginate(20)->withQueryString()->through(function ($l, $idx) {
             return [
                 'id' => $l->id,
-                'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #' . ($idx + 1),
+                'applicant' => $l->tenantProfile?->user?->name ?? 'Applicant #'.($idx + 1),
                 'unit' => $l->property?->title ?? 'Apartment Unit',
-                'monthly_rent' => number_format($l->rent_amount ?? 0) . ' ETB',
+                'monthly_rent' => number_format($l->rent_amount ?? 0).' ETB',
                 'date' => $l->created_at ? $l->created_at->format('Y-m-d') : now()->format('Y-m-d'),
                 'status' => $l->status === 'active' ? 'approved' : ($l->status === 'pending' ? 'pending' : ($l->status === 'rejected' ? 'rejected' : 'under_review')),
             ];
@@ -191,7 +191,7 @@ class RentalWebController extends Controller
                 'phone' => $user?->phone ?? '—',
                 'lease_end' => $l->end_date ?? '—',
                 'status' => $l->status ?? 'active',
-                'balance' => number_format($unpaid) . ' ETB',
+                'balance' => number_format($unpaid).' ETB',
             ];
         });
 
@@ -217,14 +217,14 @@ class RentalWebController extends Controller
             'email' => $user->email,
             'lease_end' => $lease?->end_date ?? '—',
             'status' => $lease?->status ?? 'inactive',
-            'balance' => number_format($unpaid) . ' ETB',
+            'balance' => number_format($unpaid).' ETB',
         ];
 
         $payments = ($lease && $lease->schedules) ? $lease->schedules->where('status', 'paid')->map(function ($s) {
             return [
-                'id' => 'RCP-' . strtoupper(substr($s->id, 0, 8)),
+                'id' => 'RCP-'.strtoupper(substr($s->id, 0, 8)),
                 'date' => $s->due_date,
-                'amount' => number_format($s->amount) . ' ETB',
+                'amount' => number_format($s->amount).' ETB',
                 'method' => 'Bank / Telebirr',
             ];
         })->values()->toArray() : [];
@@ -259,7 +259,7 @@ class RentalWebController extends Controller
                 'unit' => $l->property?->title ?? 'Unit',
                 'start_date' => $l->start_date ?? '—',
                 'end_date' => $l->end_date ?? '—',
-                'rent' => number_format($l->rent_amount ?? 0) . ' ETB',
+                'rent' => number_format($l->rent_amount ?? 0).' ETB',
                 'status' => $l->status ?? 'active',
             ];
         });
@@ -322,8 +322,8 @@ class RentalWebController extends Controller
             'unit' => $dbLease->property?->title ?? 'Apartment Unit',
             'start_date' => $dbLease->start_date ?? '—',
             'end_date' => $dbLease->end_date ?? '—',
-            'rent' => number_format($dbLease->rent_amount ?? 0) . ' ETB',
-            'deposit' => number_format($dbLease->deposit_amount ?? 0) . ' ETB',
+            'rent' => number_format($dbLease->rent_amount ?? 0).' ETB',
+            'deposit' => number_format($dbLease->deposit_amount ?? 0).' ETB',
             'status' => $dbLease->status ?? 'active',
             'payment_frequency' => 'Monthly',
         ];
@@ -333,7 +333,7 @@ class RentalWebController extends Controller
                 'id' => $s->id,
                 'month' => date('M Y', strtotime($s->due_date)),
                 'due_date' => $s->due_date,
-                'amount' => number_format($s->amount) . ' ETB',
+                'amount' => number_format($s->amount).' ETB',
                 'status' => $s->status,
                 'paid_date' => $s->status === 'paid' ? ($s->updated_at ? $s->updated_at->format('Y-m-d') : $s->due_date) : null,
             ];
@@ -347,7 +347,7 @@ class RentalWebController extends Controller
         $lease = Lease::findOrFail($id);
 
         $data = $request->validate([
-            'new_end_date' => 'required|date|after:' . $lease->end_date,
+            'new_end_date' => 'required|date|after:'.$lease->end_date,
             'new_rent_amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -406,7 +406,7 @@ class RentalWebController extends Controller
                 'amount' => $schedule->amount,
                 'due_date' => $schedule->due_date,
                 'status' => 'paid',
-                'notes' => 'Rent payment via ' . $data['payment_method'] . ($data['reference_number'] ? ' (Ref: ' . $data['reference_number'] . ')' : ''),
+                'notes' => 'Rent payment via '.$data['payment_method'].($data['reference_number'] ? ' (Ref: '.$data['reference_number'].')' : ''),
             ]);
         }
 
@@ -433,10 +433,10 @@ class RentalWebController extends Controller
 
         $payments = $query->paginate(20)->withQueryString()->through(function ($s) {
             return [
-                'id' => 'REC-' . strtoupper(substr($s->id, 0, 8)),
+                'id' => 'REC-'.strtoupper(substr($s->id, 0, 8)),
                 'tenant' => $s->lease?->tenantProfile?->user?->name ?? 'Tenant',
                 'unit' => $s->lease?->property?->title ?? 'Apartment Unit',
-                'amount' => number_format($s->amount ?? 0) . ' ETB',
+                'amount' => number_format($s->amount ?? 0).' ETB',
                 'date' => $s->due_date,
                 'method' => 'Bank Transfer / Telebirr',
                 'status' => $s->status === 'paid' ? 'completed' : ($s->status === 'overdue' ? 'overdue' : 'pending'),

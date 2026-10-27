@@ -13,16 +13,16 @@ class OperationsWebController extends Controller
 {
     public function index()
     {
-        $openTickets     = MaintenanceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count();
-        $overdueTasks    = CleaningTask::where('status', 'pending')->count();
+        $openTickets = MaintenanceTicket::whereIn('status', ['open', 'assigned', 'in_progress'])->count();
+        $overdueTasks = CleaningTask::where('status', 'pending')->count();
         $cleaningPending = CleaningTask::whereIn('status', ['pending', 'assigned'])->count();
-        $staffCount      = User::count();
+        $staffCount = User::count();
 
         $stats = [
-            'open_tickets'     => $openTickets,
-            'overdue_tasks'    => $overdueTasks,
+            'open_tickets' => $openTickets,
+            'overdue_tasks' => $overdueTasks,
             'cleaning_pending' => $cleaningPending,
-            'staff_active'     => $staffCount,
+            'staff_active' => $staffCount,
         ];
 
         $recentTickets = MaintenanceTicket::with(['property', 'assignee'])
@@ -31,12 +31,12 @@ class OperationsWebController extends Controller
             ->get()
             ->map(function ($t) {
                 return [
-                    'id'       => $t->id,
-                    'label'    => 'TKT-' . strtoupper(substr($t->id, 0, 8)),
-                    'unit'     => $t->property?->title ?? 'Apartment Unit',
-                    'issue'    => $t->title ?? 'Maintenance Issue',
+                    'id' => $t->id,
+                    'label' => 'TKT-'.strtoupper(substr($t->id, 0, 8)),
+                    'unit' => $t->property?->title ?? 'Apartment Unit',
+                    'issue' => $t->title ?? 'Maintenance Issue',
                     'priority' => $t->priority ?? 'medium',
-                    'status'   => $t->status ?? 'open',
+                    'status' => $t->status ?? 'open',
                     'assigned' => $t->assignee?->name ?? 'Unassigned',
                 ];
             })->toArray();
@@ -64,20 +64,20 @@ class OperationsWebController extends Controller
                 $sub->where('title', 'like', "%{$q}%")
                     ->orWhere('description', 'like', "%{$q}%")
                     ->orWhereHas('property', fn ($p) => $p->where('title', 'like', "%{$q}%"))
-                    ->orWhereHas('assignee',  fn ($u) => $u->where('name',  'like', "%{$q}%"));
+                    ->orWhereHas('assignee', fn ($u) => $u->where('name', 'like', "%{$q}%"));
             });
         }
 
         $tickets = $query->paginate(20)->withQueryString()->through(function ($t) {
             return [
-                'id'       => $t->id,
-                'label'    => 'TKT-' . strtoupper(substr($t->id, 0, 8)),
-                'unit'     => $t->property?->title ?? 'Unit',
-                'issue'    => $t->title ?? 'Issue',
+                'id' => $t->id,
+                'label' => 'TKT-'.strtoupper(substr($t->id, 0, 8)),
+                'unit' => $t->property?->title ?? 'Unit',
+                'issue' => $t->title ?? 'Issue',
                 'priority' => $t->priority ?? 'medium',
-                'status'   => $t->status ?? 'open',
+                'status' => $t->status ?? 'open',
                 'assigned' => $t->assignee?->name ?? 'Unassigned',
-                'date'     => $t->created_at ? $t->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+                'date' => $t->created_at ? $t->created_at->format('Y-m-d') : now()->format('Y-m-d'),
             ];
         });
 
@@ -91,18 +91,18 @@ class OperationsWebController extends Controller
         $dbTicket = MaintenanceTicket::with(['property', 'reporter', 'assignee'])->findOrFail($id);
 
         $ticket = [
-            'id'             => $dbTicket->id,
-            'label'          => 'TKT-' . strtoupper(substr($dbTicket->id, 0, 8)),
-            'unit'           => $dbTicket->property?->title ?? 'Apartment Unit',
-            'issue'          => $dbTicket->title,
-            'description'    => $dbTicket->description ?? 'No description provided.',
-            'priority'       => $dbTicket->priority ?? 'medium',
-            'status'         => $dbTicket->status ?? 'open',
-            'assigned'       => $dbTicket->assignee?->name ?? 'Unassigned',
-            'assigned_to'    => $dbTicket->assigned_to,
-            'reporter'       => $dbTicket->reporter?->name ?? 'Property Occupant',
+            'id' => $dbTicket->id,
+            'label' => 'TKT-'.strtoupper(substr($dbTicket->id, 0, 8)),
+            'unit' => $dbTicket->property?->title ?? 'Apartment Unit',
+            'issue' => $dbTicket->title,
+            'description' => $dbTicket->description ?? 'No description provided.',
+            'priority' => $dbTicket->priority ?? 'medium',
+            'status' => $dbTicket->status ?? 'open',
+            'assigned' => $dbTicket->assignee?->name ?? 'Unassigned',
+            'assigned_to' => $dbTicket->assigned_to,
+            'reporter' => $dbTicket->reporter?->name ?? 'Property Occupant',
             'reporter_phone' => $dbTicket->reporter?->phone ?? 'N/A',
-            'created_at'     => $dbTicket->created_at
+            'created_at' => $dbTicket->created_at
                 ? $dbTicket->created_at->format('Y-m-d h:i A')
                 : now()->format('Y-m-d h:i A'),
         ];
@@ -120,21 +120,21 @@ class OperationsWebController extends Controller
     {
         $tasks = CleaningTask::with(['property', 'cleaner'])->latest()->paginate(20)->through(function ($c) {
             return [
-                'id'       => $c->id,
-                'label'    => 'CLN-' . strtoupper(substr($c->id, 0, 8)),
-                'unit'     => $c->property?->title ?? 'Apartment Unit',
-                'type'     => 'Turnover Cleaning',
-                'date'     => $c->created_at ? $c->created_at->format('Y-m-d') : now()->format('Y-m-d'),
-                'status'   => $c->status ?? 'pending',
+                'id' => $c->id,
+                'label' => 'CLN-'.strtoupper(substr($c->id, 0, 8)),
+                'unit' => $c->property?->title ?? 'Apartment Unit',
+                'type' => 'Turnover Cleaning',
+                'date' => $c->created_at ? $c->created_at->format('Y-m-d') : now()->format('Y-m-d'),
+                'status' => $c->status ?? 'pending',
                 'assigned' => $c->cleaner?->name ?? 'Cleaning Crew',
             ];
         });
 
         $cleaningStats = [
-            'pending_checkouts'   => CleaningTask::where('status', 'pending')->count(),
-            'active_cleaning'     => CleaningTask::where('status', 'in_progress')->count(),
+            'pending_checkouts' => CleaningTask::where('status', 'pending')->count(),
+            'active_cleaning' => CleaningTask::where('status', 'in_progress')->count(),
             'awaiting_inspection' => CleaningTask::where('status', 'inspection')->count(),
-            'units_ready'         => CleaningTask::where('status', 'ready')->count(),
+            'units_ready' => CleaningTask::where('status', 'ready')->count(),
         ];
 
         $properties = Property::orderBy('title')->get(['id', 'title']);
@@ -154,12 +154,13 @@ class OperationsWebController extends Controller
                 ->where('status', 'completed')
                 ->whereDate('updated_at', today())
                 ->count();
+
             return [
-                'id'              => $u->id,
-                'name'            => $u->name,
-                'role'            => 'Operations Staff',
-                'status'          => $u->status ?? 'active',
-                'active_tasks'    => $activeTasks,
+                'id' => $u->id,
+                'name' => $u->name,
+                'role' => 'Operations Staff',
+                'status' => $u->status ?? 'active',
+                'active_tasks' => $activeTasks,
                 'completed_today' => $completedToday,
             ];
         });
@@ -172,14 +173,14 @@ class OperationsWebController extends Controller
     public function storeTicket(Request $request)
     {
         $data = $request->validate([
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
-            'priority'    => 'required|in:low,medium,high,critical',
+            'priority' => 'required|in:low,medium,high,critical',
             'property_id' => 'nullable|exists:properties,id',
         ]);
 
         $data['reported_by'] = auth()->id();
-        $data['status']      = 'open';
+        $data['status'] = 'open';
 
         MaintenanceTicket::create($data);
 
@@ -192,7 +193,7 @@ class OperationsWebController extends Controller
         $ticket = MaintenanceTicket::findOrFail($id);
 
         $data = $request->validate([
-            'status'      => 'required|in:open,assigned,in_progress,waiting,completed,closed',
+            'status' => 'required|in:open,assigned,in_progress,waiting,completed,closed',
             'assigned_to' => 'nullable|exists:users,id',
         ]);
 
@@ -206,14 +207,14 @@ class OperationsWebController extends Controller
         $ticket = MaintenanceTicket::findOrFail($id);
 
         $request->validate([
-            'note'           => 'required|string|max:2000',
+            'note' => 'required|string|max:2000',
             'visible_tenant' => 'nullable|boolean',
         ]);
 
         $existing = $ticket->description ?? '';
-        $stamp    = now()->format('Y-m-d H:i') . ' by ' . auth()->user()->name;
+        $stamp = now()->format('Y-m-d H:i').' by '.auth()->user()->name;
         $ticket->update([
-            'description' => $existing . "\n\n[{$stamp}]\n" . $request->note,
+            'description' => $existing."\n\n[{$stamp}]\n".$request->note,
         ]);
 
         return back()->with('success', 'Note posted.');
@@ -222,9 +223,9 @@ class OperationsWebController extends Controller
     public function storeCleaning(Request $request)
     {
         $data = $request->validate([
-            'property_id'         => 'required|exists:properties,id',
+            'property_id' => 'required|exists:properties,id',
             'assigned_cleaner_id' => 'nullable|exists:users,id',
-            'notes'               => 'nullable|string|max:1000',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         $data['status'] = 'pending';

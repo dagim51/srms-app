@@ -11,7 +11,6 @@ use App\Domains\Trust\Models\Verification;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TrustWebController extends Controller

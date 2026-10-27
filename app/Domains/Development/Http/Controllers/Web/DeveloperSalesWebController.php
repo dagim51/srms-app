@@ -27,7 +27,7 @@ class DeveloperSalesWebController extends Controller
             'number' => $u->unit_number ?? 'Unit',
             'type' => $u->floor_name ?? 'Apartment',
             'floor' => 1,
-            'price' => number_format($u->price ?? 8500000) . ' ETB',
+            'price' => number_format($u->price ?? 8500000).' ETB',
             'status' => $u->status ?? 'available',
             'buyer' => $buyerName,
         ];
@@ -83,8 +83,8 @@ class DeveloperSalesWebController extends Controller
 
                 return [
                     'id' => $idx + 1,
-                    'description' => $inst->name . ' (' . $pct . '%)',
-                    'amount' => number_format($amt) . ' ETB',
+                    'description' => $inst->name.' ('.$pct.'%)',
+                    'amount' => number_format($amt).' ETB',
                     'due_date' => now()->addDays($inst->due_days_after_reservation ?? ($idx * 90))->toDateString(),
                     'status' => $idx === 0 ? 'paid' : 'pending',
                     'paid_date' => $idx === 0 ? now()->subDays(10)->toDateString() : null,
@@ -206,7 +206,7 @@ class DeveloperSalesWebController extends Controller
                 'building' => $record->unit?->building?->name ?? 'Building',
                 'type' => $record->unit?->floor_name ?? 'Apartment',
                 'status' => $record->status ?? 'pending',
-                'price' => number_format($record->unit?->price ?? 0) . ' ETB',
+                'price' => number_format($record->unit?->price ?? 0).' ETB',
             ];
         })->toArray();
 
@@ -248,12 +248,12 @@ class DeveloperSalesWebController extends Controller
             $buyerName = $u->handoverRecord?->buyer?->name ?? 'Registered Buyer';
 
             return [
-                'id' => 'CNT-' . strtoupper(substr($u->id, 0, 8)),
+                'id' => 'CNT-'.strtoupper(substr($u->id, 0, 8)),
                 'unit_id' => $u->id,
                 'unit' => $u->unit_number ?? 'Unit',
                 'buyer' => $buyerName,
                 'date' => $u->updated_at ? $u->updated_at->toDateString() : now()->toDateString(),
-                'value' => number_format($u->price ?? 0) . ' ETB',
+                'value' => number_format($u->price ?? 0).' ETB',
                 'status' => $u->status === 'sold' ? 'completed' : ($u->status === 'contracted' ? 'signed' : 'draft'),
             ];
         });
@@ -312,9 +312,9 @@ class DeveloperSalesWebController extends Controller
             'status' => 'completed',
             'keys_released_at' => now(),
             'inspection_checklist' => [
-                'plumbing' => (bool)$request->input('plumbing', true),
-                'electrical' => (bool)$request->input('electrical', true),
-                'finishes' => (bool)$request->input('finishes', true),
+                'plumbing' => (bool) $request->input('plumbing', true),
+                'electrical' => (bool) $request->input('electrical', true),
+                'finishes' => (bool) $request->input('finishes', true),
                 'notes' => $request->input('notes', 'Inspection completed and keys officially released to buyer.'),
             ],
         ]);

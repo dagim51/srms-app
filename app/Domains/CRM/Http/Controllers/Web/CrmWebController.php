@@ -114,7 +114,7 @@ class CrmWebController extends Controller
         $orgId = OrganizationMember::where('user_id', Auth::id())->value('organization_id')
             ?? Organization::first()?->id;
 
-        if (!$orgId) {
+        if (! $orgId) {
             $defaultOrg = Organization::create([
                 'name' => 'Primary Real Estate Agency',
                 'slug' => 'primary-real-estate-agency',
@@ -150,9 +150,9 @@ class CrmWebController extends Controller
         $lead = Lead::with(['assignee', 'listing.property', 'activities.user'])->findOrFail($id);
 
         $client = null;
-        if (!empty($lead->email)) {
+        if (! empty($lead->email)) {
             $client = User::where('email', $lead->email)->first();
-        } elseif (!empty($lead->phone)) {
+        } elseif (! empty($lead->phone)) {
             $client = User::where('phone', $lead->phone)->first();
         }
 
@@ -202,7 +202,7 @@ class CrmWebController extends Controller
             'lead_id' => $lead->id,
             'user_id' => Auth::id() ?? User::first()?->id,
             'type' => 'status_change',
-            'description' => 'Stage progressed from ' . ucfirst($oldStatus) . ' to ' . ucfirst($newStatus) . '.',
+            'description' => 'Stage progressed from '.ucfirst($oldStatus).' to '.ucfirst($newStatus).'.',
             'completed_at' => now(),
         ]);
 
@@ -224,7 +224,7 @@ class CrmWebController extends Controller
             'user_id' => Auth::id() ?? User::first()?->id,
             'type' => $validated['type'],
             'description' => $validated['description'],
-            'scheduled_at' => !empty($validated['scheduled_at']) ? $validated['scheduled_at'] : null,
+            'scheduled_at' => ! empty($validated['scheduled_at']) ? $validated['scheduled_at'] : null,
             'completed_at' => empty($validated['scheduled_at']) ? now() : null,
         ]);
 
@@ -235,7 +235,7 @@ class CrmWebController extends Controller
     {
         $lead = Lead::findOrFail($id);
 
-        $email = $lead->email ?: 'client_' . substr($lead->id, 0, 8) . '@srms.et';
+        $email = $lead->email ?: 'client_'.substr($lead->id, 0, 8).'@srms.et';
 
         $client = User::firstOrCreate(
             ['email' => $email],
@@ -253,7 +253,7 @@ class CrmWebController extends Controller
             'lead_id' => $lead->id,
             'user_id' => Auth::id() ?? User::first()?->id,
             'type' => 'conversion',
-            'description' => 'Converted prospect into registered client (' . $client->name . ').',
+            'description' => 'Converted prospect into registered client ('.$client->name.').',
             'completed_at' => now(),
         ]);
 
@@ -321,7 +321,7 @@ class CrmWebController extends Controller
 
         $clients = $query->latest()->paginate(20)->withQueryString()->through(function ($u) {
             $leadsCount = Lead::where('email', $u->email)
-                ->when(!empty($u->phone), fn($q) => $q->orWhere('phone', $u->phone))
+                ->when(! empty($u->phone), fn ($q) => $q->orWhere('phone', $u->phone))
                 ->count();
 
             return [
@@ -345,7 +345,7 @@ class CrmWebController extends Controller
         $client = User::findOrFail($id);
 
         $leads = Lead::where('email', $client->email)
-            ->when(!empty($client->phone), function ($q) use ($client) {
+            ->when(! empty($client->phone), function ($q) use ($client) {
                 $q->orWhere('phone', $client->phone);
             })
             ->with(['assignee', 'listing.property'])
@@ -435,7 +435,7 @@ class CrmWebController extends Controller
             'user_id' => Auth::id() ?? User::first()?->id,
             'type' => $validated['type'],
             'description' => $validated['description'],
-            'scheduled_at' => !empty($validated['scheduled_at']) ? $validated['scheduled_at'] : now()->addDay(),
+            'scheduled_at' => ! empty($validated['scheduled_at']) ? $validated['scheduled_at'] : now()->addDay(),
             'completed_at' => null,
         ]);
 
@@ -489,7 +489,7 @@ class CrmWebController extends Controller
     {
         $cleanId = str_replace('COM-', '', $id);
         $commission = Commission::where('id', $id)
-            ->orWhere('id', 'like', $cleanId . '%')
+            ->orWhere('id', 'like', $cleanId.'%')
             ->firstOrFail();
 
         $commission->update(['status' => 'approved']);

@@ -158,6 +158,7 @@ class AdminWebController extends Controller
             }
 
             $rolesSummary = implode(', ', $rolesToAssign);
+
             return redirect()->route('dashboard.admin.users')->with('success', "User '{$user->name}' was successfully created with role(s): {$rolesSummary}.");
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Could not create user: '.$e->getMessage());
@@ -184,6 +185,7 @@ class AdminWebController extends Controller
         $user->syncRoles($rolesToSync, $validated['organization_id'] ?? null);
 
         $rolesSummary = ! empty($rolesToSync) ? implode(', ', $rolesToSync) : 'None';
+
         return redirect()->back()->with('success', "User '{$user->name}' role(s) successfully updated to: {$rolesSummary}.");
     }
 

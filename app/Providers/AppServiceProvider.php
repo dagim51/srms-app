@@ -213,10 +213,10 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 $view->with('unreadNotificationsCount', $unreadCount)
-                     ->with('recentNotifications', $recentNotifications);
+                    ->with('recentNotifications', $recentNotifications);
             } else {
                 $view->with('unreadNotificationsCount', 0)
-                     ->with('recentNotifications', collect());
+                    ->with('recentNotifications', collect());
             }
         });
     }
