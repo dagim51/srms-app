@@ -1,0 +1,138 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Target test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - Unit
+          - Feature
+      filter:
+        description: 'Optional PHPUnit filter expression (e.g. CommissionEngineTest)'
+        required: false
+        default: ''
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-postgres:
+    name: PHPUnit Tests (PostgreSQL 15 + PostGIS)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.5
+        env:
+          POSTGRES_DB: ethio_real_estate_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ethio_real_estate_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: testing-pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: ethio_real_estate_test
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo, pgsql, pdo_pgsql
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install PHP Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Cache Node packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+
+      - name: Build Frontend Assets
+        run: npm run build
+
+      - name: Prepare Laravel Environment
+        run: |
+          cp .env.example .env
+          sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=testing-pgsql/" .env
+          sed -i "s/^DB_HOST=.*/DB_HOST=127.0.0.1/" .env
+          sed -i "s/^DB_PORT=.*/DB_PORT=5432/" .env
+          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=ethio_real_estate_test/" .env
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=postgres/" .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=password/" .env
+          php artisan key:generate
+
+      - name: Run Database Migrations
+        run: php artisan migrate --force
+
+      - name: Run All Tests
+        if: ${{ inputs.test_suite == 'all' || inputs.test_suite == '' }}
+        run: |
+          if [ -n "${{ inputs.filter }}" ]; then
+            php artisan test --filter="${{ inputs.filter }}"
+          else
+            php artisan test
+          fi
+
+      - name: Run Unit Tests
+        if: ${{ inputs.test_suite == 'Unit' }}
+        run: |
+          if [ -n "${{ inputs.filter }}" ]; then
+            php artisan test --testsuite=Unit --filter="${{ inputs.filter }}"
+          else
+            php artisan test --testsuite=Unit
+          fi
+
+      - name: Run Feature Tests
+        if: ${{ inputs.test_suite == 'Feature' }}
+        run: |
+          if [ -n "${{ inputs.filter }}" ]; then
+            php artisan test --testsuite=Feature --filter="${{ inputs.filter }}"
+          else
+            php artisan test --testsuite=Feature
+          fi
