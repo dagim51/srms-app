@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\URL;
 
 class Document extends Model
@@ -24,11 +25,19 @@ class Document extends Model
         'mime_type',
         'file_size',
         'description',
+        'access_level',
+        'documentable_type',
+        'documentable_id',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function documentable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function versions(): HasMany

@@ -49,7 +49,17 @@ class PropertyPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('properties.create') || $user->hasAnyRole([
+            'Administrator',
+            'Property Owner',
+            'Seller',
+            'Landlord',
+            'Host',
+            'Agent',
+            'Developer',
+            'Real Estate Company',
+            'Property Manager',
+        ]);
     }
 
     /**

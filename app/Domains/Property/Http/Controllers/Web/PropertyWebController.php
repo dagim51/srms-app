@@ -2,6 +2,8 @@
 
 namespace App\Domains\Property\Http\Controllers\Web;
 
+use App\Domains\Identity\Models\User;
+use App\Domains\Rental\Models\Lease;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessPropertyMedia;
 use App\Models\Amenity;
@@ -10,9 +12,11 @@ use App\Models\Property;
 use App\Models\PropertyCategory;
 use App\Models\PropertyFeature;
 use App\Models\PropertyType;
+use App\Services\Documents\DocumentWatermarkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -56,6 +60,8 @@ class PropertyWebController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', Property::class);
+
         $categories = PropertyCategory::where('status', 'active')
             ->orderBy('name_en')
             ->get();
@@ -81,6 +87,8 @@ class PropertyWebController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', Property::class);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -272,6 +280,8 @@ class PropertyWebController extends Controller
      */
     public function edit(Property $property)
     {
+        Gate::authorize('update', $property);
+
         $property->load(['amenities', 'features', 'media']);
 
         $categories = PropertyCategory::where('status', 'active')
@@ -299,6 +309,8 @@ class PropertyWebController extends Controller
      */
     public function update(Request $request, Property $property)
     {
+        Gate::authorize('update', $property);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -388,9 +400,61 @@ class PropertyWebController extends Controller
      */
     public function destroy(Property $property)
     {
+        Gate::authorize('delete', $property);
+
         $property->delete();
 
         return redirect()->route('dashboard.properties.index')
             ->with('success', 'Property removed successfully.');
+    }
+
+    /**
+     * Download watermarked official title deed (Carta) for authorized users.
+     */
+    public function downloadDeed(Request $request, Property $property, DocumentWatermarkService $watermarkService)
+    {
+        /** @var User|null $user */
+        $user = Auth::user();
+        if (! $user) {
+            abort(401);
+        }
+
+        $isOwner = $property->owner_user_id === $user->id;
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('super_admin') || $user->hasRole('Administrator') || $user->hasPermissionTo('admin');
+        $isActiveTenant = false;
+
+        if (! $isOwner && ! $isAdmin) {
+            $isActiveTenant = Lease::where('property_id', $property->id)
+                ->where('status', 'active')
+                ->whereHas('tenantProfile', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })->exists();
+        }
+
+        if (! $isOwner && ! $isAdmin && ! $isActiveTenant) {
+            abort(403, 'Unauthorized: Only the registered landholder, active tenant, or certified authority may access the title deed.');
+        }
+
+        $rawContent = '';
+        if ($property->deedDocument && Storage::exists($property->deedDocument->file_path)) {
+            $rawContent = (string) Storage::get($property->deedDocument->file_path);
+        } else {
+            $rawContent = $watermarkService->generateCanonicalCartaDeed($property);
+        }
+
+        $watermarkedContent = $watermarkService->watermarkContent(
+            $rawContent,
+            $user,
+            $request->ip() ?? '127.0.0.1',
+            $property->deedDocument,
+            ['property_id' => $property->id, 'carta_number' => $property->carta_number]
+        );
+
+        $filename = 'carta-deed-'.($property->carta_number ?: strtoupper(substr($property->id, 0, 8))).'.html';
+
+        return response($watermarkedContent)
+            ->header('Content-Type', 'text/html; charset=UTF-8')
+            ->header('Content-Disposition', 'inline; filename="'.$filename.'"')
+            ->header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     }
 }

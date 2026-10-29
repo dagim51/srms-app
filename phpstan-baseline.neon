@@ -117,7 +117,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Domains\\Booking\\Models\\AccommodationBooking\:\:\$accommodation\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 5
 			path: app/Domains/Booking/Http/Controllers/Web/BookingEngineWebController.php
 
 		-
@@ -685,24 +685,6 @@ parameters:
 			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
 
 		-
-			message: '#^Relation ''location'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Relation ''organization'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
-			message: '#^Relation ''owner'' is not found in App\\Domains\\Property\\Models\\Property model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Property/Http/Controllers/Api/V1/PropertyController.php
-
-		-
 			message: '#^Parameter \#1 \$media of job class App\\Jobs\\ProcessPropertyMedia constructor expects App\\Domains\\Property\\Models\\PropertyMedia in App\\Jobs\\ProcessPropertyMedia\:\:dispatch\(\), Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
 			count: 1
@@ -805,38 +787,44 @@ parameters:
 			path: app/Domains/PropertyManagement/Http/Controllers/Api/V1/PropertyManagementController.php
 
 		-
-			message: '#^Relation ''schedules'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Domains/Rental/Http/Controllers/Api/V1/RentalController.php
+			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\TenantProfile\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$property\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$due_date\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$updated_at\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$schedules\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$tenantProfile\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Rental\\Models\\Lease\>\:\:\$schedules\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domains\\Rental\\Models\\Lease\>\:\:\$tenantProfile\.$#'
-			identifier: property.notFound
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 2
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
@@ -847,21 +835,15 @@ parameters:
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 9
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 2
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
-			message: '#^Relation ''schedules'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 3
-			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
-
-		-
-			message: '#^Relation ''tenantProfile'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 11
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
 
 		-
@@ -899,6 +881,90 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 7
 			path: app/Domains/Rental/Http/Controllers/Web/RentalWebController.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\TenantProfile\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$phone\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>bathrooms" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>bedrooms" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>building_area" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>phone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>property_code" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Domains/Rental/Services/LeaseAgreementPdfService.php
 
 		-
 			message: '#^Relation ''reviewer'' is not found in App\\Domains\\Review\\Models\\Review model\.$#'
@@ -1009,6 +1075,12 @@ parameters:
 			path: app/Domains/Stay/Models/Accommodation.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
 			message: '#^Access to property \$accommodation_id on an unknown class App\\Models\\ExternalCalendarSync\.$#'
 			identifier: class.notFound
 			count: 2
@@ -1047,6 +1119,12 @@ parameters:
 		-
 			message: '#^Parameter \$sync of method App\\Domains\\Stay\\Services\\CalendarSyncService\:\:syncFeed\(\) has invalid type App\\Models\\ExternalCalendarSync\.$#'
 			identifier: class.notFound
+			count: 1
+			path: app/Domains/Stay/Services/CalendarSyncService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domains/Stay/Services/CalendarSyncService.php
 
@@ -5623,18 +5701,6 @@ parameters:
 			path: app/Listeners/InquiryRespondedListener.php
 
 		-
-			message: '#^Relation ''property'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Listeners/LeaseActivatedListener.php
-
-		-
-			message: '#^Relation ''tenantProfile'' is not found in App\\Domains\\Rental\\Models\\Lease model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Listeners/LeaseActivatedListener.php
-
-		-
 			message: '#^Access to an undefined property App\\Domains\\Transaction\\Models\\Payment\:\:\$payable\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6267,7 +6333,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Api\\V1\\PropertyController not found\.$#'
 			identifier: class.notFound
-			count: 8
+			count: 9
 			path: routes/api.php
 
 		-
@@ -6387,7 +6453,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\BookingEngineWebController not found\.$#'
 			identifier: class.notFound
-			count: 7
+			count: 8
 			path: routes/web.php
 
 		-
@@ -6411,7 +6477,7 @@ parameters:
 		-
 			message: '#^Class App\\Http\\Controllers\\Web\\DeveloperSalesWebController not found\.$#'
 			identifier: class.notFound
-			count: 12
+			count: 13
 			path: routes/web.php
 
 		-
@@ -6499,12 +6565,6 @@ parameters:
 			path: routes/web.php
 
 		-
-			message: '#^Class App\\Http\\Controllers\\Web\\PropertyWebController not found\.$#'
-			identifier: class.notFound
-			count: 6
-			path: routes/web.php
-
-		-
 			message: '#^Class App\\Http\\Controllers\\Web\\PublicPropertyWebController not found\.$#'
 			identifier: class.notFound
 			count: 5
@@ -6563,12 +6623,6 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Feature/AutomationJobTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Rental\\Models\\Lease\:\:\$schedules\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/DomainServices/RentalAndOfferDomainServicesTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with array will always evaluate to true\.$#'
@@ -6805,6 +6859,18 @@ parameters:
 			path: tests/Feature/Module5StayOperationsTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/OperationalWebControllersTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/OperationalWebControllersTest.php
+
+		-
 			message: '#^Call to static method where\(\) on an unknown class App\\Models\\HandoverRecord\.$#'
 			identifier: class.notFound
 			count: 1
@@ -6833,6 +6899,12 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: tests/Feature/Phase1ControllersTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Phase4Holes3And4Test.php
 
 		-
 			message: '#^Access to an undefined property App\\Domains\\Property\\Models\\Amenity\:\:\$status\.$#'

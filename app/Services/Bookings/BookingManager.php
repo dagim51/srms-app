@@ -23,7 +23,9 @@ class BookingManager
     public function create(array $data, string $userId): AccommodationBooking
     {
         return DB::transaction(function () use ($data, $userId) {
-            $accommodation = Accommodation::findOrFail($data['accommodation_id']);
+            $accommodation = Accommodation::where('id', $data['accommodation_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
 
             // Prevent host from booking their own accommodation
             if ($accommodation->host_id === $userId) {
@@ -68,14 +70,80 @@ class BookingManager
     }
 
     /**
-     * Confirm a pending booking (host action).
+     * Create a temporary reservation hold (default 15 minutes).
+     */
+    public function createHold(array $data, string $userId, int $holdMinutes = 15): AccommodationBooking
+    {
+        return DB::transaction(function () use ($data, $userId, $holdMinutes) {
+            $accommodation = Accommodation::where('id', $data['accommodation_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Prevent host from booking their own accommodation
+            if ($accommodation->host_id === $userId) {
+                throw new \InvalidArgumentException('You cannot book your own accommodation.');
+            }
+
+            if ($data['guests'] > $accommodation->max_guests) {
+                throw new \InvalidArgumentException('Number of guests exceeds maximum allowed.');
+            }
+
+            // Validate accommodation availability
+            $this->validateAvailability($accommodation, $data['check_in_date'], $data['check_out_date']);
+
+            // Calculate price
+            $totalPrice = $this->calculatePrice($accommodation, $data['check_in_date'], $data['check_out_date']);
+
+            $expiresAt = Carbon::now()->addMinutes($holdMinutes);
+
+            // Create temporary booking hold
+            $booking = AccommodationBooking::create([
+                'accommodation_id' => $accommodation->id,
+                'user_id' => $userId,
+                'check_in_date' => $data['check_in_date'],
+                'check_out_date' => $data['check_out_date'],
+                'guests' => $data['guests'],
+                'total_price' => $totalPrice,
+                'status' => 'holding',
+                'expires_at' => $expiresAt,
+            ]);
+
+            // Record the hold as an availability block
+            AccommodationAvailability::create([
+                'accommodation_id' => $accommodation->id,
+                'start_date' => $data['check_in_date'],
+                'end_date' => $data['check_out_date'],
+                'type' => 'held',
+                'reason' => 'Hold ID: '.$booking->id,
+            ]);
+
+            event(new BookingCreated($booking));
+
+            return $booking->fresh();
+        });
+    }
+
+    /**
+     * Confirm a pending or holding booking.
      */
     public function confirm(AccommodationBooking $booking, ?string $confirmedBy = null): AccommodationBooking
     {
         return DB::transaction(function () use ($booking, $confirmedBy) {
-            if ($booking->status !== 'pending') {
-                throw new \InvalidArgumentException('Only pending bookings can be confirmed');
+            if (! in_array($booking->status, ['pending', 'holding'])) {
+                throw new \InvalidArgumentException('Only pending or holding bookings can be confirmed');
             }
+
+            if ($booking->status === 'holding' && $booking->expires_at && $booking->expires_at->isPast()) {
+                throw new \DomainException('The reservation hold has expired');
+            }
+
+            // Upgrade availability block from held to booked if applicable
+            AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
+                ->where('reason', 'Hold ID: '.$booking->id)
+                ->update([
+                    'type' => 'booked',
+                    'reason' => 'Booking ID: '.$booking->id,
+                ]);
 
             $action = new ConfirmBooking;
             $confirmedBooking = $action->execute($booking);
@@ -92,9 +160,17 @@ class BookingManager
     public function cancel(AccommodationBooking $booking, ?string $cancelledBy = null, string $reason = 'guest_cancelled'): AccommodationBooking
     {
         return DB::transaction(function () use ($booking, $cancelledBy, $reason) {
-            if (! in_array($booking->status, ['pending', 'confirmed'])) {
-                throw new \InvalidArgumentException('Only pending or confirmed bookings can be cancelled');
+            if (! in_array($booking->status, ['pending', 'confirmed', 'holding'])) {
+                throw new \InvalidArgumentException('Only pending, confirmed, or holding bookings can be cancelled');
             }
+
+            // Remove availability blocks associated with this booking
+            AccommodationAvailability::where('accommodation_id', $booking->accommodation_id)
+                ->where(function ($q) use ($booking) {
+                    $q->where('reason', 'Booking ID: '.$booking->id)
+                        ->orWhere('reason', 'Hold ID: '.$booking->id);
+                })
+                ->delete();
 
             $action = new CancelBooking;
             $cancelledBooking = $action->execute($booking);
@@ -110,19 +186,41 @@ class BookingManager
      */
     protected function validateAvailability(Accommodation $accommodation, string $checkIn, string $checkOut): void
     {
-        // Check availability blocks
+        // Check availability blocks, excluding any expired holds
         $conflict = AccommodationAvailability::where('accommodation_id', $accommodation->id)
             ->where('start_date', '<', $checkOut)
             ->where('end_date', '>', $checkIn)
+            ->where(function ($q) {
+                $q->where('type', '!=', 'held')
+                    ->orWhereExists(function ($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('accommodation_bookings')
+                            ->whereRaw("accommodation_availabilities.reason = 'Hold ID: ' || accommodation_bookings.id")
+                            ->where('status', 'holding')
+                            ->where(function ($exp) {
+                                $exp->whereNull('expires_at')
+                                    ->orWhere('expires_at', '>', now());
+                            });
+                    });
+            })
             ->exists();
 
         if ($conflict) {
             throw new \DomainException('The selected dates are not available');
         }
 
-        // Check existing confirmed/pending bookings
+        // Check existing confirmed/pending bookings and unexpired active holds
         $bookingConflict = AccommodationBooking::where('accommodation_id', $accommodation->id)
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->where(function ($query) {
+                $query->whereIn('status', ['pending', 'confirmed'])
+                    ->orWhere(function ($q) {
+                        $q->where('status', 'holding')
+                            ->where(function ($sub) {
+                                $sub->whereNull('expires_at')
+                                    ->orWhere('expires_at', '>', now());
+                            });
+                    });
+            })
             ->where('check_in_date', '<', $checkOut)
             ->where('check_out_date', '>', $checkIn)
             ->exists();

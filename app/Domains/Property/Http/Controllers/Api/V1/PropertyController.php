@@ -13,6 +13,8 @@ class PropertyController extends Controller
 {
     public function store(Request $request)
     {
+        Gate::authorize('create', Property::class);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -33,7 +35,7 @@ class PropertyController extends Controller
 
     public function show(Property $property)
     {
-        $property->load(['location', 'category', 'type', 'media', 'amenities', 'features', 'listings', 'owner', 'organization']);
+        $property->load(['category', 'type', 'media', 'amenities', 'features', 'listings', 'owner', 'organization']);
 
         return response()->json(['data' => new PropertyResource($property)]);
     }

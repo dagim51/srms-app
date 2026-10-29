@@ -37,4 +37,45 @@ class HandoverRecord extends Model
     {
         return $this->belongsTo(User::class, 'buyer_id');
     }
+
+    public function snaggingItems()
+    {
+        return $this->hasMany(SnaggingItem::class, 'handover_record_id');
+    }
+
+    /**
+     * Check if any snagging defects are still pending rectification.
+     */
+    public function hasPendingSnags(): bool
+    {
+        return $this->snaggingItems()->whereIn('status', ['open', 'rectified'])->exists();
+    }
+
+    /**
+     * Check if handover is eligible for final sign-off.
+     */
+    public function canCompleteHandover(): bool
+    {
+        return ! $this->hasPendingSnags();
+    }
+
+    /**
+     * Finalize handover, record keys release, and issue certificate.
+     */
+    public function completeHandover(?User $signer = null, array $checklist = []): void
+    {
+        if (! $this->canCompleteHandover()) {
+            throw new \DomainException('Cannot complete handover while unresolved defect snagging items remain.');
+        }
+
+        $this->update([
+            'status' => 'completed',
+            'keys_released_at' => now(),
+            'signed_document_url' => 'certificates/handover-cert-'.$this->id.'.pdf',
+            'inspection_checklist' => array_merge($this->inspection_checklist ?? [], $checklist, [
+                'signed_by' => $signer ? $signer->name : 'Buyer',
+                'signed_at' => now()->toISOString(),
+            ]),
+        ]);
+    }
 }

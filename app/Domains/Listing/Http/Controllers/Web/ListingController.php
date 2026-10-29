@@ -7,6 +7,7 @@ use App\Models\Listing;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ListingController extends Controller
 {
@@ -68,6 +69,8 @@ class ListingController extends Controller
      */
     public function create(Request $request)
     {
+        Gate::authorize('create', Listing::class);
+
         $selectedPropertyId = $request->get('property_id');
 
         $properties = Property::with(['media', 'amenities', 'features', 'category', 'type'])
@@ -86,6 +89,8 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', Listing::class);
+
         $validated = $request->validate([
             'property_id' => 'required|uuid|exists:properties,id',
             'purpose' => 'required|string|in:For Sale,For Rent,Short Stay,Land,Development',
@@ -125,6 +130,8 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing)
     {
+        Gate::authorize('update', $listing);
+
         $listing->load(['property.media', 'property.amenities', 'property.features', 'property.category', 'property.type', 'moderations']);
 
         return view('dashboard.listings.edit', compact('listing'));
@@ -135,6 +142,8 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
+        Gate::authorize('update', $listing);
+
         $validated = $request->validate([
             'purpose' => 'required|string|in:For Sale,For Rent,Short Stay,Land,Development',
             'price' => 'required|numeric|min:0',
@@ -159,6 +168,8 @@ class ListingController extends Controller
      */
     public function toggleStatus(Request $request, Listing $listing)
     {
+        Gate::authorize('update', $listing);
+
         $target = $request->input('status');
 
         if ($target && in_array($target, ['published', 'paused', 'draft', 'pending_review'])) {
@@ -190,6 +201,8 @@ class ListingController extends Controller
      */
     public function destroy(Listing $listing)
     {
+        Gate::authorize('delete', $listing);
+
         $listing->delete();
 
         return redirect()->route('dashboard.listings.index')

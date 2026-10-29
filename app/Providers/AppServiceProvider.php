@@ -6,6 +6,7 @@ use App\Contracts\PaymentGatewayInterface;
 use App\Events\Bookings\BookingCancelled;
 use App\Events\Bookings\BookingConfirmed;
 use App\Events\Bookings\BookingCreated;
+use App\Events\Development\ConstructionMilestoneCertified;
 use App\Events\Development\DevelopmentUnitReserved;
 use App\Events\Development\ProjectMilestoneCompleted;
 use App\Events\Inquiries\InquiryCreated;
@@ -46,9 +47,11 @@ use App\Listeners\OfferNegotiationListener;
 use App\Listeners\PaymentCompletedListener;
 use App\Listeners\PaymentFailedListener;
 use App\Listeners\PaymentRefundedListener;
+use App\Listeners\TriggerMilestoneInstallmentInvoicing;
 use App\Models\AccommodationBooking;
 use App\Models\DevelopmentProject;
 use App\Models\Dispute;
+use App\Models\Document;
 use App\Models\Lease;
 use App\Models\Payment;
 use App\Models\Property;
@@ -57,6 +60,7 @@ use App\Observers\PropertyObserver;
 use App\Policies\AccommodationBookingPolicy;
 use App\Policies\DevelopmentProjectPolicy;
 use App\Policies\DisputePolicy;
+use App\Policies\DocumentPolicy;
 use App\Policies\LeasePolicy;
 use App\Policies\PaymentPolicy;
 use App\Services\Payments\TelebirrGateway;
@@ -126,6 +130,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(OfferRejected::class, OfferNegotiationListener::class);
         Event::listen(OfferWithdrawn::class, OfferNegotiationListener::class);
         Event::listen(OfferCountered::class, OfferNegotiationListener::class);
+        Event::listen(ConstructionMilestoneCertified::class, TriggerMilestoneInstallmentInvoicing::class);
         Event::listen(ProjectMilestoneCompleted::class, DevelopmentProjectListener::class);
         Event::listen(DevelopmentUnitReserved::class, DevelopmentProjectListener::class);
         Event::listen(TicketCreated::class, MaintenanceTicketListener::class);
@@ -145,6 +150,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(DevelopmentProject::class, DevelopmentProjectPolicy::class);
         Gate::policy(Payment::class, PaymentPolicy::class);
         Gate::policy(Dispute::class, DisputePolicy::class);
+        Gate::policy(Document::class, DocumentPolicy::class);
 
         // RBAC: Grant Administrator super-admin access across all abilities
         Gate::before(function ($user, $ability) {

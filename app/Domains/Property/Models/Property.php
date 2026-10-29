@@ -2,13 +2,17 @@
 
 namespace App\Domains\Property\Models;
 
+use App\Domains\Identity\Models\User;
+use App\Domains\Transaction\Models\Document;
 use App\Models\Listing;
+use App\Models\Organization;
 use App\Models\PropertyPriceHistory;
 use App\Models\PropertyStatusHistory;
 use App\Models\Region;
 use App\Models\SubCity;
 use App\Models\Woreda;
 use App\Models\Zone;
+use App\Support\Traits\Auditable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +25,14 @@ use Illuminate\Support\Facades\DB;
 /**
  * @property string $id
  * @property string|null $address
+ * @property string|null $cadastral_parcel_id
+ * @property string|null $block_number
+ * @property string|null $woreda_cadastre_sheet
+ * @property string|null $land_tenure_type
+ * @property int|null $lease_years_remaining
+ * @property string|null $carta_number
+ * @property string|null $deed_document_id
+ * @property-read Document|null $deedDocument
  * @property-read SubCity|null $subCity
  * @property-read Zone|null $zone
  * @property-read Woreda|null $woreda
@@ -28,15 +40,29 @@ use Illuminate\Support\Facades\DB;
  */
 class Property extends Model
 {
-    use HasUuids, SoftDeletes;
+    use Auditable, HasUuids, SoftDeletes;
 
     protected $guarded = [];
 
     protected $casts = [
         'bathrooms' => 'float',
-        'property_point' => 'geometry:point',
-        'property_boundary' => 'geometry:polygon',
+        'lease_years_remaining' => 'integer',
     ];
+
+    public function deedDocument(): BelongsTo
+    {
+        return $this->belongsTo(Document::class, 'deed_document_id');
+    }
+
+    public function isLeasehold(): bool
+    {
+        return str_starts_with((string) $this->land_tenure_type, 'leasehold');
+    }
+
+    public function getCadastralReference(): string
+    {
+        return $this->cadastral_parcel_id ?? 'UNREGISTERED';
+    }
 
     public function region(): BelongsTo
     {
@@ -76,6 +102,16 @@ class Property extends Model
         }
 
         return $this->address ?? __('Location not set');
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 
     public function listings(): HasMany

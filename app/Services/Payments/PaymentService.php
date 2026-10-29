@@ -3,10 +3,10 @@
 namespace App\Services\Payments;
 
 use App\Contracts\PaymentGatewayInterface;
+use App\Domains\Transaction\Services\LedgerPostingService;
 use App\Events\Payments\PaymentCompleted;
 use App\Events\Payments\PaymentFailed;
 use App\Events\Payments\PaymentRefunded;
-use App\Models\LedgerAccount;
 use App\Models\LedgerEntry;
 use App\Models\LedgerEntryLine;
 use App\Models\Payment;
@@ -19,9 +19,12 @@ class PaymentService
 {
     protected PaymentGatewayInterface $gateway;
 
-    public function __construct(PaymentGatewayInterface $gateway)
+    protected LedgerPostingService $ledgerPostingService;
+
+    public function __construct(PaymentGatewayInterface $gateway, ?LedgerPostingService $ledgerPostingService = null)
     {
         $this->gateway = $gateway;
+        $this->ledgerPostingService = $ledgerPostingService ?? app(LedgerPostingService::class);
     }
 
     /**
@@ -366,129 +369,40 @@ class PaymentService
     /**
      * Record balanced double-entry ledger lines for completed payment settlement.
      */
-    protected function recordLedgerJournalEntry(Payment $payment): void
+    public function recordLedgerJournalEntry(Payment $payment): LedgerEntry
     {
-        // Prevent duplicate journal entries
-        $existingEntry = LedgerEntry::where('reference_id', $payment->id)
-            ->orWhere('reference_id', $payment->transaction_reference)
-            ->first();
+        return $this->ledgerPostingService->postPaymentSettlement($payment);
+    }
 
-        if ($existingEntry) {
-            return;
-        }
+    /**
+     * Record an explicit multi-party balanced settlement journal entry.
+     */
+    public function recordSplitSettlement(Payment $payment, array $distribution): LedgerEntry
+    {
+        return DB::transaction(function () use ($payment, $distribution) {
+            $payment->update([
+                'metadata' => array_merge($payment->metadata ?? [], [
+                    'split_distribution' => $distribution,
+                ]),
+            ]);
 
-        // 1. Asset Account (Debit: Cash / Gateway Clearing)
-        $assetCode = match ($payment->payment_method) {
-            'telebirr' => '1020',
-            default => '1010',
-        };
-        $assetName = ($assetCode === '1020')
-            ? 'Cash - Telebirr Merchant Account'
-            : 'Cash - Commercial Bank of Ethiopia';
+            // Delete any un-itemized ledger entry if it was previously recorded
+            $existingEntry = LedgerEntry::where('reference_id', $payment->id)->first();
+            if ($existingEntry) {
+                LedgerEntryLine::where('ledger_entry_id', $existingEntry->id)->delete();
+                $existingEntry->delete();
+            }
 
-        $assetAccount = LedgerAccount::firstOrCreate(
-            ['code' => $assetCode],
-            ['name' => $assetName, 'type' => 'Asset']
-        );
-
-        // 2. Revenue Account (Credit: Operating Revenue)
-        $payableClass = class_basename($payment->payable_type ?? '');
-        $revenueCode = match ($payableClass) {
-            'AccommodationBooking' => '4030',
-            'Lease', 'RentSchedule' => '4010',
-            'DevelopmentUnit', 'PaymentPlanInstallment' => '4020',
-            default => '4000',
-        };
-        $revenueName = match ($revenueCode) {
-            '4030' => 'Short-Stay Accommodation Revenue',
-            '4010' => 'Rental Lease Revenue',
-            '4020' => 'Development Sales Commission',
-            default => 'General Operating Revenue',
-        };
-
-        $revenueAccount = LedgerAccount::firstOrCreate(
-            ['code' => $revenueCode],
-            ['name' => $revenueName, 'type' => 'Revenue']
-        );
-
-        // 3. Create Ledger Entry
-        $entry = LedgerEntry::create([
-            'description' => "Automated settlement for Payment #{$payment->id} ({$payableClass} #{$payment->payable_id})",
-            'reference_id' => $payment->id,
-            'entry_date' => now()->toDateString(),
-        ]);
-
-        $amount = abs((float) $payment->amount);
-
-        // 4. Debit Asset Account (Cash increases)
-        LedgerEntryLine::create([
-            'ledger_entry_id' => $entry->id,
-            'ledger_account_id' => $assetAccount->id,
-            'type' => 'debit',
-            'amount' => $amount,
-        ]);
-
-        // 5. Credit Revenue Account (Revenue increases)
-        LedgerEntryLine::create([
-            'ledger_entry_id' => $entry->id,
-            'ledger_account_id' => $revenueAccount->id,
-            'type' => 'credit',
-            'amount' => $amount,
-        ]);
+            return $this->ledgerPostingService->postPaymentSettlement($payment, $distribution);
+        });
     }
 
     /**
      * Record balanced double-entry ledger lines for payment refund.
      */
-    protected function recordLedgerRefundEntry(Payment $refund, Payment $payment, float $amount): void
+    protected function recordLedgerRefundEntry(Payment $refund, Payment $payment, float $amount): LedgerEntry
     {
-        $existingEntry = LedgerEntry::where('reference_id', $refund->id)
-            ->orWhere('reference_id', $refund->transaction_reference)
-            ->first();
-
-        if ($existingEntry) {
-            return;
-        }
-
-        $liabilityAccount = LedgerAccount::firstOrCreate(
-            ['code' => '2050'],
-            ['name' => 'Refunds & Payouts Payable', 'type' => 'Liability']
-        );
-
-        $assetCode = match ($payment->payment_method) {
-            'telebirr' => '1020',
-            default => '1010',
-        };
-        $assetName = ($assetCode === '1020')
-            ? 'Cash - Telebirr Merchant Account'
-            : 'Cash - Commercial Bank of Ethiopia';
-
-        $assetAccount = LedgerAccount::firstOrCreate(
-            ['code' => $assetCode],
-            ['name' => $assetName, 'type' => 'Asset']
-        );
-
-        $entry = LedgerEntry::create([
-            'description' => "Automated reversal for Refund #{$refund->id} (Original Payment #{$payment->id})",
-            'reference_id' => $refund->id,
-            'entry_date' => now()->toDateString(),
-        ]);
-
-        // Debit Liability
-        LedgerEntryLine::create([
-            'ledger_entry_id' => $entry->id,
-            'ledger_account_id' => $liabilityAccount->id,
-            'type' => 'debit',
-            'amount' => $amount,
-        ]);
-
-        // Credit Asset (Cash decreases)
-        LedgerEntryLine::create([
-            'ledger_entry_id' => $entry->id,
-            'ledger_account_id' => $assetAccount->id,
-            'type' => 'credit',
-            'amount' => $amount,
-        ]);
+        return $this->ledgerPostingService->postRefund($refund, $payment, $amount);
     }
 
     /**

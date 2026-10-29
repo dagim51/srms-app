@@ -113,6 +113,44 @@ class AdminAuthorizationTest extends TestCase
     }
 
     /**
+     * Test admin can create users with empty or default prefix phone without UNIQUE constraint violation
+     */
+    public function test_admin_can_create_users_with_empty_or_prefix_phone(): void
+    {
+        // 1. First user with '+251' prefix (left uncompleted)
+        $this->actingAs($this->admin)
+            ->post('/dashboard/admin/users', [
+                'name' => 'User Alpha',
+                'email' => 'alpha@srms.et',
+                'phone' => '+251',
+                'password' => 'password123',
+                'role' => 'Agent',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $user1 = User::where('email', 'alpha@srms.et')->first();
+        $this->assertNotNull($user1);
+        $this->assertNull($user1->phone);
+
+        // 2. Second user also with '+251' prefix should not collide with unique constraint
+        $this->actingAs($this->admin)
+            ->post('/dashboard/admin/users', [
+                'name' => 'User Beta',
+                'email' => 'beta@srms.et',
+                'phone' => '+251 ',
+                'password' => 'password123',
+                'role' => 'Agent',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $user2 = User::where('email', 'beta@srms.et')->first();
+        $this->assertNotNull($user2);
+        $this->assertNull($user2->phone);
+    }
+
+    /**
      * Test admin can update user role
      */
     public function test_admin_can_update_user_role(): void

@@ -28,11 +28,29 @@ class PaymentWebhookController extends Controller
         // Webhook endpoint - no auth required, signature verification handles auth
         $payload = $request->all();
         $signature = $request->header('X-Telebirr-Signature') ?? $request->header('signature');
+        $timestamp = $request->header('X-Webhook-Timestamp') ?? ($payload['timestamp'] ?? null);
 
         Log::info('Telebirr webhook received', [
             'payload' => $payload,
             'has_signature' => ! empty($signature),
         ]);
+
+        // Enforce mandatory signature in production environment
+        if (app()->environment('production') && empty($signature)) {
+            Log::warning('Telebirr webhook missing mandatory signature in production');
+
+            return response()->json(['code' => 'SIGNATURE_REQUIRED', 'msg' => 'Signature is required in production'], 401);
+        }
+
+        // Replay attack prevention: verify timestamp freshness if provided
+        if ($timestamp) {
+            $parsedTimestamp = is_numeric($timestamp) ? (int) $timestamp : strtotime((string) $timestamp);
+            if ($parsedTimestamp && abs(time() - $parsedTimestamp) > 300) {
+                Log::warning('Telebirr webhook timestamp expired or out of bounds', ['timestamp' => $timestamp]);
+
+                return response()->json(['code' => 'REQUEST_EXPIRED', 'msg' => 'Webhook timestamp expired'], 401);
+            }
+        }
 
         // Verify webhook signature if provided
         if ($signature) {
@@ -155,16 +173,34 @@ class PaymentWebhookController extends Controller
     {
         $payload = $request->all();
         $signature = $request->header('X-Cbe-Birr-Signature') ?? $request->header('signature');
+        $timestamp = $request->header('X-Webhook-Timestamp') ?? ($payload['timestamp'] ?? null);
 
         Log::info('CBE Birr webhook received', [
             'payload' => $payload,
             'has_signature' => ! empty($signature),
         ]);
 
+        // Enforce mandatory signature in production environment
+        if (app()->environment('production') && empty($signature)) {
+            Log::warning('CBE Birr webhook missing mandatory signature in production');
+
+            return response()->json(['code' => 'SIGNATURE_REQUIRED', 'msg' => 'Signature is required in production'], 401);
+        }
+
+        // Replay attack prevention: verify timestamp freshness if provided
+        if ($timestamp) {
+            $parsedTimestamp = is_numeric($timestamp) ? (int) $timestamp : strtotime((string) $timestamp);
+            if ($parsedTimestamp && abs(time() - $parsedTimestamp) > 300) {
+                Log::warning('CBE Birr webhook timestamp expired or out of bounds', ['timestamp' => $timestamp]);
+
+                return response()->json(['code' => 'REQUEST_EXPIRED', 'msg' => 'Webhook timestamp expired'], 401);
+            }
+        }
+
         $gateway = app(CbeBirrGateway::class);
         $rawPayload = $request->getContent();
 
-        // Enforce signature verification if signature is provided or in production
+        // Enforce signature verification if signature is provided
         if ($signature && ! $gateway->verifyWebhookSignature($rawPayload, $signature)) {
             Log::warning('CBE Birr webhook signature verification failed');
 

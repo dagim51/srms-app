@@ -49,7 +49,7 @@
 
                     <div>
                         <label class="form-label font-bold">{{ __('Phone Number (Ethiopia)') }}</label>
-                        <input type="text" name="phone" value="{{ old('phone', '+251 ') }}" placeholder="+251 911 000 000" class="form-input">
+                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+251 911 000 000" class="form-input">
                         @error('phone') <span class="form-error">{{ $message }}</span> @enderror
                     </div>
 

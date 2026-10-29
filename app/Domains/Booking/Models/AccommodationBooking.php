@@ -23,6 +23,7 @@ class AccommodationBooking extends Model
         'guests',
         'total_price',
         'status',
+        'expires_at',
         'confirmed_at',
     ];
 
@@ -30,7 +31,13 @@ class AccommodationBooking extends Model
         'check_in_date' => 'date',
         'check_out_date' => 'date',
         'total_price' => 'float',
+        'expires_at' => 'datetime',
     ];
+
+    public function isExpired(): bool
+    {
+        return $this->status === 'holding' && $this->expires_at && $this->expires_at->isPast();
+    }
 
     public function accommodation()
     {

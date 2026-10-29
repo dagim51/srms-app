@@ -3,12 +3,13 @@
 namespace App\Domains\Transaction\Models;
 
 use App\Domains\Identity\Models\User;
+use App\Support\Traits\Auditable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
-    use HasUuids;
+    use Auditable, HasUuids;
 
     protected $fillable = [
         'user_id',

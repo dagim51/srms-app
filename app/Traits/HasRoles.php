@@ -2,11 +2,13 @@
 
 namespace App\Traits;
 
+use App\Domains\Administration\Models\AuditLog;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 trait HasRoles
@@ -29,54 +31,198 @@ trait HasRoles
             ->withPivot('organization_id');
     }
 
+    /**
+     * Resolve hierarchical scopes for Company -> Branch -> Team inheritance (SRS Section 197).
+     *
+     * @return array{organization_id: string|null, branch_id: string|null, team_id: string|null}
+     */
+    public function resolveScopeHierarchy(?string $scopeId): array
+    {
+        if ($scopeId === null) {
+            return ['organization_id' => null, 'branch_id' => null, 'team_id' => null];
+        }
+
+        // 1. Is it a Team?
+        $team = DB::table('teams')->where('id', $scopeId)->first();
+        if ($team && $team->branch_id) {
+            $branch = DB::table('branches')->where('id', $team->branch_id)->first();
+
+            return [
+                'organization_id' => $branch?->organization_id,
+                'branch_id' => $team->branch_id,
+                'team_id' => $team->id,
+            ];
+        }
+
+        // 2. Is it a Branch?
+        $branch = DB::table('branches')->where('id', $scopeId)->first();
+        if ($branch && $branch->organization_id) {
+            return [
+                'organization_id' => $branch->organization_id,
+                'branch_id' => $branch->id,
+                'team_id' => null,
+            ];
+        }
+
+        // 3. Otherwise assume it is a root Organization
+        return [
+            'organization_id' => $scopeId,
+            'branch_id' => null,
+            'team_id' => null,
+        ];
+    }
+
     public function assignRole($role, $organizationId = null): void
     {
-        $roleId = $role instanceof Role ? $role->id : Role::where('name', $role)->firstOrFail()->id;
+        $roleModel = $role instanceof Role ? $role : Role::where('name', $role)->firstOrFail();
+        $roleId = $roleModel->id;
+
+        $resolved = $this->resolveScopeHierarchy($organizationId);
 
         if (! $this->hasExactRole($roleId, $organizationId)) {
-            $this->roles()->attach($roleId, ['organization_id' => $organizationId]);
+            $oldRoles = $this->getRoleNames($organizationId)->toArray();
+
+            $pivotData = ['organization_id' => $resolved['organization_id']];
+            if (Schema::hasColumn('user_roles', 'branch_id')) {
+                $pivotData['branch_id'] = $resolved['branch_id'];
+            }
+            if (Schema::hasColumn('user_roles', 'team_id')) {
+                $pivotData['team_id'] = $resolved['team_id'];
+            }
+
+            $this->roles()->attach($roleId, $pivotData);
+
+            $newRoles = $this->getRoleNames($organizationId)->toArray();
+
+            // Security Audit Trail with Old vs New Diffing (SRS Section 142)
+            AuditLog::log(
+                event: 'role_assigned',
+                auditable: $this,
+                newValues: ['roles' => $newRoles, 'assigned_role' => $roleModel->name, 'scope' => $resolved],
+                oldValues: ['roles' => $oldRoles],
+                notes: "Assigned role '{$roleModel->name}' to user '{$this->name}'".($organizationId ? " for scope [{$organizationId}]" : ' (global)'),
+                actorId: auth()->id()
+            );
         }
     }
 
     public function removeRole($role, $organizationId = null): void
     {
-        $roleId = $role instanceof Role ? $role->id : Role::where('name', $role)->value('id');
+        $roleModel = $role instanceof Role ? $role : Role::where('name', $role)->first();
+        $roleId = $roleModel?->id;
 
         if ($roleId) {
+            $oldRoles = $this->getRoleNames($organizationId)->toArray();
+            $resolved = $this->resolveScopeHierarchy($organizationId);
+
             DB::table('user_roles')
                 ->where('user_id', $this->id)
                 ->where('role_id', $roleId)
                 ->when(
                     $organizationId !== null,
-                    fn ($q) => $q->where('organization_id', $organizationId),
+                    function ($q) use ($resolved) {
+                        $q->where('organization_id', $resolved['organization_id']);
+                        if (Schema::hasColumn('user_roles', 'branch_id')) {
+                            if ($resolved['branch_id'] !== null) {
+                                $q->where('branch_id', $resolved['branch_id']);
+                            } else {
+                                $q->whereNull('branch_id');
+                            }
+                        }
+                        if (Schema::hasColumn('user_roles', 'team_id')) {
+                            if ($resolved['team_id'] !== null) {
+                                $q->where('team_id', $resolved['team_id']);
+                            } else {
+                                $q->whereNull('team_id');
+                            }
+                        }
+                    },
                     fn ($q) => $q->whereNull('organization_id')
                 )
                 ->delete();
+
+            $newRoles = $this->getRoleNames($organizationId)->toArray();
+
+            // Security Audit Trail with Old vs New Diffing (SRS Section 142)
+            AuditLog::log(
+                event: 'role_revoked',
+                auditable: $this,
+                newValues: ['roles' => $newRoles, 'revoked_role' => $roleModel->name, 'scope' => $resolved],
+                oldValues: ['roles' => $oldRoles],
+                notes: "Revoked role '{$roleModel->name}' from user '{$this->name}'".($organizationId ? " for scope [{$organizationId}]" : ' (global)'),
+                actorId: auth()->id()
+            );
         }
     }
 
     public function syncRoles(array $roles, $organizationId = null): void
     {
+        $oldRoles = $this->getRoleNames($organizationId)->toArray();
+        $resolved = $this->resolveScopeHierarchy($organizationId);
+
         DB::table('user_roles')
             ->where('user_id', $this->id)
             ->when(
                 $organizationId !== null,
-                fn ($q) => $q->where('organization_id', $organizationId),
+                function ($q) use ($resolved) {
+                    $q->where('organization_id', $resolved['organization_id']);
+                    if (Schema::hasColumn('user_roles', 'branch_id')) {
+                        if ($resolved['branch_id'] !== null) {
+                            $q->where('branch_id', $resolved['branch_id']);
+                        } else {
+                            $q->whereNull('branch_id');
+                        }
+                    }
+                    if (Schema::hasColumn('user_roles', 'team_id')) {
+                        if ($resolved['team_id'] !== null) {
+                            $q->where('team_id', $resolved['team_id']);
+                        } else {
+                            $q->whereNull('team_id');
+                        }
+                    }
+                },
                 fn ($q) => $q->whereNull('organization_id')
             )
             ->delete();
 
+        $processedIds = [];
         foreach ($roles as $role) {
-            $this->assignRole($role, $organizationId);
+            $roleId = $role instanceof Role ? $role->id : Role::where('name', $role)->firstOrFail()->id;
+            if (in_array($roleId, $processedIds, true)) {
+                continue;
+            }
+            $processedIds[] = $roleId;
+
+            $pivotData = ['organization_id' => $resolved['organization_id']];
+            if (Schema::hasColumn('user_roles', 'branch_id')) {
+                $pivotData['branch_id'] = $resolved['branch_id'];
+            }
+            if (Schema::hasColumn('user_roles', 'team_id')) {
+                $pivotData['team_id'] = $resolved['team_id'];
+            }
+            $this->roles()->attach($roleId, $pivotData);
         }
+
+        $newRoles = $this->getRoleNames($organizationId)->toArray();
+
+        // Security Audit Trail with Old vs New Diffing (SRS Section 142)
+        AuditLog::log(
+            event: 'roles_synced',
+            auditable: $this,
+            newValues: ['roles' => $newRoles, 'scope' => $resolved],
+            oldValues: ['roles' => $oldRoles],
+            notes: "Synced roles for user '{$this->name}' from [".implode(', ', $oldRoles).'] to ['.implode(', ', $newRoles).']',
+            actorId: auth()->id()
+        );
     }
 
     /**
-     * Check if user has exact role assignment for the given organization scope.
+     * Check if user has exact role assignment for the given organization scope (no inheritance).
      */
     public function hasExactRole($role, $organizationId = null): bool
     {
         $roleNameOrId = $role instanceof Role ? $role->id : $role;
+        $resolved = $this->resolveScopeHierarchy($organizationId);
 
         return $this->roles()
             ->where(function ($query) use ($roleNameOrId) {
@@ -87,9 +233,23 @@ trait HasRoles
                     $query->where('roles.name', $roleNameOrId);
                 }
             })
-            ->where(function ($query) use ($organizationId) {
+            ->where(function ($query) use ($resolved, $organizationId) {
                 if ($organizationId !== null) {
-                    $query->where('user_roles.organization_id', $organizationId);
+                    $query->where('user_roles.organization_id', $resolved['organization_id']);
+                    if (Schema::hasColumn('user_roles', 'branch_id')) {
+                        if ($resolved['branch_id'] !== null) {
+                            $query->where('user_roles.branch_id', $resolved['branch_id']);
+                        } else {
+                            $query->whereNull('user_roles.branch_id');
+                        }
+                    }
+                    if (Schema::hasColumn('user_roles', 'team_id')) {
+                        if ($resolved['team_id'] !== null) {
+                            $query->where('user_roles.team_id', $resolved['team_id']);
+                        } else {
+                            $query->whereNull('user_roles.team_id');
+                        }
+                    }
                 } else {
                     $query->whereNull('user_roles.organization_id');
                 }
@@ -98,12 +258,13 @@ trait HasRoles
     }
 
     /**
-     * Check if user has role. If $organizationId is provided, either an organization-scoped
-     * assignment OR a global platform assignment (organization_id IS NULL) satisfies it.
+     * Check if user has role. Supports hierarchical organization inheritance (Company -> Branch -> Team)
+     * and global platform assignments (organization_id IS NULL).
      */
     public function hasRole($role, $organizationId = null): bool
     {
         $roleNameOrId = $role instanceof Role ? $role->id : $role;
+        $resolved = $this->resolveScopeHierarchy($organizationId);
 
         return $this->roles()
             ->where(function ($query) use ($roleNameOrId) {
@@ -114,10 +275,37 @@ trait HasRoles
                     $query->where('roles.name', $roleNameOrId);
                 }
             })
-            ->where(function ($query) use ($organizationId) {
+            ->where(function ($query) use ($resolved, $organizationId) {
                 if ($organizationId !== null) {
-                    $query->where('user_roles.organization_id', $organizationId)
-                        ->orWhereNull('user_roles.organization_id');
+                    $query->where(function ($sub) use ($resolved) {
+                        // 1. Global platform role
+                        $sub->whereNull('user_roles.organization_id');
+
+                        // 2. Organization-level role (inherits down to all branches and teams)
+                        if ($resolved['organization_id']) {
+                            $sub->orWhere(function ($qOrg) use ($resolved) {
+                                $qOrg->where('user_roles.organization_id', $resolved['organization_id']);
+                                if (Schema::hasColumn('user_roles', 'branch_id')) {
+                                    $qOrg->whereNull('user_roles.branch_id');
+                                }
+                            });
+                        }
+
+                        // 3. Branch-level role (inherits down to all teams in this branch)
+                        if ($resolved['branch_id'] && Schema::hasColumn('user_roles', 'branch_id')) {
+                            $sub->orWhere(function ($qBranch) use ($resolved) {
+                                $qBranch->where('user_roles.branch_id', $resolved['branch_id']);
+                                if (Schema::hasColumn('user_roles', 'team_id')) {
+                                    $qBranch->whereNull('user_roles.team_id');
+                                }
+                            });
+                        }
+
+                        // 4. Team-level role (exact team match)
+                        if ($resolved['team_id'] && Schema::hasColumn('user_roles', 'team_id')) {
+                            $sub->orWhere('user_roles.team_id', $resolved['team_id']);
+                        }
+                    });
                 } else {
                     $query->whereNull('user_roles.organization_id');
                 }
@@ -166,58 +354,167 @@ trait HasRoles
 
     public function givePermissionTo($permission, $organizationId = null): void
     {
-        $permissionId = $permission instanceof Permission
-            ? $permission->id
-            : Permission::where('code', $permission)->firstOrFail()->id;
+        $permModel = $permission instanceof Permission
+            ? $permission
+            : Permission::where('code', $permission)->firstOrFail();
+        $permissionId = $permModel->id;
+        $resolved = $this->resolveScopeHierarchy($organizationId);
 
         $hasExact = $this->permissions()
             ->where('permissions.id', $permissionId)
-            ->where(function ($q) use ($organizationId) {
+            ->where(function ($q) use ($resolved, $organizationId) {
                 if ($organizationId !== null) {
-                    $q->where('user_permissions.organization_id', $organizationId);
+                    $q->where('user_permissions.organization_id', $resolved['organization_id']);
+                    if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                        if ($resolved['branch_id'] !== null) {
+                            $q->where('user_permissions.branch_id', $resolved['branch_id']);
+                        } else {
+                            $q->whereNull('user_permissions.branch_id');
+                        }
+                    }
+                    if (Schema::hasColumn('user_permissions', 'team_id')) {
+                        if ($resolved['team_id'] !== null) {
+                            $q->where('user_permissions.team_id', $resolved['team_id']);
+                        } else {
+                            $q->whereNull('user_permissions.team_id');
+                        }
+                    }
                 } else {
                     $q->whereNull('user_permissions.organization_id');
                 }
             })->exists();
 
         if (! $hasExact) {
-            $this->permissions()->attach($permissionId, ['organization_id' => $organizationId]);
+            $oldPerms = $this->getAllPermissions($organizationId)->toArray();
+
+            $pivotData = ['organization_id' => $resolved['organization_id']];
+            if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                $pivotData['branch_id'] = $resolved['branch_id'];
+            }
+            if (Schema::hasColumn('user_permissions', 'team_id')) {
+                $pivotData['team_id'] = $resolved['team_id'];
+            }
+
+            $this->permissions()->attach($permissionId, $pivotData);
+
+            $newPerms = $this->getAllPermissions($organizationId)->toArray();
+
+            // Security Audit Trail (SRS Section 142)
+            AuditLog::log(
+                event: 'permission_granted',
+                auditable: $this,
+                newValues: ['permissions' => $newPerms, 'granted_permission' => $permModel->code, 'scope' => $resolved],
+                oldValues: ['permissions' => $oldPerms],
+                notes: "Granted direct permission '{$permModel->code}' to user '{$this->name}'".($organizationId ? " for scope [{$organizationId}]" : ' (global)'),
+                actorId: auth()->id()
+            );
         }
     }
 
     public function revokePermissionTo($permission, $organizationId = null): void
     {
-        $permissionId = $permission instanceof Permission
-            ? $permission->id
-            : Permission::where('code', $permission)->value('id');
+        $permModel = $permission instanceof Permission
+            ? $permission
+            : Permission::where('code', $permission)->first();
+        $permissionId = $permModel?->id;
 
         if ($permissionId) {
+            $oldPerms = $this->getAllPermissions($organizationId)->toArray();
+            $resolved = $this->resolveScopeHierarchy($organizationId);
+
             DB::table('user_permissions')
                 ->where('user_id', $this->id)
                 ->where('permission_id', $permissionId)
                 ->when(
                     $organizationId !== null,
-                    fn ($q) => $q->where('organization_id', $organizationId),
+                    function ($q) use ($resolved) {
+                        $q->where('organization_id', $resolved['organization_id']);
+                        if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                            if ($resolved['branch_id'] !== null) {
+                                $q->where('branch_id', $resolved['branch_id']);
+                            } else {
+                                $q->whereNull('branch_id');
+                            }
+                        }
+                        if (Schema::hasColumn('user_permissions', 'team_id')) {
+                            if ($resolved['team_id'] !== null) {
+                                $q->where('team_id', $resolved['team_id']);
+                            } else {
+                                $q->whereNull('team_id');
+                            }
+                        }
+                    },
                     fn ($q) => $q->whereNull('organization_id')
                 )
                 ->delete();
+
+            $newPerms = $this->getAllPermissions($organizationId)->toArray();
+
+            // Security Audit Trail (SRS Section 142)
+            AuditLog::log(
+                event: 'permission_revoked',
+                auditable: $this,
+                newValues: ['permissions' => $newPerms, 'revoked_permission' => $permModel->code, 'scope' => $resolved],
+                oldValues: ['permissions' => $oldPerms],
+                notes: "Revoked direct permission '{$permModel->code}' from user '{$this->name}'".($organizationId ? " for scope [{$organizationId}]" : ' (global)'),
+                actorId: auth()->id()
+            );
         }
     }
 
     public function syncPermissions(array $permissions, $organizationId = null): void
     {
+        $oldPerms = $this->getAllPermissions($organizationId)->toArray();
+        $resolved = $this->resolveScopeHierarchy($organizationId);
+
         DB::table('user_permissions')
             ->where('user_id', $this->id)
             ->when(
                 $organizationId !== null,
-                fn ($q) => $q->where('organization_id', $organizationId),
+                function ($q) use ($resolved) {
+                    $q->where('organization_id', $resolved['organization_id']);
+                    if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                        if ($resolved['branch_id'] !== null) {
+                            $q->where('branch_id', $resolved['branch_id']);
+                        } else {
+                            $q->whereNull('branch_id');
+                        }
+                    }
+                    if (Schema::hasColumn('user_permissions', 'team_id')) {
+                        if ($resolved['team_id'] !== null) {
+                            $q->where('team_id', $resolved['team_id']);
+                        } else {
+                            $q->whereNull('team_id');
+                        }
+                    }
+                },
                 fn ($q) => $q->whereNull('organization_id')
             )
             ->delete();
 
         foreach ($permissions as $permission) {
-            $this->givePermissionTo($permission, $organizationId);
+            $permId = $permission instanceof Permission ? $permission->id : Permission::where('code', $permission)->firstOrFail()->id;
+            $pivotData = ['organization_id' => $resolved['organization_id']];
+            if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                $pivotData['branch_id'] = $resolved['branch_id'];
+            }
+            if (Schema::hasColumn('user_permissions', 'team_id')) {
+                $pivotData['team_id'] = $resolved['team_id'];
+            }
+            $this->permissions()->attach($permId, $pivotData);
         }
+
+        $newPerms = $this->getAllPermissions($organizationId)->toArray();
+
+        // Security Audit Trail (SRS Section 142)
+        AuditLog::log(
+            event: 'permissions_synced',
+            auditable: $this,
+            newValues: ['permissions' => $newPerms, 'scope' => $resolved],
+            oldValues: ['permissions' => $oldPerms],
+            notes: "Synced direct permissions for user '{$this->name}'",
+            actorId: auth()->id()
+        );
     }
 
     public function hasPermissionTo($permission, $organizationId = null): bool
@@ -228,14 +525,35 @@ trait HasRoles
         }
 
         $permissionCode = $permission instanceof Permission ? $permission->code : $permission;
+        $resolved = $this->resolveScopeHierarchy($organizationId);
 
-        // Check direct permissions (scoped or global)
+        // Check direct permissions (scoped with hierarchy or global)
         $hasDirect = $this->permissions()
             ->where('code', $permissionCode)
-            ->where(function ($query) use ($organizationId) {
+            ->where(function ($query) use ($resolved, $organizationId) {
                 if ($organizationId !== null) {
-                    $query->where('user_permissions.organization_id', $organizationId)
-                        ->orWhereNull('user_permissions.organization_id');
+                    $query->where(function ($sub) use ($resolved) {
+                        $sub->whereNull('user_permissions.organization_id');
+                        if ($resolved['organization_id']) {
+                            $sub->orWhere(function ($qOrg) use ($resolved) {
+                                $qOrg->where('user_permissions.organization_id', $resolved['organization_id']);
+                                if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                                    $qOrg->whereNull('user_permissions.branch_id');
+                                }
+                            });
+                        }
+                        if ($resolved['branch_id'] && Schema::hasColumn('user_permissions', 'branch_id')) {
+                            $sub->orWhere(function ($qBranch) use ($resolved) {
+                                $qBranch->where('user_permissions.branch_id', $resolved['branch_id']);
+                                if (Schema::hasColumn('user_permissions', 'team_id')) {
+                                    $qBranch->whereNull('user_permissions.team_id');
+                                }
+                            });
+                        }
+                        if ($resolved['team_id'] && Schema::hasColumn('user_permissions', 'team_id')) {
+                            $sub->orWhere('user_permissions.team_id', $resolved['team_id']);
+                        }
+                    });
                 } else {
                     $query->whereNull('user_permissions.organization_id');
                 }
@@ -246,12 +564,32 @@ trait HasRoles
             return true;
         }
 
-        // Check through assigned roles (scoped or global)
+        // Check through assigned roles (scoped with hierarchy or global)
         return $this->roles()
-            ->where(function ($query) use ($organizationId) {
+            ->where(function ($query) use ($resolved, $organizationId) {
                 if ($organizationId !== null) {
-                    $query->where('user_roles.organization_id', $organizationId)
-                        ->orWhereNull('user_roles.organization_id');
+                    $query->where(function ($sub) use ($resolved) {
+                        $sub->whereNull('user_roles.organization_id');
+                        if ($resolved['organization_id']) {
+                            $sub->orWhere(function ($qOrg) use ($resolved) {
+                                $qOrg->where('user_roles.organization_id', $resolved['organization_id']);
+                                if (Schema::hasColumn('user_roles', 'branch_id')) {
+                                    $qOrg->whereNull('user_roles.branch_id');
+                                }
+                            });
+                        }
+                        if ($resolved['branch_id'] && Schema::hasColumn('user_roles', 'branch_id')) {
+                            $sub->orWhere(function ($qBranch) use ($resolved) {
+                                $qBranch->where('user_roles.branch_id', $resolved['branch_id']);
+                                if (Schema::hasColumn('user_roles', 'team_id')) {
+                                    $qBranch->whereNull('user_roles.team_id');
+                                }
+                            });
+                        }
+                        if ($resolved['team_id'] && Schema::hasColumn('user_roles', 'team_id')) {
+                            $sub->orWhere('user_roles.team_id', $resolved['team_id']);
+                        }
+                    });
                 } else {
                     $query->whereNull('user_roles.organization_id');
                 }
@@ -279,10 +617,32 @@ trait HasRoles
 
     public function getRoleNames($organizationId = null): Collection
     {
+        $resolved = $this->resolveScopeHierarchy($organizationId);
+
         return $this->roles()
-            ->when($organizationId !== null, function ($query) use ($organizationId) {
-                $query->where('user_roles.organization_id', $organizationId)
-                    ->orWhereNull('user_roles.organization_id');
+            ->when($organizationId !== null, function ($query) use ($resolved) {
+                $query->where(function ($sub) use ($resolved) {
+                    $sub->whereNull('user_roles.organization_id');
+                    if ($resolved['organization_id']) {
+                        $sub->orWhere(function ($qOrg) use ($resolved) {
+                            $qOrg->where('user_roles.organization_id', $resolved['organization_id']);
+                            if (Schema::hasColumn('user_roles', 'branch_id')) {
+                                $qOrg->whereNull('user_roles.branch_id');
+                            }
+                        });
+                    }
+                    if ($resolved['branch_id'] && Schema::hasColumn('user_roles', 'branch_id')) {
+                        $sub->orWhere(function ($qBranch) use ($resolved) {
+                            $qBranch->where('user_roles.branch_id', $resolved['branch_id']);
+                            if (Schema::hasColumn('user_roles', 'team_id')) {
+                                $qBranch->whereNull('user_roles.team_id');
+                            }
+                        });
+                    }
+                    if ($resolved['team_id'] && Schema::hasColumn('user_roles', 'team_id')) {
+                        $sub->orWhere('user_roles.team_id', $resolved['team_id']);
+                    }
+                });
             })
             ->when($organizationId === null, fn ($q) => $q->whereNull('user_roles.organization_id'))
             ->pluck('name');
@@ -290,22 +650,64 @@ trait HasRoles
 
     public function getAllPermissions($organizationId = null): Collection
     {
+        $resolved = $this->resolveScopeHierarchy($organizationId);
+
         $direct = $this->permissions()
-            ->when($organizationId !== null, function ($query) use ($organizationId) {
-                $query->where('user_permissions.organization_id', $organizationId)
-                    ->orWhereNull('user_permissions.organization_id');
+            ->when($organizationId !== null, function ($query) use ($resolved) {
+                $query->where(function ($sub) use ($resolved) {
+                    $sub->whereNull('user_permissions.organization_id');
+                    if ($resolved['organization_id']) {
+                        $sub->orWhere(function ($qOrg) use ($resolved) {
+                            $qOrg->where('user_permissions.organization_id', $resolved['organization_id']);
+                            if (Schema::hasColumn('user_permissions', 'branch_id')) {
+                                $qOrg->whereNull('user_permissions.branch_id');
+                            }
+                        });
+                    }
+                    if ($resolved['branch_id'] && Schema::hasColumn('user_permissions', 'branch_id')) {
+                        $sub->orWhere(function ($qBranch) use ($resolved) {
+                            $qBranch->where('user_permissions.branch_id', $resolved['branch_id']);
+                            if (Schema::hasColumn('user_permissions', 'team_id')) {
+                                $qBranch->whereNull('user_permissions.team_id');
+                            }
+                        });
+                    }
+                    if ($resolved['team_id'] && Schema::hasColumn('user_permissions', 'team_id')) {
+                        $sub->orWhere('user_permissions.team_id', $resolved['team_id']);
+                    }
+                });
             })
             ->when($organizationId === null, fn ($q) => $q->whereNull('user_permissions.organization_id'))
             ->pluck('code');
 
-        $viaRoles = Permission::whereHas('roles', function ($query) use ($organizationId) {
-            $query->whereIn('roles.id', function ($sub) use ($organizationId) {
+        $viaRoles = Permission::whereHas('roles', function ($query) use ($organizationId, $resolved) {
+            $query->whereIn('roles.id', function ($sub) use ($organizationId, $resolved) {
                 $sub->select('role_id')
                     ->from('user_roles')
                     ->where('user_id', $this->id)
-                    ->when($organizationId !== null, function ($q) use ($organizationId) {
-                        $q->where('organization_id', $organizationId)
-                            ->orWhereNull('organization_id');
+                    ->when($organizationId !== null, function ($q) use ($resolved) {
+                        $q->where(function ($sub2) use ($resolved) {
+                            $sub2->whereNull('user_roles.organization_id');
+                            if ($resolved['organization_id']) {
+                                $sub2->orWhere(function ($qOrg) use ($resolved) {
+                                    $qOrg->where('user_roles.organization_id', $resolved['organization_id']);
+                                    if (Schema::hasColumn('user_roles', 'branch_id')) {
+                                        $qOrg->whereNull('user_roles.branch_id');
+                                    }
+                                });
+                            }
+                            if ($resolved['branch_id'] && Schema::hasColumn('user_roles', 'branch_id')) {
+                                $sub2->orWhere(function ($qBranch) use ($resolved) {
+                                    $qBranch->where('user_roles.branch_id', $resolved['branch_id']);
+                                    if (Schema::hasColumn('user_roles', 'team_id')) {
+                                        $qBranch->whereNull('user_roles.team_id');
+                                    }
+                                });
+                            }
+                            if ($resolved['team_id'] && Schema::hasColumn('user_roles', 'team_id')) {
+                                $sub2->orWhere('user_roles.team_id', $resolved['team_id']);
+                            }
+                        });
                     })
                     ->when($organizationId === null, fn ($q) => $q->whereNull('organization_id'));
             });

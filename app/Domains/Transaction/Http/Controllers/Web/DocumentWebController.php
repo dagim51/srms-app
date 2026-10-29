@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentAccessLog;
 use App\Models\Verification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
@@ -29,6 +30,13 @@ class DocumentWebController extends Controller
         }
 
         $dbDocuments = $docQuery->get();
+
+        // Filter documents the current user is authorized to view
+        if (auth()->check()) {
+            $dbDocuments = $dbDocuments->filter(function (Document $doc) {
+                return Gate::allows('view', $doc);
+            });
+        }
 
         if ($dbDocuments->isNotEmpty()) {
             $documents = $dbDocuments->map(function (Document $d) {
@@ -81,6 +89,10 @@ class DocumentWebController extends Controller
         $dbDoc = Document::with(['user', 'versions.uploader', 'accessLogs.user'])->find($id);
 
         if ($dbDoc) {
+            if (auth()->check() && ! Gate::allows('view', $dbDoc)) {
+                abort(403, 'Unauthorized access to this document.');
+            }
+
             $downloadUrl = URL::temporarySignedRoute(
                 'dashboard.documents.download',
                 now()->addMinutes(15),
@@ -157,6 +169,10 @@ class DocumentWebController extends Controller
 
     public function downloadDocument(Request $request, Document $document)
     {
+        if (auth()->check() && ! Gate::allows('download', $document)) {
+            abort(403, 'Unauthorized access to this document.');
+        }
+
         DocumentAccessLog::create([
             'document_id' => $document->id,
             'user_id' => auth()->id(),

@@ -107,6 +107,7 @@ Route::prefix('v1')->group(function () {
 
             // Property Core
             Route::get('/properties', [PropertyController::class, 'index']);
+            Route::get('/properties/{property}', [PropertyController::class, 'show']);
             Route::get('/properties/search/radius', [PropertyController::class, 'radiusSearch']);
             Route::post('/properties', [PropertyController::class, 'store']);
             Route::put('/properties/{property}', [PropertyController::class, 'update']);

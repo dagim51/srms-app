@@ -3,6 +3,7 @@
 namespace App\Domains\Development\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\DevelopmentProject;
 use App\Models\DevelopmentUnit;
 use App\Models\HandoverRecord;
 use App\Models\PaymentPlan;
@@ -325,5 +326,21 @@ class DeveloperSalesWebController extends Controller
 
         return redirect()->route('dashboard.sales.handovers')
             ->with('success', __('Key handover completed and keys officially released.'));
+    }
+
+    public function updateMilestoneProgress(Request $request, $projectId)
+    {
+        $project = DevelopmentProject::findOrFail($projectId);
+
+        $data = $request->validate([
+            'progress_percentage' => 'required|numeric|min:0|max:100',
+        ]);
+
+        $invoicesCount = $project->updateProgress((float) $data['progress_percentage']);
+
+        return back()->with('success', __('Construction milestone progress updated to :pct%. :invoices milestone invoice(s) generated.', [
+            'pct' => $data['progress_percentage'],
+            'invoices' => $invoicesCount,
+        ]));
     }
 }

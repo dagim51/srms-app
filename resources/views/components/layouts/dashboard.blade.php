@@ -48,6 +48,14 @@
     }
 
     $topbarTitle = trim((string) ($title ?? (trim($__env->yieldContent('page-title')) ?: ($matchedNavTitle ?: 'Dashboard'))));
+
+    $authUser = auth()->user();
+    $isStaffOrBusiness = $authUser && ($authUser->hasAnyRole([
+        'Administrator', 'Property Manager', 'Agent', 'Developer',
+        'Host', 'Seller', 'Landlord', 'Moderator', 'Verification Officer',
+        'Finance Officer', 'Professional Service Provider', 'Real Estate Company'
+    ]) || $authUser->can('properties.create') || $authUser->can('listings.submit'));
+    $primaryUserRole = $authUser?->roles->pluck('name')->first() ?? 'Client';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
@@ -159,46 +167,63 @@
                 </div>
             </div>
 
-            {{-- Organization Workspace Selector (Replaces duplicate user profile) --}}
+            {{-- Organization Workspace Selector / Client Account Badge --}}
             <div class="px-3 py-3 border-b border-slate-200/80 dark:border-slate-800/70">
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="w-full flex items-center justify-between bg-slate-100/70 dark:bg-slate-900/60 hover:bg-orange-50/50 dark:hover:bg-slate-800/80 p-2.5 rounded-xl transition-all border border-slate-200/80 dark:border-slate-800/80 group text-left cursor-pointer" aria-haspopup="true" :aria-expanded="open" id="tenant-switcher">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-950 dark:from-slate-700 dark:to-slate-900 text-orange-400 border border-slate-700/50 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{{ __('Acme Real Estate Group') }}</p>
-                                <div class="flex items-center gap-1.5 mt-0.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <p class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">{{ __('Verified Workspace') }}</p>
+                @if($isStaffOrBusiness)
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="w-full flex items-center justify-between bg-slate-100/70 dark:bg-slate-900/60 hover:bg-orange-50/50 dark:hover:bg-slate-800/80 p-2.5 rounded-xl transition-all border border-slate-200/80 dark:border-slate-800/80 group text-left cursor-pointer" aria-haspopup="true" :aria-expanded="open" id="tenant-switcher">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-950 dark:from-slate-700 dark:to-slate-900 text-orange-400 border border-slate-700/50 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{{ __('Acme Real Estate Group') }}</p>
+                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <p class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">{{ __('Verified Workspace') }}</p>
+                                    </div>
                                 </div>
                             </div>
+                            <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
+                        </button>
+                        <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl shadow-slate-950/20 p-1.5 z-50" x-cloak>
+                            <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{{ __('Active Workspaces') }}</div>
+                            <a href="#" class="dropdown-item rounded-lg flex items-center justify-between bg-orange-50/50 dark:bg-orange-950/20">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <div class="w-6 h-6 rounded-md bg-orange-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">A</div>
+                                    <span class="truncate text-xs font-semibold text-slate-900 dark:text-white">{{ __('Acme Real Estate Group') }}</span>
+                                </div>
+                                <svg class="w-4 h-4 text-orange-500 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                            </a>
+                            <a href="#" class="dropdown-item rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <div class="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-xs flex-shrink-0">P</div>
+                                    <span class="truncate text-xs text-slate-700 dark:text-slate-300">{{ __('Personal Portfolio') }}</span>
+                                </div>
+                            </a>
+                            <div class="divider my-1 border-slate-100 dark:border-slate-800/80"></div>
+                            <a href="/dashboard/organization/create" class="dropdown-item rounded-lg text-orange-600 dark:text-orange-400 font-semibold text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                <span>{{ __('Add Workspace') }}</span>
+                            </a>
                         </div>
-                        <svg class="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
-                    </button>
-                    <div x-show="open" @click.outside="open = false" class="dropdown absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl shadow-slate-950/20 p-1.5 z-50" x-cloak>
-                        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{{ __('Active Workspaces') }}</div>
-                        <a href="#" class="dropdown-item rounded-lg flex items-center justify-between bg-orange-50/50 dark:bg-orange-950/20">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <div class="w-6 h-6 rounded-md bg-orange-500 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">A</div>
-                                <span class="truncate text-xs font-semibold text-slate-900 dark:text-white">{{ __('Acme Real Estate Group') }}</span>
-                            </div>
-                            <svg class="w-4 h-4 text-orange-500 ml-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                        </a>
-                        <a href="#" class="dropdown-item rounded-lg flex items-center justify-between">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <div class="w-6 h-6 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-xs flex-shrink-0">P</div>
-                                <span class="truncate text-xs text-slate-700 dark:text-slate-300">{{ __('Personal Portfolio') }}</span>
-                            </div>
-                        </a>
-                        <div class="divider my-1 border-slate-100 dark:border-slate-800/80"></div>
-                        <a href="/dashboard/organization/create" class="dropdown-item rounded-lg text-orange-600 dark:text-orange-400 font-semibold text-xs flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                            <span>{{ __('Add Workspace') }}</span>
-                        </a>
                     </div>
-                </div>
+                @else
+                    <div class="flex items-center gap-2.5 p-2 bg-slate-100/70 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ __('Personal Account') }}</p>
+                            <div class="flex items-center gap-1.5 mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                <p class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider truncate">{{ __($primaryUserRole) }} {{ __('Portal') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             {{-- Sidebar Nav --}}
@@ -225,17 +250,21 @@
                         <span>{{ __('Map Explorer') }}</span>
                     </a>
 
-                    <a href="/dashboard/listings" id="sidebar-listings"
-                       class="sidebar-link {{ (request()->is('dashboard/listings*') && !request()->is('dashboard/moderation*')) ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
-                        <span>{{ __('Listings') }}</span>
-                    </a>
+                    @if($isStaffOrBusiness || ($authUser && $authUser->can('listings.submit')))
+                        <a href="/dashboard/listings" id="sidebar-listings"
+                           class="sidebar-link {{ (request()->is('dashboard/listings*') && !request()->is('dashboard/moderation*')) ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                            <span>{{ __('Listings') }}</span>
+                        </a>
+                    @endif
 
-                    <a href="/dashboard/moderation/listings" id="sidebar-moderation"
-                       class="sidebar-link {{ request()->is('dashboard/moderation*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
-                        <span>{{ __('Moderation Queue') }}</span>
-                    </a>
+                    @if($authUser && ($authUser->hasAnyRole(['Administrator', 'Moderator']) || $authUser->can('moderation.review')))
+                        <a href="/dashboard/moderation/listings" id="sidebar-moderation"
+                           class="sidebar-link {{ request()->is('dashboard/moderation*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                            <span>{{ __('Moderation Queue') }}</span>
+                        </a>
+                    @endif
 
                     <a href="{{ route('dashboard.notifications.index') }}" id="sidebar-notifications"
                        class="sidebar-link {{ request()->is('dashboard/notifications*') ? 'active' : '' }}">
@@ -249,39 +278,41 @@
                     </a>
                 </div>
 
-                {{-- Group 2: Catalogs & Operations --}}
-                <div class="space-y-1">
-                    <p class="px-3 text-xs font-bold uppercase tracking-wider text-muted dark:text-muted">{{ __('Catalogs & Operations') }}</p>
-                    <a href="/dashboard/amenities" id="sidebar-amenities"
-                       class="sidebar-link {{ request()->is('dashboard/amenities*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
-                        <span>{{ __('Amenities') }}</span>
-                    </a>
+                @if($isStaffOrBusiness)
+                    {{-- Group 2: Catalogs & Operations --}}
+                    <div class="space-y-1">
+                        <p class="px-3 text-xs font-bold uppercase tracking-wider text-muted dark:text-muted">{{ __('Catalogs & Operations') }}</p>
+                        <a href="/dashboard/amenities" id="sidebar-amenities"
+                           class="sidebar-link {{ request()->is('dashboard/amenities*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
+                            <span>{{ __('Amenities') }}</span>
+                        </a>
 
-                    <a href="/dashboard/features" id="sidebar-features"
-                       class="sidebar-link {{ request()->is('dashboard/features*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                        <span>{{ __('Features') }}</span>
-                    </a>
+                        <a href="/dashboard/features" id="sidebar-features"
+                           class="sidebar-link {{ request()->is('dashboard/features*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            <span>{{ __('Features') }}</span>
+                        </a>
 
-                    <a href="/dashboard/locations" id="sidebar-locations"
-                       class="sidebar-link {{ request()->is('dashboard/locations*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-                        <span>{{ __('Locations') }}</span>
-                    </a>
+                        <a href="/dashboard/locations" id="sidebar-locations"
+                           class="sidebar-link {{ request()->is('dashboard/locations*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+                            <span>{{ __('Locations') }}</span>
+                        </a>
 
-                    <a href="/dashboard/accommodations" id="sidebar-accommodations"
-                       class="sidebar-link {{ request()->is('dashboard/accommodations*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        <span>{{ __('Hosting & Stays') }}</span>
-                    </a>
+                        <a href="/dashboard/accommodations" id="sidebar-accommodations"
+                           class="sidebar-link {{ request()->is('dashboard/accommodations*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                            <span>{{ __('Hosting & Stays') }}</span>
+                        </a>
 
-                    <a href="/dashboard/operations" id="sidebar-operations"
-                       class="sidebar-link {{ request()->is('dashboard/operations*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
-                        <span>{{ __('Operations') }}</span>
-                    </a>
-                </div>
+                        <a href="/dashboard/operations" id="sidebar-operations"
+                           class="sidebar-link {{ request()->is('dashboard/operations*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
+                            <span>{{ __('Operations') }}</span>
+                        </a>
+                    </div>
+                @endif
 
                 {{-- Group 3: Transactions & Pipeline --}}
                 <div class="space-y-1">
@@ -310,39 +341,43 @@
                         <span>{{ __('Rental & Leases') }}</span>
                     </a>
 
-                    <a href="/dashboard/crm" id="sidebar-crm"
-                       class="sidebar-link {{ request()->is('dashboard/crm*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                        <span>{{ __('CRM & Leads') }}</span>
-                    </a>
+                    @if($authUser && $authUser->hasAnyRole(['Administrator', 'Property Manager', 'Agent', 'Developer', 'Real Estate Company']))
+                        <a href="/dashboard/crm" id="sidebar-crm"
+                           class="sidebar-link {{ request()->is('dashboard/crm*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                            <span>{{ __('CRM & Leads') }}</span>
+                        </a>
 
-                    <a href="/dashboard/projects" id="sidebar-projects"
-                       class="sidebar-link {{ request()->is('dashboard/projects*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" /></svg>
-                        <span>{{ __('Developer Projects') }}</span>
-                    </a>
+                        <a href="/dashboard/projects" id="sidebar-projects"
+                           class="sidebar-link {{ request()->is('dashboard/projects*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" /></svg>
+                            <span>{{ __('Developer Projects') }}</span>
+                        </a>
 
-                    <a href="/dashboard/sales" id="sidebar-sales"
-                       class="sidebar-link {{ request()->is('dashboard/sales*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-                        <span>{{ __('Developer Sales') }}</span>
-                    </a>
+                        <a href="/dashboard/sales" id="sidebar-sales"
+                           class="sidebar-link {{ request()->is('dashboard/sales*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+                            <span>{{ __('Developer Sales') }}</span>
+                        </a>
 
-                    <a href="/dashboard/transactions" id="sidebar-transactions"
-                       class="sidebar-link {{ request()->is('dashboard/transactions*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
-                        <span>{{ __('Transactions') }}</span>
-                    </a>
+                        <a href="/dashboard/transactions" id="sidebar-transactions"
+                           class="sidebar-link {{ request()->is('dashboard/transactions*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+                            <span>{{ __('Transactions') }}</span>
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Group 4: Finance, Trust & Intelligence --}}
                 <div class="space-y-1">
                     <p class="px-3 text-xs font-bold uppercase tracking-wider text-muted dark:text-muted">{{ __('Finance & Intelligence') }}</p>
-                    <a href="/dashboard/finance" id="sidebar-finance"
-                       class="sidebar-link {{ request()->is('dashboard/finance*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{{ __('Financial Core') }}</span>
-                    </a>
+                    @if($authUser && $authUser->hasAnyRole(['Administrator', 'Finance Officer', 'Property Manager', 'Developer']))
+                        <a href="/dashboard/finance" id="sidebar-finance"
+                           class="sidebar-link {{ request()->is('dashboard/finance*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>{{ __('Financial Core') }}</span>
+                        </a>
+                    @endif
 
                     <a href="/dashboard/documents" id="sidebar-documents"
                        class="sidebar-link {{ request()->is('dashboard/documents*') ? 'active' : '' }}">
@@ -350,23 +385,27 @@
                         <span>{{ __('Documents & KYC') }}</span>
                     </a>
 
-                    <a href="/dashboard/trust" id="sidebar-trust"
-                       class="sidebar-link {{ request()->is('dashboard/trust*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                        <span>{{ __('Trust & Safety') }}</span>
-                    </a>
+                    @if($authUser && $authUser->hasAnyRole(['Administrator', 'Moderator', 'Verification Officer']))
+                        <a href="/dashboard/trust" id="sidebar-trust"
+                           class="sidebar-link {{ request()->is('dashboard/trust*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                            <span>{{ __('Trust & Safety') }}</span>
+                        </a>
+                    @endif
 
-                    <a href="/dashboard/map" id="sidebar-advanced-gis"
-                       class="sidebar-link {{ request()->is('dashboard/map*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
-                        <span>{{ __('Advanced GIS') }}</span>
-                    </a>
+                    @if($isStaffOrBusiness)
+                        <a href="/dashboard/map" id="sidebar-advanced-gis"
+                           class="sidebar-link {{ request()->is('dashboard/map*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                            <span>{{ __('Advanced GIS') }}</span>
+                        </a>
 
-                    <a href="/dashboard/intelligence/valuation" id="sidebar-intelligence"
-                       class="sidebar-link {{ request()->is('dashboard/intelligence*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                        <span>{{ __('Intelligence & ROI') }}</span>
-                    </a>
+                        <a href="/dashboard/intelligence/valuation" id="sidebar-intelligence"
+                           class="sidebar-link {{ request()->is('dashboard/intelligence*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                            <span>{{ __('Intelligence & ROI') }}</span>
+                        </a>
+                    @endif
 
                     <a href="/dashboard/services" id="sidebar-services"
                        class="sidebar-link {{ request()->is('dashboard/services*') ? 'active' : '' }}">
@@ -380,11 +419,13 @@
                         <span>{{ __('AI Assistant') }}</span>
                     </a>
 
-                    <a href="/dashboard/integrations" id="sidebar-integrations"
-                       class="sidebar-link {{ request()->is('dashboard/integrations*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>
-                        <span>{{ __('Integrations') }}</span>
-                    </a>
+                    @if($authUser && $authUser->hasRole('Administrator'))
+                        <a href="/dashboard/integrations" id="sidebar-integrations"
+                           class="sidebar-link {{ request()->is('dashboard/integrations*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>
+                            <span>{{ __('Integrations') }}</span>
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Group 5: Workspace & Administration --}}
@@ -408,11 +449,13 @@
                         <span>{{ __('Collections') }}</span>
                     </a>
 
-                    <a href="/dashboard/analytics" id="sidebar-analytics"
-                       class="sidebar-link {{ request()->is('dashboard/analytics*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
-                        <span>{{ __('Analytics') }}</span>
-                    </a>
+                    @if($isStaffOrBusiness)
+                        <a href="/dashboard/analytics" id="sidebar-analytics"
+                           class="sidebar-link {{ request()->is('dashboard/analytics*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+                            <span>{{ __('Analytics') }}</span>
+                        </a>
+                    @endif
 
                     <a href="/dashboard/alerts" id="sidebar-alerts"
                        class="sidebar-link {{ request()->is('dashboard/alerts*') || request()->is('dashboard/recommendations*') ? 'active' : '' }}">
@@ -420,23 +463,27 @@
                         <span>{{ __('Alerts & For You') }}</span>
                     </a>
 
-                    <a href="/dashboard/organization" id="sidebar-organization"
-                       class="sidebar-link {{ request()->is('dashboard/organization*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
-                        <span>{{ __('Organization') }}</span>
-                    </a>
+                    @if($isStaffOrBusiness)
+                        <a href="/dashboard/organization" id="sidebar-organization"
+                           class="sidebar-link {{ request()->is('dashboard/organization*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>
+                            <span>{{ __('Organization') }}</span>
+                        </a>
+                    @endif
 
-                    <a href="/dashboard/admin/users" id="sidebar-users"
-                       class="sidebar-link {{ (request()->is('dashboard/admin/users*') || request()->is('dashboard/users*')) ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
-                        <span>{{ __('Users & Teams') }}</span>
-                    </a>
+                    @if(auth()->check() && (auth()->user()->hasRole('Administrator') || auth()->user()->hasPermissionTo('admin') || auth()->user()->hasPermissionTo('users.manage')))
+                        <a href="/dashboard/admin/users" id="sidebar-users"
+                           class="sidebar-link {{ (request()->is('dashboard/admin/users*') || request()->is('dashboard/users*')) ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                            <span>{{ __('Users & Teams') }}</span>
+                        </a>
 
-                    <a href="/dashboard/admin" id="sidebar-admin"
-                       class="sidebar-link {{ request()->is('dashboard/admin*') ? 'active' : '' }}">
-                        <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        <span>{{ __('Administration') }}</span>
-                    </a>
+                        <a href="/dashboard/admin" id="sidebar-admin"
+                           class="sidebar-link {{ request()->is('dashboard/admin*') ? 'active' : '' }}">
+                            <svg class="w-4.5 h-4.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <span>{{ __('Administration') }}</span>
+                        </a>
+                    @endif
 
                     <a href="/dashboard/settings" id="sidebar-settings"
                        class="sidebar-link {{ request()->is('dashboard/settings*') ? 'active' : '' }}">
@@ -460,7 +507,14 @@
                         <div class="flex-1 min-w-0 text-left">
                             <p class="text-xs font-semibold text-slate-900 dark:text-white truncate">{{ auth()->user()->name ?? 'User' }}</p>
                             <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="badge badge-brand text-[10px] px-1.5 py-0 border-none bg-orange-100 dark:bg-orange-500/20 font-bold">{{ __('Admin') }}</span>
+                                @php
+                                    $userRoleNames = auth()->user()->roles->pluck('name')->all();
+                                    $roleBadgeText = !empty($userRoleNames) ? implode(', ', $userRoleNames) : 'User';
+                                    $isGlobalAdmin = auth()->user()->hasRole('Administrator');
+                                @endphp
+                                <span class="badge {{ $isGlobalAdmin ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300' : 'badge-brand bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300' }} text-[10px] px-1.5 py-0 border-none font-bold max-w-[120px] truncate" title="{{ $roleBadgeText }}">
+                                    {{ $roleBadgeText }}
+                                </span>
                                 <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">{{ auth()->user()->email ?? '' }}</p>
                             </div>
                         </div>

@@ -2,6 +2,9 @@
 
 namespace App\Domains\Development\Models;
 
+use App\Domains\Identity\Models\User;
+use App\Events\Development\ConstructionMilestoneCertified;
+use App\Jobs\InstallmentBillingJob;
 use App\Models\DevelopmentBuilding;
 use App\Models\Organization;
 use App\Models\PaymentPlan;
@@ -37,5 +40,21 @@ class DevelopmentProject extends Model
     public function paymentPlans(): HasMany
     {
         return $this->hasMany(PaymentPlan::class);
+    }
+
+    public function updateProgress(float $percentage): int
+    {
+        $this->update(['progress_percentage' => $percentage]);
+
+        $job = new InstallmentBillingJob($this->id, $percentage);
+
+        return $job->handle();
+    }
+
+    public function certifyMilestone(string $milestoneName, float $progressPercentage, User $certifier, ?string $reportUrl = null): void
+    {
+        $this->update(['progress_percentage' => $progressPercentage]);
+
+        event(new ConstructionMilestoneCertified($this, $progressPercentage, $milestoneName, $certifier, $reportUrl));
     }
 }

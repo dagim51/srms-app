@@ -35,6 +35,8 @@ class Module11DocumentVerificationTest extends TestCase
             'name' => 'Admin Officer',
             'status' => 'active',
         ]);
+        \App\Models\Role::firstOrCreate(['name' => 'Administrator']);
+        $this->admin->assignRole('Administrator');
 
         $this->document = Document::create([
             'user_id' => $this->user->id,

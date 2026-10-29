@@ -4,6 +4,7 @@ namespace App\Domains\Listing\Http\Controllers\Api\V1;
 
 use App\Domains\Listing\Http\Controllers\Controller;
 use App\Domains\Listing\Models\Listing;
+use App\Http\Resources\ListingResource;
 use App\Services\Listings\ListingPublisher;
 use Illuminate\Http\Request;
 
@@ -15,18 +16,18 @@ class ListingModerationController extends Controller
 
     public function index(Request $request)
     {
-        if (! $request->user()->hasRole('Administrator')) {
+        if (! $request->user()->hasAnyRole(['Administrator', 'Moderator']) && ! $request->user()->hasPermissionTo('listings.moderate')) {
             abort(403, 'Unauthorized');
         }
 
         $listings = Listing::where('status', 'pending_review')->with('property')->paginate(20);
 
-        return response()->json($listings);
+        return ListingResource::collection($listings);
     }
 
     public function process(Request $request, Listing $listing)
     {
-        if (! $request->user()->hasRole('Administrator')) {
+        if (! $request->user()->hasAnyRole(['Administrator', 'Moderator']) && ! $request->user()->hasPermissionTo('listings.moderate')) {
             abort(403, 'Unauthorized');
         }
 

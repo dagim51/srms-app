@@ -189,6 +189,7 @@
 
                                             {{-- Interactive Toggle Switch --}}
                                             <div class="flex items-center gap-2.5 flex-shrink-0 pt-0.5">
+                                                <input type="checkbox" name="permissions[]" value="{{ $perm['code'] }}" :checked="isGranted('{{ $perm['code'] }}')" class="sr-only">
                                                 <span class="text-xs font-semibold"
                                                       :class="isGranted('{{ $perm['code'] }}') ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted dark:text-muted'"
                                                       x-text="isGranted('{{ $perm['code'] }}') ? '{{ __('Allowed') }}' : '{{ __('Restricted') }}'"></span>

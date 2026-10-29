@@ -20,17 +20,12 @@ class ListingModerationWebController extends Controller
      */
     protected function ensureAuthorized()
     {
-        // If logged in as non-admin, abort 403
-        if (Auth::check() && ! Auth::user()->hasRole('Administrator')) {
-            abort(403, 'Unauthorized. Moderator access is restricted to Administrators.');
+        if (! Auth::check()) {
+            abort(401, 'Authentication required.');
         }
 
-        // If not logged in in local development, auto-login or retrieve the seeded Admin user
-        if (! Auth::check()) {
-            $admin = User::whereHas('roles', fn ($q) => $q->where('name', 'Administrator'))->first();
-            if ($admin) {
-                Auth::login($admin);
-            }
+        if (! Auth::user()->hasAnyRole(['Administrator', 'Moderator']) && ! Auth::user()->hasPermissionTo('listings.moderate')) {
+            abort(403, 'Unauthorized. Moderator access is restricted to Administrators and Moderators.');
         }
     }
 

@@ -188,6 +188,11 @@ class TelebirrGateway implements PaymentGatewayInterface
 
         $publicKeyResource = openssl_pkey_get_public($publicKey);
 
+        if (! $publicKeyResource && ! str_contains((string) $publicKey, '-----BEGIN PUBLIC KEY-----')) {
+            $pem = "-----BEGIN PUBLIC KEY-----\n".chunk_split(trim((string) $publicKey), 64, "\n").'-----END PUBLIC KEY-----';
+            $publicKeyResource = openssl_pkey_get_public($pem);
+        }
+
         if (! $publicKeyResource) {
             if (! empty($secret)) {
                 $computed = hash_hmac('sha256', $payload, $secret);
@@ -200,14 +205,17 @@ class TelebirrGateway implements PaymentGatewayInterface
             return false;
         }
 
+        $decodedSig = base64_decode($signature, true);
+        if ($decodedSig === false) {
+            return false;
+        }
+
         $verified = openssl_verify(
             $payload,
-            base64_decode($signature),
+            $decodedSig,
             $publicKeyResource,
             OPENSSL_ALGO_SHA256
         );
-
-        openssl_free_key($publicKeyResource);
 
         return $verified === 1;
     }

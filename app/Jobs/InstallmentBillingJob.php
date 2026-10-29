@@ -66,16 +66,17 @@ class InstallmentBillingJob implements ShouldQueue
 
                             if ($buyerId) {
                                 $unitPrice = (float) ($unit->price ?? 0);
-                                $installmentAmount = $installment->amount ?? (($unitPrice * $threshold) / 100);
+                                $installmentAmount = ((float) ($installment->amount ?? 0) > 0)
+                                    ? (float) $installment->amount
+                                    : (($unitPrice * $threshold) / 100);
+
+                                $invoiceNote = "Installment '{$installment->name}' ({$threshold}%) for Unit {$unit->unit_number} in Project {$project->name}";
+
+                                $exists = Invoice::where('user_id', $buyerId)
+                                    ->where('notes', $invoiceNote)
+                                    ->exists();
 
                                 if ($installmentAmount > 0) {
-                                    $invoiceNote = "Installment '{$installment->name}' ({$threshold}%) for Unit {$unit->unit_number} in Project {$project->name}";
-
-                                    // Prevent duplicate billing for this specific installment and unit note
-                                    $exists = Invoice::where('user_id', $buyerId)
-                                        ->where('notes', $invoiceNote)
-                                        ->exists();
-
                                     if (! $exists) {
                                         Invoice::create([
                                             'user_id' => $buyerId,

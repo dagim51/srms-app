@@ -2,6 +2,7 @@
 
 namespace App\Domains\Stay\Services;
 
+use App\Models\Accommodation;
 use App\Models\AccommodationAvailability;
 use App\Models\ExternalCalendarSync;
 use Carbon\Carbon;
@@ -191,5 +192,52 @@ class CalendarSyncService
         } catch (Exception) {
             return null;
         }
+    }
+
+    /**
+     * Generate standard RFC 5545 iCalendar feed string for an accommodation.
+     */
+    public function generateIcsFeed(Accommodation $accommodation): string
+    {
+        $accommodation->loadMissing(['property']);
+
+        $availabilities = AccommodationAvailability::where('accommodation_id', $accommodation->id)
+            ->where('end_date', '>=', now()->toDateString())
+            ->get();
+
+        $lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//SRMS//Ethiopian Real Estate & Short Stay Engine//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'X-WR-CALNAME:SRMS - '.($accommodation->property?->title ?? 'Accommodation').' Calendar',
+            'X-WR-TIMEZONE:UTC',
+        ];
+
+        foreach ($availabilities as $avail) {
+            $dtStart = Carbon::parse($avail->start_date)->format('Ymd');
+            $dtEnd = Carbon::parse($avail->end_date)->addDay()->format('Ymd');
+            $uid = 'srms-avail-'.$avail->id.'@srms.et';
+            $summary = match ($avail->type) {
+                'held' => 'Temporary Hold (SRMS)',
+                'booked' => 'Reserved (SRMS)',
+                'maintenance' => 'Maintenance (SRMS)',
+                default => 'Unavailable (SRMS)',
+            };
+
+            $lines[] = 'BEGIN:VEVENT';
+            $lines[] = "UID:{$uid}";
+            $lines[] = 'DTSTAMP:'.gmdate('Ymd\THis\Z');
+            $lines[] = "DTSTART;VALUE=DATE:{$dtStart}";
+            $lines[] = "DTEND;VALUE=DATE:{$dtEnd}";
+            $lines[] = "SUMMARY:{$summary}";
+            $lines[] = 'STATUS:CONFIRMED';
+            $lines[] = 'END:VEVENT';
+        }
+
+        $lines[] = 'END:VCALENDAR';
+
+        return implode("\r\n", $lines);
     }
 }

@@ -201,32 +201,45 @@
                         <div class="p-6 space-y-4">
                             <h3 class="font-bold text-muted dark:text-white">{{ __('Price details') }}</h3>
 
+                            @php
+                                $currencySymbol = $accommodation->property->currency === 'USD' ? '$' : 'Br';
+                                $staySubtotal = $pricing['stay_subtotal'] ?? $basePrice;
+                                $cleaningFee = $pricing['cleaning_fee'] ?? 50.00;
+                                $serviceFee = $pricing['service_fee'] ?? round($staySubtotal * 0.05, 2);
+                                $taxAmount = $pricing['tax_amount'] ?? round(($staySubtotal + $serviceFee) * 0.15, 2);
+                                $totalPrice = $pricing['total_price'] ?? ($staySubtotal + $cleaningFee + $serviceFee + $taxAmount);
+                            @endphp
+
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between items-center">
                                     <span class="text-muted dark:text-muted">
-                                        {{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}{{ number_format($accommodation->property->price, 2) }} × {{ $nights }} nights
+                                        {{ $currencySymbol }}{{ number_format($pricing['base_nightly_rate'] ?? $accommodation->property->price, 2) }} × {{ $nights }} nights
                                     </span>
                                     <span class="font-medium text-muted dark:text-white">
-                                        {{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}{{ number_format($basePrice, 2) }}
+                                        {{ $currencySymbol }}{{ number_format($staySubtotal, 2) }}
                                     </span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-muted dark:text-muted underline decoration-dotted underline-offset-2 cursor-help">{{ __('Cleaning fee') }}</span>
-                                    <span class="font-medium text-muted dark:text-white">{{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}25.00</span>
+                                    <span class="font-medium text-muted dark:text-white">{{ $currencySymbol }}{{ number_format($cleaningFee, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-muted dark:text-muted underline decoration-dotted underline-offset-2 cursor-help">{{ __('SRMS service fee') }}</span>
-                                    <span class="font-medium text-muted dark:text-white">{{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}15.00</span>
+                                    <span class="text-muted dark:text-muted underline decoration-dotted underline-offset-2 cursor-help">{{ __('SRMS service fee') }} (5%)</span>
+                                    <span class="font-medium text-muted dark:text-white">{{ $currencySymbol }}{{ number_format($serviceFee, 2) }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-muted dark:text-muted underline decoration-dotted underline-offset-2 cursor-help">{{ __('VAT & Taxes') }} (15%)</span>
+                                    <span class="font-medium text-muted dark:text-white">{{ $currencySymbol }}{{ number_format($taxAmount, 2) }}</span>
                                 </div>
                             </div>
 
                             <div class="pt-4 border-t border-warm dark:border-warm flex justify-between items-center">
                                 <div>
                                     <p class="font-bold text-muted dark:text-white">{{ __('Total') }}</p>
-                                    <p class="text-xs text-muted mt-0.5">{{ __('Taxes included') }}</p>
+                                    <p class="text-xs text-muted mt-0.5">{{ __('Taxes & fees included') }}</p>
                                 </div>
                                 <p class="text-2xl font-extrabold font-display text-muted dark:text-white">
-                                    {{ $accommodation->property->currency === 'USD' ? '$' : 'Br' }}{{ number_format($basePrice + 40, 2) }}
+                                    {{ $currencySymbol }}{{ number_format($totalPrice, 2) }}
                                 </p>
                             </div>
                         </div>

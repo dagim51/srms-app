@@ -19,7 +19,16 @@ class ListingPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('listings.submit') || $user->hasAnyRole([
+            'Administrator',
+            'Property Owner',
+            'Seller',
+            'Landlord',
+            'Host',
+            'Agent',
+            'Developer',
+            'Real Estate Company',
+        ]);
     }
 
     public function update(User $user, Listing $listing): bool

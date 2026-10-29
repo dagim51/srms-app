@@ -3,9 +3,32 @@
 
     <div x-data="{
         showCreateModal: false,
+        showRoleModal: false,
+        activeUser: { id: '', name: '', roles: [] },
         searchQuery: '',
         roleFilter: '',
         statusFilter: '',
+        openRoleModal(user) {
+            let userRoles = [];
+            if (Array.isArray(user.roles)) {
+                userRoles = [...user.roles];
+            } else if (user.role) {
+                userRoles = user.role.split(',').map(r => r.trim()).filter(Boolean);
+            }
+            this.activeUser = {
+                id: user.id,
+                name: user.name,
+                roles: userRoles
+            };
+            this.showRoleModal = true;
+        },
+        toggleActiveUserRole(roleName) {
+            if (this.activeUser.roles.includes(roleName)) {
+                this.activeUser.roles = this.activeUser.roles.filter(r => r !== roleName);
+            } else {
+                this.activeUser.roles.push(roleName);
+            }
+        },
         newUser: {
             name: '',
             email: '',
@@ -178,7 +201,10 @@
                                         <a href="{{ route('dashboard.admin.users.show', $user['id']) }}" class="btn btn-secondary btn-sm text-xs py-1 px-2.5" title="View details">
                                             {{ __('View') }}
                                         </a>
-                                        <a href="{{ route('dashboard.admin.permissions') }}" class="btn btn-outline btn-sm text-xs py-1 px-2.5 text-orange-600" title="Configure abilities">
+                                        <button type="button" @click="openRoleModal({{ json_encode($user) }})" class="btn btn-outline btn-sm text-xs py-1 px-2.5 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/40 cursor-pointer" title="{{ __('Assign Roles') }}">
+                                            {{ __('Roles') }}
+                                        </button>
+                                        <a href="{{ route('dashboard.admin.permissions') }}" class="btn btn-outline btn-sm text-xs py-1 px-2.5 text-muted hover:text-orange-600" title="Configure abilities">
                                             {{ __('Access') }}
                                         </a>
                                     </div>
@@ -281,6 +307,66 @@
                         </button>
                         <button type="submit" class="btn btn-primary text-xs px-5 py-2 font-bold shadow-xs">
                             {{ __('Create User Account') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {{-- ═══════════════════════════════════════════════════════════
+             MODAL: ASSIGN ROLES TO USER
+             ═══════════════════════════════════════════════════════════ --}}
+        <div x-show="showRoleModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+             x-cloak>
+            <div @click.outside="showRoleModal = false"
+                 class="card bg-white dark:bg-[#111827] border border-[#EBDBC9] dark:border-[#273244] w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-xl space-y-5 relative">
+                <div class="flex items-center justify-between pb-2 border-b border-[#EBDBC9] dark:border-[#273244]">
+                    <div>
+                        <h3 class="text-base font-bold text-foreground dark:text-foreground">{{ __('Assign Roles to User') }}</h3>
+                        <p class="text-xs text-muted dark:text-muted mt-0.5">
+                            {{ __('User:') }} <strong class="text-foreground dark:text-foreground" x-text="activeUser.name"></strong>
+                        </p>
+                    </div>
+                    <button type="button" @click="showRoleModal = false" class="text-muted hover:text-foreground text-2xl font-light leading-none cursor-pointer">&times;</button>
+                </div>
+
+                <form method="POST" :action="'/dashboard/admin/users/' + activeUser.id + '/role'" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-muted dark:text-muted mb-2">
+                            {{ __('Select Platform Roles (Multi-Role Capable)') }}
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto p-2 rounded-xl bg-[#FFF5EB]/40 dark:bg-[#172033]/40 border border-[#EBDBC9] dark:border-[#273244]">
+                            @foreach($roles as $r)
+                                <label class="flex items-center gap-2 p-2 rounded-lg hover:bg-white dark:hover:bg-[#1e293b] text-xs cursor-pointer transition-colors border border-transparent hover:border-orange-200">
+                                    <input type="checkbox" name="roles[]" value="{{ $r }}"
+                                           x-model="activeUser.roles"
+                                           class="rounded border-[#EBDBC9] text-orange-600 focus:ring-orange-500">
+                                    <span class="font-medium text-foreground dark:text-foreground">{{ $r }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-200">
+                        {{ __('Safety Guard: System policy requires at least one active global Administrator. Revoking the Administrator role from the sole admin is automatically rejected.') }}
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-[#EBDBC9] dark:border-[#273244]">
+                        <button type="button" @click="showRoleModal = false"
+                                class="px-3.5 py-1.5 rounded-xl border border-[#EBDBC9] dark:border-[#273244] text-xs font-semibold text-muted hover:bg-[#FFF5EB] dark:hover:bg-[#172033]">
+                            {{ __('Cancel') }}
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-xs">
+                            {{ __('Save Role Assignments') }}
                         </button>
                     </div>
                 </form>

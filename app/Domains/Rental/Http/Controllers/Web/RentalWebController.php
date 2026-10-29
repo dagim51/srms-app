@@ -134,23 +134,7 @@ class RentalWebController extends Controller
         $targetStatus = $request->status;
 
         if ($targetStatus === 'approved') {
-            $lease->update(['status' => 'active']);
-
-            // Generate monthly rent schedules if not already generated
-            if ($lease->schedules()->count() === 0) {
-                $start = Carbon::parse($lease->start_date);
-                $end = Carbon::parse($lease->end_date);
-                $current = $start->copy();
-                while ($current->lte($end)) {
-                    RentSchedule::create([
-                        'lease_id' => $lease->id,
-                        'due_date' => $current->toDateString(),
-                        'amount' => $lease->rent_amount,
-                        'status' => 'unpaid',
-                    ]);
-                    $current->addMonth();
-                }
-            }
+            $lease->activate();
         } elseif ($targetStatus === 'rejected') {
             $lease->update(['status' => 'rejected']);
         } else {
@@ -315,6 +299,15 @@ class RentalWebController extends Controller
     public function leaseShow($id)
     {
         $dbLease = Lease::with(['tenantProfile.user', 'property', 'schedules'])->findOrFail($id);
+
+        $user = auth()->user();
+        $isManager = $user && $user->hasAnyRole(['Administrator', 'Landlord', 'Property Manager']);
+        $isTenant = $user && $dbLease->tenantProfile?->user_id === $user->id;
+
+        if (! $isManager && ! $isTenant) {
+            abort(403, 'Unauthorized access to this lease agreement.');
+        }
+
         $lease = [
             'id' => $dbLease->id,
             'tenant' => $dbLease->tenantProfile?->user?->name ?? 'Tenant',

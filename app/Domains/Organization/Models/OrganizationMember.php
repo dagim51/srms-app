@@ -13,6 +13,8 @@ class OrganizationMember extends Model
     protected $fillable = [
         'organization_id',
         'user_id',
+        'branch_id',
+        'team_id',
         'status',
         'created_by',
         'updated_by',
@@ -26,5 +28,15 @@ class OrganizationMember extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 }

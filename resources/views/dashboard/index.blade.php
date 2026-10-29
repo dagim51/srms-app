@@ -79,26 +79,93 @@
 
         {{-- Aura Estates Signature Welcome Banner --}}
         <div class="cinematic-fade-up card relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500/[0.08] via-amber-500/[0.04] to-transparent border border-orange-200/70 dark:border-orange-900/40 p-5 sm:p-6 backdrop-blur-md">
+            @if(session('registered_intent') || session('welcome_toast'))
+                <div class="mb-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+                    <span>🎉</span>
+                    <span>{{ __('Welcome to SRMS! Your management portal is configured for your track.') }}</span>
+                </div>
+            @endif
+
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                 <div class="space-y-1.5">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100/90 dark:bg-orange-950/70 border border-orange-200/80 dark:border-orange-800/80 text-orange-700 dark:text-orange-300 text-[11px] font-semibold tracking-wide uppercase">
                         <span class="w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
-                        <span>{{ __('Aura Pro Executive Intelligence') }}</span>
+                        @if(in_array(auth()->user()->intent, ['landlord']))
+                            <span>{{ __('Landlord Operations Hub') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['host']))
+                            <span>{{ __('Short-Stay Host Operations') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['developer']))
+                            <span>{{ __('Real Estate Developer Suite') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['property_manager']))
+                            <span>{{ __('Facilities & Property Management') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['service_provider']))
+                            <span>{{ __('Professional Services Specialist') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['owner_host', 'seller']))
+                            <span>{{ __('Asset Owner & Seller Hub') }}</span>
+                        @elseif(in_array(auth()->user()->intent, ['professional', 'agent']))
+                            <span>{{ __('Licensed Real Estate Professional Suite') }}</span>
+                        @else
+                            <span>{{ __('Aura Pro Executive Intelligence') }}</span>
+                        @endif
                     </div>
-                    <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        {{ __('Curating Capital Where') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('Architecture') }}</span> {{ __('Meets Liquidity.') }}
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-                        {{ __('Unified operations overview: tracking active property inventory, authenticated Diaspora inquiries, and automated escrow milestones across Ethiopia.') }}
-                    </p>
+
+                    @if(auth()->user()->intent === 'landlord')
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('Manage Your Leases &') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('Rental Properties') }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Oversee tenant rosters, digital lease agreements, security deposit escrows, and rent collection records in real time.') }}
+                        </p>
+                    @elseif(auth()->user()->intent === 'host')
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('Vacation Rental Units &') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('Calendar Availability') }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Configure short-stay accommodation units, manage dynamic nightly rates, sync iCal feeds, and approve guest bookings.') }}
+                        </p>
+                    @elseif(auth()->user()->intent === 'developer')
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('Master Development Projects') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('& Unit Inventories') }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Track multi-phase construction milestones, off-plan unit inventories, architectural plans, and progressive buyer billings.') }}
+                        </p>
+                    @elseif(in_array(auth()->user()->intent, ['owner_host', 'seller']))
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('List & Monetize Your') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('Real Estate Assets') }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Connect with verified diaspora and local buyers, publish property listings, and manage viewing schedules and offers in real time.') }}
+                        </p>
+                    @elseif(in_array(auth()->user()->intent, ['professional', 'agent']))
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('Professional Deal Pipeline') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('& Client Leads') }}</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Manage assigned client leads, coordinate scheduled property viewings, draft legal transaction offers, and track escrow settlements.') }}
+                        </p>
+                    @else
+                        <h2 class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            {{ __('Curating Capital Where') }} <span class="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-500 to-orange-400 dark:from-orange-400 dark:to-amber-300">{{ __('Architecture') }}</span> {{ __('Meets Liquidity.') }}
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+                            {{ __('Unified operations overview: tracking active property inventory, authenticated Diaspora inquiries, and automated escrow milestones across Ethiopia.') }}
+                        </p>
+                    @endif
                 </div>
                 <div class="flex items-center gap-2.5 sm:self-center flex-shrink-0">
                     <a href="/dashboard/properties/map" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-orange-600 dark:hover:text-orange-400 border border-slate-200/80 dark:border-slate-700 shadow-xs hover:shadow-md transition-all active:scale-[0.98]">
                         {{ __('Explore GIS Map') }}
                     </a>
-                    <a href="/dashboard/properties/create" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 transition-all active:scale-[0.98]">
-                        {{ __('Register Property') }}
-                    </a>
+                    @if(auth()->user()->intent === 'owner_host')
+                        <a href="/dashboard/listings/create" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 transition-all active:scale-[0.98]">
+                            {{ __('New Listing') }}
+                        </a>
+                    @else
+                        <a href="/dashboard/properties/create" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white shadow-md shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/30 transition-all active:scale-[0.98]">
+                            {{ __('Register Property') }}
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
