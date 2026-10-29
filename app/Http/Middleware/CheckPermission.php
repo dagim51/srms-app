@@ -30,6 +30,11 @@ class CheckPermission
             return redirect()->guest(route('login'));
         }
 
+        // Administrators always have full system permissions
+        if ($user->hasRole('Administrator')) {
+            return $next($request);
+        }
+
         // Get organization from header if it exists
         $organizationId = $request->header('X-Organization-ID');
 
