@@ -2,6 +2,7 @@
 
 namespace App\Domains\Identity\Models;
 
+use App\Domains\Booking\Models\AccommodationBooking;
 use App\Domains\CRM\Models\Lead;
 use App\Domains\Organization\Models\OrganizationMember;
 use App\Models\HandoverRecord;
@@ -71,5 +72,10 @@ class User extends Authenticatable
     public function organizationMemberships(): HasMany
     {
         return $this->hasMany(OrganizationMember::class, 'user_id');
+    }
+
+    public function accommodationBookings(): HasMany
+    {
+        return $this->hasMany(AccommodationBooking::class, 'user_id');
     }
 }

@@ -34,7 +34,9 @@ class PageHeaderCardWebTest extends TestCase
 
     public function test_dashboard_pages_do_not_contain_top_page_header_card()
     {
+        $this->seed(\Database\Seeders\AuthorizationSeeder::class);
         $user = User::factory()->create();
+        $user->assignRole('Administrator');
 
         $dashboardEndpoints = [
             '/dashboard',

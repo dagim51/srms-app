@@ -53,7 +53,7 @@ class DashboardWebController extends Controller
                 ->count();
             $submittedOffersCount = Offer::where('buyer_id', $user->id)->count();
             $activeLeasesCount = Lease::whereHas('tenantProfile', fn ($tq) => $tq->where('user_id', $user->id))->count();
-            $activeBookingsCount = AccommodationBooking::where('guest_id', $user->id)->count();
+            $activeBookingsCount = AccommodationBooking::where('user_id', $user->id)->count();
 
             $recentFavorites = Favorite::where('user_id', $user->id)
                 ->with([
