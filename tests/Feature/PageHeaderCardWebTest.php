@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\AuthorizationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,7 +35,7 @@ class PageHeaderCardWebTest extends TestCase
 
     public function test_dashboard_pages_do_not_contain_top_page_header_card()
     {
-        $this->seed(\Database\Seeders\AuthorizationSeeder::class);
+        $this->seed(AuthorizationSeeder::class);
         $user = User::factory()->create();
         $user->assignRole('Administrator');
 

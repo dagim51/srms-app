@@ -50,9 +50,9 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'intent' => [
-                'required', 
-                'string', 
-                'in:buyer,tenant,traveler,seller,landlord,host,agent,developer,property_manager,service_provider,buyer_tenant,owner_host,professional'
+                'required',
+                'string',
+                'in:buyer,tenant,traveler,seller,landlord,host,agent,developer,property_manager,service_provider,buyer_tenant,owner_host,professional',
             ],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],

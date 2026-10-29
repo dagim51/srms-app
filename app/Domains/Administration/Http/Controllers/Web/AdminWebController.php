@@ -590,7 +590,7 @@ class AdminWebController extends Controller
             auditable: $role,
             newValues: ['permissions_count' => count($grantedCodes), 'permissions' => array_values($grantedCodes)],
             oldValues: ['permissions_count' => count($oldGrantedCodes), 'permissions' => array_values($oldGrantedCodes)],
-            notes: "Updated capabilities for role '{$role->name}' from ".count($oldGrantedCodes)." to ".count($grantedCodes)." permissions",
+            notes: "Updated capabilities for role '{$role->name}' from ".count($oldGrantedCodes).' to '.count($grantedCodes).' permissions',
             actorId: auth()->id()
         );
 

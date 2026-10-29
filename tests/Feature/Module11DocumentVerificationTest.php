@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Document;
 use App\Models\DocumentVersion;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Verification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,7 +36,7 @@ class Module11DocumentVerificationTest extends TestCase
             'name' => 'Admin Officer',
             'status' => 'active',
         ]);
-        \App\Models\Role::firstOrCreate(['name' => 'Administrator']);
+        Role::firstOrCreate(['name' => 'Administrator']);
         $this->admin->assignRole('Administrator');
 
         $this->document = Document::create([

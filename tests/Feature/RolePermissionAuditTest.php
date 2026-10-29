@@ -12,12 +12,19 @@ class RolePermissionAuditTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $buyer;
+
     protected User $tenant;
+
     protected User $moderator;
+
     protected User $financeOfficer;
+
     protected User $agent;
+
     protected User $developer;
+
     protected User $verificationOfficer;
 
     protected function setUp(): void

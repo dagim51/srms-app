@@ -16,15 +16,25 @@ class RolePermissionIsolationTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $buyer;
+
     protected User $tenant;
+
     protected User $host;
+
     protected User $landlord;
+
     protected User $agent;
+
     protected User $developer;
+
     protected User $company;
+
     protected User $moderator;
+
     protected User $financeOfficer;
+
     protected User $verificationOfficer;
 
     protected function setUp(): void
