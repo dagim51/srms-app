@@ -2,8 +2,8 @@
 
 namespace App\Domains\Transaction\Http\Controllers\Web;
 
+use App\Domains\Transaction\Models\Document;
 use App\Http\Controllers\Controller;
-use App\Models\Document;
 use App\Models\DocumentAccessLog;
 use App\Models\Verification;
 use Illuminate\Http\Request;

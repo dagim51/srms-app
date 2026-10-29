@@ -2,13 +2,14 @@
 
 namespace App\Domains\Booking\Models;
 
-use App\Models\Accommodation;
-use App\Models\BookingGuest;
+use App\Domains\Identity\Models\User;
+use App\Domains\Stay\Models\Accommodation;
 use App\Models\CancellationRecord;
 use App\Models\CheckInOutRecord;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AccommodationBooking extends Model
@@ -39,17 +40,26 @@ class AccommodationBooking extends Model
         return $this->status === 'holding' && $this->expires_at && $this->expires_at->isPast();
     }
 
-    public function accommodation()
+    /**
+     * @return BelongsTo<Accommodation, $this>
+     */
+    public function accommodation(): BelongsTo
     {
         return $this->belongsTo(Accommodation::class);
     }
 
-    public function user()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function bookingGuests()
+    /**
+     * @return HasMany<BookingGuest, $this>
+     */
+    public function bookingGuests(): HasMany
     {
         return $this->hasMany(BookingGuest::class, 'booking_id');
     }

@@ -1,10 +1,10 @@
 <?php
 
+use App\Domains\Administration\Http\Controllers\Web\AdminWebController;
 use App\Domains\Property\Http\Controllers\Web\PropertyWebController;
 use App\Http\Controllers\Web\AccommodationCalendarWebController;
 use App\Http\Controllers\Web\AccommodationPricingWebController;
 use App\Http\Controllers\Web\AccommodationWebController;
-use App\Http\Controllers\Web\AdminWebController;
 use App\Http\Controllers\Web\AgentWebController;
 use App\Http\Controllers\Web\AiSearchWebController;
 use App\Http\Controllers\Web\AlertsWebController;

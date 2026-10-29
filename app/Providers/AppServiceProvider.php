@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\PaymentGatewayInterface;
+use App\Domains\Transaction\Models\Document;
 use App\Events\Bookings\BookingCancelled;
 use App\Events\Bookings\BookingConfirmed;
 use App\Events\Bookings\BookingCreated;
@@ -51,7 +52,6 @@ use App\Listeners\TriggerMilestoneInstallmentInvoicing;
 use App\Models\AccommodationBooking;
 use App\Models\DevelopmentProject;
 use App\Models\Dispute;
-use App\Models\Document;
 use App\Models\Lease;
 use App\Models\Payment;
 use App\Models\Property;

@@ -3,6 +3,8 @@
 namespace App\Policies;
 
 use App\Domains\Identity\Models\User;
+use App\Domains\Listing\Models\Listing;
+use App\Domains\Stay\Models\Accommodation;
 use App\Domains\Transaction\Models\Document;
 use App\Models\AccommodationBooking;
 use App\Models\Lease;
@@ -96,7 +98,9 @@ class DocumentPolicy
                 if ($target->buyer_id === $user->id) {
                     return true;
                 }
-                $sellerId = $target->listing?->property?->owner_user_id;
+                /** @var Listing|null $listing */
+                $listing = $target->listing;
+                $sellerId = $listing?->property?->owner_user_id;
                 if ($sellerId && $sellerId === $user->id) {
                     return true;
                 }
@@ -111,7 +115,9 @@ class DocumentPolicy
                 if ($target->user_id === $user->id) {
                     return true;
                 }
-                if ($target->accommodation?->property?->owner_user_id === $user->id) {
+                /** @var Accommodation|null $accommodation */
+                $accommodation = $target->accommodation;
+                if ($accommodation?->property?->owner_user_id === $user->id) {
                     return true;
                 }
             }
@@ -172,8 +178,8 @@ class DocumentPolicy
 
     protected function isPropertyTransactionParticipant(User $user, Property $property): bool
     {
-        // Owner or Assigned Agent
-        if ($property->owner_user_id === $user->id || $property->agent_user_id === $user->id) {
+        // Owner
+        if ($property->owner_user_id === $user->id) {
             return true;
         }
 

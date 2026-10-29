@@ -2,11 +2,12 @@
 
 namespace App\Domains\Engagement\Models;
 
-use App\Models\Listing;
-use App\Models\Property;
-use App\Models\User;
+use App\Domains\Identity\Models\User;
+use App\Domains\Listing\Models\Listing;
+use App\Domains\Property\Models\Property;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inquiry extends Model
@@ -22,22 +23,34 @@ class Inquiry extends Model
         'message',
     ];
 
-    public function listing()
+    /**
+     * @return BelongsTo<Listing, $this>
+     */
+    public function listing(): BelongsTo
     {
         return $this->belongsTo(Listing::class);
     }
 
-    public function property()
+    /**
+     * @return BelongsTo<Property, $this>
+     */
+    public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class);
     }
 
-    public function requester()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function requester(): BelongsTo
     {
         return $this->belongsTo(User::class, 'requester_id');
     }
 
-    public function sellerAgent()
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function sellerAgent(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_agent_id');
     }
